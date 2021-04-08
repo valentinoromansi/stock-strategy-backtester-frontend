@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Table, Tabs } from "antd";
 import { StrategyBacktestResults } from "../models/strategy-backtest-results";
-import { BacktestResult } from "../models/backtest-result";
 import { columns } from "../constants/constants";
 
 type PropsType = {

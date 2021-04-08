@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-//import BacktestsTable from "./backtests-table";
-import { Button } from "antd";
 import { strategyBacktestResultsMock, strategyMock } from "../mocks/mocks";
 import { StrategyBacktestResults } from "../models/strategy-backtest-results";
 import BacktestsTable from "./backtests-table";
@@ -19,13 +17,15 @@ export default class Main extends Component<PropsType, StateType> {
     this.state = {
       strategyBacktestResults: strategyBacktestResultsMock
     };
-    this.getBacktestData()
+    console.log( this.state.strategyBacktestResults)
+    //this.getBacktestData()
   }
 
-  getBacktestData = () => {
+  getBacktestData = () => {    
     getBacktestData(strategyMock).then(data => {
       this.setState({strategyBacktestResults: data})
     })
+    
   }
 
   render() {

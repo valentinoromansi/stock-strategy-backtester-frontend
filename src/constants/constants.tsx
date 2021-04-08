@@ -5,14 +5,21 @@ import { BacktestResult } from "../models/backtest-result";
 let getColorFromPlFactor = (plFactor: any) : string => {
   if (plFactor < 0.5)
     return 'red'
-  else if (plFactor == 0.5)
+  else if (plFactor === 0.5)
     return 'black'
   return 'limegreen'
 } 
-let getColorFromPlRatio = (plFactor: any) : string => {
-  if (plFactor < 1)
+let getColorFromPlRatio = (plRatio: any) : string => {
+  if (plRatio < 1)
     return 'red'
-  else if (plFactor == 1)
+  else if (plRatio === 1)
+    return 'black'
+  return 'limegreen'
+}
+let getColorFromAvgProfit = (avgProfit: any) : string => {
+  if (avgProfit < 0)
+    return 'red'
+  else if (avgProfit === 0)
     return 'black'
   return 'limegreen'
 } 
@@ -20,13 +27,11 @@ let getColorFromPlRatio = (plFactor: any) : string => {
 export const columns: ColumnsType<BacktestResult> = [
   {
     title: 'Stock',
-    dataIndex: 'stockName',
-    width: '1%',    
+    dataIndex: 'stockName'
   },
   {
     title: 'Interval',
     dataIndex: 'interval',
-    width: '1%',
     filters: [
       {
         text: '15min',
@@ -47,7 +52,6 @@ export const columns: ColumnsType<BacktestResult> = [
   },
   {
     title: 'Profit/Loss factor',
-    width: '1%',
     sorter: (a: BacktestResult, b: BacktestResult) => a.plFactor - b.plFactor,
     sortDirections: ['ascend', 'descend'],
     render: ((value, record: BacktestResult) => {
@@ -57,7 +61,6 @@ export const columns: ColumnsType<BacktestResult> = [
   },
   {
     title: 'Profit/Loss ratio',
-    width: '1%',
     sorter: (a: BacktestResult, b: BacktestResult) => a.plRatio - b.plRatio,
     sortDirections: ['ascend', 'descend'],
     render: ((value, record: BacktestResult) => {
@@ -66,8 +69,16 @@ export const columns: ColumnsType<BacktestResult> = [
     })
   },
   {
+    title: 'Average profit per trade',
+    sorter: (a: BacktestResult, b: BacktestResult) => a.plRatio - b.plRatio,
+    sortDirections: ['ascend', 'descend'],
+    render: ((value, record: BacktestResult) => {
+      const color = getColorFromAvgProfit(record.plRatio - 1)
+      return <span style={{ color: color }}>{(record.plRatio - 1).toFixed(2)}</span>
+    })
+  },
+  {
     title: 'Sample(win-loss-indecisive)',
-    width: '1%',
     sorter: (a: BacktestResult, b: BacktestResult) => (a.timesProfited + a.timesLost + a.timesIndecisive) - (b.timesProfited + b.timesLost + b.timesIndecisive),
     sortDirections: ['ascend', 'descend'],
     render: ((value, record: BacktestResult) => {
@@ -85,6 +96,7 @@ export const columns: ColumnsType<BacktestResult> = [
   },
   {
     title: 'Reward:risk',
+    width: '40%',
     sorter: (a: BacktestResult, b: BacktestResult) => a.rewardToRisk - b.rewardToRisk,
     sortDirections: ['ascend', 'descend'],
     render: ((value, record: BacktestResult) => {

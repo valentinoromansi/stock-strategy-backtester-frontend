@@ -15,6 +15,7 @@ export let strategyMock = {
     "type2": "CLOSE",
     "percent": 0.5
   },
+  "riskToRewardList": [1, 2, 3],
   "rules": [
     {
       "valueData1": {
@@ -105,25 +106,6 @@ export let strategyBacktestResultsMock = new StrategyBacktestResults({
       stockName: "AAON",
       interval: "15min",
       rewardToRisk: 1
-    })
-  ]
-})
-export let strategyBacktestResults2Mock = new StrategyBacktestResults({
-  strategyName: "1 bar play",
-  backtestResults: [
-    new BacktestResult({
-      entryDatesOfProfitTrades: [
-        "2020-06-29T08:30:00.000Z",
-      ],
-      timesProfited: 11,
-      timesLost: 22,
-      timesIndecisive: 33,
-      winRate: 0.47282608695652173,
-      plRatio: 0.8969072164948453,
-      plFactor: 0.47282608695652173,
-      stockName: "AAAA",
-      interval: "15min",
-      rewardToRisk: 2.34,
     })
   ]
 })
