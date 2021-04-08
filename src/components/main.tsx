@@ -19,6 +19,7 @@ export default class Main extends Component<PropsType, StateType> {
     this.state = {
       strategyBacktestResults: strategyBacktestResultsMock
     };
+    this.getBacktestData()
   }
 
   getBacktestData = () => {
@@ -30,7 +31,6 @@ export default class Main extends Component<PropsType, StateType> {
   render() {
     return (
       <div>
-        <Button onClick={this.getBacktestData}>GuMbbiiC</Button>
         <BacktestsTable strategyBacktestResults={this.state.strategyBacktestResults}></BacktestsTable>
       </div>
     );

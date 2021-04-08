@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import { Tabs } from "antd";
+import { Table, Tabs } from "antd";
 import { StrategyBacktestResults } from "../models/strategy-backtest-results";
+import { BacktestResult } from "../models/backtest-result";
+import { columns } from "../constants/constants";
 
 type PropsType = {
   strategyBacktestResults?: StrategyBacktestResults
@@ -15,8 +17,7 @@ export default class BacktestsTable extends Component<PropsType, StateType> {
     super(props);
     this.state = {
       strategyBacktestResults: props.strategyBacktestResults
-    }
-    
+    }    
   }
 
   componentDidUpdate(prevProps: PropsType) {
@@ -25,17 +26,14 @@ export default class BacktestsTable extends Component<PropsType, StateType> {
     }
   }
 
-  
-
   render() {
     return (
       <div>
         <Tabs defaultActiveKey="1" onChange={() => {}}>
           <Tabs.TabPane tab={this.state?.strategyBacktestResults?.strategyName} key="1">
-            Content of Tab Pane 1
-          </Tabs.TabPane>     
+            <Table columns={columns} dataSource={this.state?.strategyBacktestResults?.backtestResults}/>
+          </Tabs.TabPane>
         </Tabs>
-        <p>{JSON.stringify(this.state)}</p>
       </div>
     );
   }
