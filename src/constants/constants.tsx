@@ -1,4 +1,7 @@
+import { Button } from "antd";
+import Modal from "antd/lib/modal/Modal";
 import { ColumnsType } from "antd/lib/table";
+import TimestampList from "../components/timestamp-list";
 import { BacktestResult } from "../models/backtest-result";
 
 
@@ -96,11 +99,29 @@ export const columns: ColumnsType<BacktestResult> = [
   },
   {
     title: 'Reward:risk',
-    width: '40%',
     sorter: (a: BacktestResult, b: BacktestResult) => a.rewardToRisk - b.rewardToRisk,
     sortDirections: ['ascend', 'descend'],
     render: ((value, record: BacktestResult) => {
       return <span>{record.rewardToRisk}:1</span>
+    })
+  },
+  {
+    title: 'Profit trade entries',
+    render: ((value, record: BacktestResult) => {
+      const title = 'Profit entries - ' + record.entryDatesOfProfitTrades.length
+      return <span>
+        <TimestampList title={title} timestamps={record.entryDatesOfProfitTrades}></TimestampList>
+      </span>
+    })
+  },
+  {
+    title: 'Loss trade entries',
+    width: '40%',
+    render: ((value, record: BacktestResult) => {
+      const title = 'Loss entries - ' + record.entryDatesOfLossTrades.length
+      return <span>
+        <TimestampList title={title} timestamps={record.entryDatesOfLossTrades}></TimestampList>
+      </span>
     })
   }
 

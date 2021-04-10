@@ -18,7 +18,7 @@ export default class Main extends Component<PropsType, StateType> {
       strategyBacktestResults: strategyBacktestResultsMock
     };
     console.log( this.state.strategyBacktestResults)
-    //this.getBacktestData()
+    this.getBacktestData()
   }
 
   getBacktestData = () => {    

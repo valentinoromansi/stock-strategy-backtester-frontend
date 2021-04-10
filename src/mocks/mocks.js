@@ -4,60 +4,88 @@ import { StrategyBacktestResults } from "../models/strategy-backtest-results"
 export let strategyMock = {
   "name": "2 bar play",
   "enterRad": {
-    "id": 1,
-    "period": null,
-    "type1": "CLOSE"
+      "id": 1,
+      "period": null,
+      "type1": "CLOSE"
   },
   "stopLossRad": {
-    "id": 0,
-    "period": null,
-    "type1": "OPEN",
-    "type2": "CLOSE",
-    "percent": 0.5
+      "id": 0,
+      "period": null,
+      "type1": "OPEN",
+      "type2": "CLOSE",
+      "percent": 0.5
   },
-  "riskToRewardList": [1, 2, 3],
+  "riskToRewardList": [2, 3],
   "rules": [
-    {
-      "valueData1": {
-        "id": 0,
-        "period": null,
-        "type1": "CLOSE"
+      {
+          "valueData1": {
+              "id": 0,
+              "period": null,
+              "type1": "OPEN"
+          },
+          "position": "ABOVE",
+          "valueData2": {
+              "id": 0,
+              "period": null,
+              "type1": "CLOSE"
+          }
       },
-      "position": "ABOVE",
-      "valueData2": {
-        "id": 1,
-        "period": null,
-        "type1": "CLOSE"
-      }
-    },
-    {
-      "valueData1": {
-        "id": 0,
-        "period": null,
-        "type1": "CLOSE"
+      {
+          "valueData1": {
+              "id": 1,
+              "period": null,
+              "type1": "OPEN"
+          },
+          "position": "BELOW",
+          "valueData2": {
+              "id": 0,
+              "period": null,
+              "type1": "HIGH"
+          }
       },
-      "position": "ABOVE",
-      "valueData2": {
-        "id": 1,
-        "period": null,
-        "type1": "OPEN"
-      }
-    },
-    {
-      "valueData1": {
-        "id": 1,
-        "period": null,
-        "type1": "CLOSE"
+      {
+          "valueData1": {
+              "id": 1,
+              "period": null,
+              "type1": "CLOSE"
+          },
+          "position": "BELOW",
+          "valueData2": {
+              "id": 0,
+              "period": null,
+              "type1": "HIGH"
+          }
       },
-      "position": "ABOVE",
-      "valueData2": {
-        "id": 0,
-        "period": null,
-        "type1": "OPEN",
-        "type2": "CLOSE",
-        "percent": 0.5
+      {
+          "valueData1": {
+              "id": 1,
+              "period": null,
+              "type1": "OPEN"
+          },
+          "position": "ABOVE",
+          "valueData2": {
+              "id": 0,
+              "period": null,
+              "type1": "OPEN",
+              "type2": "CLOSE",
+              "percent": 0.5
+          }
+      },
+      {
+          "valueData1": {
+              "id": 1,
+              "period": null,
+              "type1": "CLOSE"
+          },
+          "position": "ABOVE",
+          "valueData2": {
+              "id": 0,
+              "period": null,
+              "type1": "OPEN",
+              "type2": "CLOSE",
+              "percent": 0.5
+          }
       }
-    }
   ]
 }
 
