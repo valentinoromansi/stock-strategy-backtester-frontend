@@ -3,90 +3,62 @@ import { StrategyBacktestResults } from "../models/strategy-backtest-results"
 
 export let strategyMock = {
   "name": "2 bar play",
-  "enterRad": {
+  "enterValueExRule": {
       "id": 1,
       "period": null,
-      "type1": "CLOSE"
+      "attribute1": "CLOSE"
   },
-  "stopLossRad": {
+  "stopLossValueExRule": {
       "id": 0,
       "period": null,
-      "type1": "OPEN",
-      "type2": "CLOSE",
+      "attribute1": "OPEN",
+      "attribute2": "CLOSE",
       "percent": 0.5
   },
-  "riskToRewardList": [2, 3, 4, 5, 6],
-  "rules": [
+  "strategyConRules": [
       {
-          "valueData1": {
+          "valueExtractionRule1": {
               "id": 0,
               "period": null,
-              "type1": "OPEN"
-          },
-          "position": "BELOW",
-          "valueData2": {
-              "id": 0,
-              "period": null,
-              "type1": "CLOSE"
-          }
-      },
-      {
-          "valueData1": {
-              "id": 1,
-              "period": null,
-              "type1": "OPEN"
-          },
-          "position": "BELOW",
-          "valueData2": {
-              "id": 0,
-              "period": null,
-              "type1": "HIGH"
-          }
-      },
-      {
-          "valueData1": {
-              "id": 1,
-              "period": null,
-              "type1": "CLOSE"
-          },
-          "position": "BELOW",
-          "valueData2": {
-              "id": 0,
-              "period": null,
-              "type1": "HIGH"
-          }
-      },
-      {
-          "valueData1": {
-              "id": 1,
-              "period": null,
-              "type1": "OPEN"
+              "attribute1": "CLOSE"
           },
           "position": "ABOVE",
-          "valueData2": {
-              "id": 0,
+          "valueExtractionRule2": {
+              "id": 1,
               "period": null,
-              "type1": "OPEN",
-              "type2": "CLOSE",
-              "percent": 0.5
+              "attribute1": "CLOSE"
           }
       },
       {
-          "valueData1": {
-              "id": 1,
-              "period": null,
-              "type1": "CLOSE"
-          },
-          "position": "ABOVE",
-          "valueData2": {
+          "valueExtractionRule1": {
               "id": 0,
               "period": null,
-              "type1": "OPEN",
-              "type2": "CLOSE",
+              "attribute1": "CLOSE"
+          },
+          "position": "ABOVE",
+          "valueExtractionRule2": {
+              "id": 1,
+              "period": null,
+              "attribute1": "OPEN"
+          }
+      },
+      {
+          "valueExtractionRule1": {
+              "id": 1,
+              "period": null,
+              "attribute1": "CLOSE"
+          },
+          "position": "ABOVE",
+          "valueExtractionRule2": {
+              "id": 0,
+              "period": null,
+              "attribute1": "OPEN",
+              "attribute2": "CLOSE",
               "percent": 0.5
           }
       }
-  ]
+  ],
+  "riskToRewardList": [1, 2]
 }
 
 export let strategyBacktestResultsMock = new StrategyBacktestResults({
