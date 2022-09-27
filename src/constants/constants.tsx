@@ -84,6 +84,7 @@ export const columns: ColumnsType<BacktestResult> = [
     title: 'Sample(win-loss-indecisive)',
     sorter: (a: BacktestResult, b: BacktestResult) => (a.timesProfited + a.timesLost + a.timesIndecisive) - (b.timesProfited + b.timesLost + b.timesIndecisive),
     sortDirections: ['ascend', 'descend'],
+    onFilter: (value: any, record: BacktestResult) => record.timesProfited > 100,
     render: ((value, record: BacktestResult) => {
       const sample = record.timesProfited + record.timesLost + record.timesIndecisive
       return <span>

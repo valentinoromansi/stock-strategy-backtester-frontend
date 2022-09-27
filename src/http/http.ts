@@ -9,4 +9,5 @@ export let getBacktestData = (strategy: any) : Promise<any> => {
     body: JSON.stringify(strategy)
   })
   .then(response => response.json())
+  .catch((err) => console.log("ERRRRRRRRRRRRRRRRROR:" + err))
 }

@@ -28,11 +28,7 @@ export default class BacktestsTable extends Component<PropsType, StateType> {
   render() {
     return (
       <div>
-        <Tabs defaultActiveKey="1" onChange={() => {}}>
-          <Tabs.TabPane tab={this.state?.strategyBacktestResults?.strategyName} key="1">
-            <Table columns={columns} dataSource={this.state?.strategyBacktestResults?.backtestResults}/>
-          </Tabs.TabPane>
-        </Tabs>
+        <Table columns={columns} dataSource={this.state?.strategyBacktestResults?.backtestResults}/>
       </div>
     );
   }

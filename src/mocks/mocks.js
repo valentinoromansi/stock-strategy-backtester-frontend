@@ -15,7 +15,7 @@ export let strategyMock = {
       "type2": "CLOSE",
       "percent": 0.5
   },
-  "riskToRewardList": [2, 3],
+  "riskToRewardList": [2, 3, 4, 5, 6],
   "rules": [
       {
           "valueData1": {
@@ -23,7 +23,7 @@ export let strategyMock = {
               "period": null,
               "type1": "OPEN"
           },
-          "position": "ABOVE",
+          "position": "BELOW",
           "valueData2": {
               "id": 0,
               "period": null,
