@@ -1,8 +1,10 @@
 import React, { Component } from "react";
-import { strategyBacktestResultsMock, strategyMock } from "../mocks/mocks";
 import { StrategyBacktestResults } from "../models/strategy-backtest-results";
 import BacktestsTable from "./backtests-table";
-import { getBacktestData } from "../http/http";
+import Navigation from './navigation'
+import * as actions from "../state/actions";
+
+
 
 type PropsType = {
   strategyBacktestResults?: StrategyBacktestResults
@@ -14,14 +16,7 @@ type StateType = {
 export default class Main extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
-    this.getBacktestData()
-  }
-
-  getBacktestData = () => {
-    getBacktestData(strategyMock).then(data => {
-      this.setState({ strategyBacktestResults: data })
-    })
-
+    actions.getBacktestData();
   }
 
   render() {
@@ -61,23 +56,23 @@ export default class Main extends Component<PropsType, StateType> {
         strategyName: this.state?.strategyBacktestResults?.strategyName,
         backtestResults: this.state?.strategyBacktestResults?.backtestResults?.filter((record) => record.timesProfited + record.timesLost + record.timesIndecisive > 50)
       })
-      backtestTableDiv = <BacktestsTable strategyBacktestResults={rowsForDisplay}></BacktestsTable>;
+      backtestTableDiv = <BacktestsTable></BacktestsTable>
     }
     
 
     return (
       <div>
-        <div style={navStyle}></div>
+        <Navigation></Navigation>
         <div style={underNavStyle}>
           <div style={strategyListStyle}></div>
           <div style={graphBacktestListWrapperStyle}>
             <div style={graphStyle}></div>
             <div style={backtestListStyle}>
-            {backtestTableDiv}
+            {/*backtestTableDiv*/}
+            <BacktestsTable></BacktestsTable>
             </div>
           </div>
         </div>
-          {/*<BacktestsTable strategyBacktestResults={rowsForDisplay}></BacktestsTable>*/}
       </div>
     );
   }
