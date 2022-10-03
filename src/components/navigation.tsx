@@ -1,22 +1,21 @@
 import React, { Component } from "react";
-import { StrategyBacktestResults } from "../models/strategy-backtest-results";
+import { StrategyReport } from "../models/strategy-report";
 import { connect } from "react-redux";
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { getBacktestData } from "../http/http";
-import { strategyMock } from "../mocks/mocks";
+import { getStrategyReports } from "../http/http";
 import { store } from "../state/store";
 import * as types from '../state/types';
 import * as actions from "../state/actions";
 
 
 type PropsType = {
-  strategyBacktestResults?: StrategyBacktestResults
+  strategyBacktestResults?: StrategyReport[]
   currentStr?: string
 }
 type StateType = {
-  strategyBacktestResults?: StrategyBacktestResults
+  strategyBacktestResults?: StrategyReport[]
   spinnerActive?: boolean
 }
 
@@ -24,9 +23,9 @@ type StateType = {
 class Navigation extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
-    getBacktestData(strategyMock).then(data => {
+    getStrategyReports().then(data => {
       this.setState({ strategyBacktestResults: data })
-      store.dispatch({type: types.UPDATE_BACKTEST_DATA, payload: data})
+      store.dispatch({type: types.UPDATE_STRATEGY_REPORTS, payload: data})
     })
 
   }
@@ -38,7 +37,7 @@ class Navigation extends Component<PropsType, StateType> {
   }
 
   onRefresh() {
-    actions.getBacktestData();
+    actions.getStrategyReport();
   }
 
   render() {

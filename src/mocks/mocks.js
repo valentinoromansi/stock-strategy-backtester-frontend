@@ -1,5 +1,5 @@
 import { BacktestResult } from "../models/backtest-result"
-import { StrategyBacktestResults } from "../models/strategy-backtest-results"
+import { StrategyReport } from "../models/strategy-report"
 
 export let strategyMock = {
   "name": "2 bar play",
@@ -61,7 +61,7 @@ export let strategyMock = {
   "riskToRewardList": [1, 2]
 }
 
-export let strategyBacktestResultsMock = new StrategyBacktestResults({
+export let strategyBacktestResultsMock = new StrategyReport({
   strategyName: "2 bar play",
   backtestResults: [
     new BacktestResult({

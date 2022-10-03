@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, Table, Tabs } from "antd";
-import { StrategyBacktestResults } from "../models/strategy-backtest-results";
+import { StrategyReport } from "../models/strategy-report";
 import { columns } from "../constants/constants";
 import Modal from "antd/lib/modal/Modal";
 

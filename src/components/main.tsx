@@ -1,22 +1,24 @@
 import React, { Component } from "react";
-import { StrategyBacktestResults } from "../models/strategy-backtest-results";
-import BacktestsTable from "./backtests-table";
+import { StrategyReport } from "../models/strategy-report";
+import StrategyReportTable from "./backtests-table";
 import Navigation from './navigation'
 import * as actions from "../state/actions";
-
+import * as reducer from '../state/reducers';
+import { connect } from "react-redux";
 
 
 type PropsType = {
-  strategyBacktestResults?: StrategyBacktestResults
+  strategyBacktestResults?: StrategyReport
 }
 type StateType = {
-  strategyBacktestResults?: StrategyBacktestResults
+  strategyBacktestResults?: StrategyReport
 }
 
-export default class Main extends Component<PropsType, StateType> {
+class Main extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
-    actions.getBacktestData();
+    actions.getStrategies();
+    actions.getStrategyReport();
   }
 
   render() {
@@ -50,13 +52,13 @@ export default class Main extends Component<PropsType, StateType> {
     
     let backtestTableDiv;
     if(!this.state?.strategyBacktestResults) {
-      backtestTableDiv = <BacktestsTable></BacktestsTable>;
+      backtestTableDiv = <StrategyReportTable></StrategyReportTable>;
     } else {
-      let rowsForDisplay: StrategyBacktestResults = new StrategyBacktestResults({
+      let rowsForDisplay: StrategyReport = new StrategyReport({
         strategyName: this.state?.strategyBacktestResults?.strategyName,
         backtestResults: this.state?.strategyBacktestResults?.backtestResults?.filter((record) => record.timesProfited + record.timesLost + record.timesIndecisive > 50)
       })
-      backtestTableDiv = <BacktestsTable></BacktestsTable>
+      backtestTableDiv = <StrategyReportTable></StrategyReportTable>
     }
     
 
@@ -69,7 +71,7 @@ export default class Main extends Component<PropsType, StateType> {
             <div style={graphStyle}></div>
             <div style={backtestListStyle}>
             {/*backtestTableDiv*/}
-            <BacktestsTable></BacktestsTable>
+            <StrategyReportTable></StrategyReportTable>
             </div>
           </div>
         </div>
@@ -77,3 +79,12 @@ export default class Main extends Component<PropsType, StateType> {
     );
   }
 }
+
+const mapStateToProps = (state: reducer.StateType) => {
+  return {
+    strategyReports: state.strategyReports,
+    strategyReportsFecthing: state.strategyReportsFecthing,
+  };
+};
+
+export default connect(mapStateToProps)(Main);
