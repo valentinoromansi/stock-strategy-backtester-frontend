@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { StrategyReport } from "../models/strategy-report";
 import StrategyReportTable from "./backtests-table";
 import Navigation from './navigation'
+import StrategyList from './strategy-list'
 import * as actions from "../state/actions";
 import * as reducer from '../state/reducers';
 import { connect } from "react-redux";
@@ -30,11 +31,6 @@ class Main extends Component<PropsType, StateType> {
     const underNavStyle = {
       height: window.innerHeight - 50,
       display: 'flex',
-    }
-
-    const strategyListStyle = {
-      width: '10%',
-      backgroundColor: 'purple'
     }
     
     const graphBacktestListWrapperStyle = {
@@ -66,7 +62,7 @@ class Main extends Component<PropsType, StateType> {
       <div>
         <Navigation></Navigation>
         <div style={underNavStyle}>
-          <div style={strategyListStyle}></div>
+          <StrategyList></StrategyList>
           <div style={graphBacktestListWrapperStyle}>
             <div style={graphStyle}></div>
             <div style={backtestListStyle}>

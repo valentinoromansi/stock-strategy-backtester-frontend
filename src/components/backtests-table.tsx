@@ -37,6 +37,7 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     
     return (
       <div>
+        {this.props.selectedStrategy?.name}
         <Table columns={columns} dataSource={strategyReport?.backtestResults} loading={this.props.strategyReportsFecthing || this.props.strategiesFecthing} />
       </div>
     );
