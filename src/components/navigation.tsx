@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, CSSProperties } from "react";
 import { StrategyReport } from "../models/strategy-report";
 import { connect } from "react-redux";
 import Button from '@mui/material/Button';
@@ -8,6 +8,8 @@ import { getStrategyReports } from "../http/http";
 import { store } from "../state/store";
 import * as types from '../state/types';
 import * as actions from "../state/actions";
+import UpdateIcon from '@mui/icons-material/Update';
+
 
 
 type PropsType = {
@@ -36,29 +38,65 @@ class Navigation extends Component<PropsType, StateType> {
     }
   }
 
-  onRefresh() {
-    actions.getStrategyReport();
+  updateStrategyReports() {
+    actions.updateStrategyReports()
   }
 
+  refetchStrategyReports() {
+    actions.getStrategyReports()
+  }  
+
+  refetchStrategies() {
+    actions.getStrategies()
+  }
+
+  navItemStyle = { py: 0, minHeight: 16, "&:hover": {backgroundColor: '#212936'} }
+  navItemTextStyle = {color: '#56657f'}
+
   render() {
-    const navStyle = {
+    const navStyle: CSSProperties = {
       width: '100%',
       padding: '8px',
-      backgroundColor: 'red'
+      backgroundColor: '#212936',
+      display: 'flex',
+      justifyContent:'left', 
+      flexDirection: 'row',
+      gap: '10px'
     }
     
+
     return (
       <div style={navStyle}>
-        <Stack spacing={1} direction="row">
-          <Button variant="text" onClick={() => { this.onRefresh();}}>
-            <div>
-              <RefreshIcon fontSize="large"/>
+        <div style={this.navItemStyle}>
+          <Button variant="text" onClick={() => { this.updateStrategyReports()}}>
               <div>
-                <b>refresh</b>
+                <UpdateIcon fontSize="large"/>
+                <div>
+                  <b style={this.navItemTextStyle}>Regenerate reports</b>
+                </div>
               </div>
-            </div>
           </Button>
-        </Stack>
+          </div>
+          <div>
+          <Button variant="text" onClick={() => { this.refetchStrategyReports();}}>
+              <div>
+                <RefreshIcon fontSize="large"/>
+                <div>
+                <b style={this.navItemTextStyle}>Refetch reports</b>
+                </div>
+              </div>
+          </Button>
+        </div>
+        <div>
+          <Button variant="text" onClick={() => { this.refetchStrategies();}}>
+              <div>
+                <RefreshIcon fontSize="large"/>
+                <div>
+                <b style={this.navItemTextStyle}>Refetch strategies</b>
+                </div>
+              </div>
+          </Button>
+        </div>
       </div>
     );
   }

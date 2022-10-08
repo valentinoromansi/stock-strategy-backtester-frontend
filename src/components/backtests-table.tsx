@@ -5,6 +5,7 @@ import { columns } from "../constants/constants";
 import { connect } from "react-redux";
 import * as reducer from '../state/reducers';
 import { Strategy } from "../models/strategy";
+import { SpinnerComponent } from 'react-element-spinner';
 
 type PropsType = {
   selectedStrategy: Strategy | null,
@@ -37,8 +38,8 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     
     return (
       <div>
-        {this.props.selectedStrategy?.name}
-        <Table columns={columns} dataSource={strategyReport?.backtestResults} loading={this.props.strategyReportsFecthing || this.props.strategiesFecthing} />
+        <SpinnerComponent loading={this.props.strategyReportsFecthing} position="centered" />
+        <Table columns={columns} dataSource={strategyReport?.backtestResults}/>
       </div>
     );
   }

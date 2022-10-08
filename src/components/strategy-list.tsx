@@ -11,7 +11,8 @@ import * as actions from "../state/actions";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import EditIcon from '@mui/icons-material/Edit';
-
+import { CSSProperties } from "react";
+import { SpinnerComponent } from 'react-element-spinner';
 
 
 
@@ -71,7 +72,8 @@ class StrategyList extends Component<PropsType, StateType> {
 
   render() {
 
-    const strategyListStyle = {
+    const strategyListStyle: CSSProperties = {
+      borderTop: '1px solid #374154',
       width: '10%',
       backgroundColor: '#212936',
       padding: '10px'
@@ -84,7 +86,8 @@ class StrategyList extends Component<PropsType, StateType> {
     }
     
     return (
-      <div style={strategyListStyle}>        
+      <div style={strategyListStyle}>
+        <SpinnerComponent loading={this.props.strategiesFecthing} position="centered" />
         <List component="nav" aria-label="main mailbox folders" style={{display: 'flex', flexDirection: 'column', rowGap: 6}} >
           {/* Strategy list  */}
           {!this.props.strategiesFecthing &&
@@ -107,8 +110,6 @@ class StrategyList extends Component<PropsType, StateType> {
           <LibraryAddIcon fontSize="medium"/>
         </ListItemButton>
         </List>
-
-
       </div>
     );
   }
@@ -118,7 +119,8 @@ class StrategyList extends Component<PropsType, StateType> {
 const mapStateToProps = (state: reducer.StateType) => {
   return {
     strategies: state.strategies,
-    strategiesFecthing: state.strategiesFecthing
+    strategiesFecthing: state.strategiesFecthing,
+    selectedStrategy: state.selectedStrategy
   };
 };
 

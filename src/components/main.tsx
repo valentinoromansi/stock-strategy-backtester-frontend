@@ -19,7 +19,7 @@ class Main extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
     actions.getStrategies();
-    actions.getStrategyReport();
+    actions.getStrategyReports();
   }
 
   render() {
@@ -35,7 +35,7 @@ class Main extends Component<PropsType, StateType> {
     
     const graphBacktestListWrapperStyle = {
       width: '90%',
-      backgroundColor: 'blue'
+      backgroundColor: '#212936'
     }
     const graphStyle = {
       backgroundColor: 'yellow',

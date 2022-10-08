@@ -4,6 +4,7 @@ import { Strategy } from "../models/strategy"
 
 const URL_GET_STRATEGY_REPORTS: string = 'http://localhost:4000/get-strategy-reports'
 const URL_GET_STRATEGIES: string = 'http://localhost:4000/get-strategies'
+const URL_UPDATE_STRATEGY_REPORTS: string = 'http://localhost:4000/update-strategy-reports'
 const HEADERS: HeadersInit = {'Content-Type': 'application/json'}
 
 export let getStrategyReports = () : Promise<StrategyReport[]> => {
@@ -41,6 +42,26 @@ export let getStrategies = () : Promise<Strategy[]> => {
     })
     .catch((err) => {
       console.log(colors.red(`Fetch ${URL_GET_STRATEGIES} thrown error: ` + err))
+      resolve([])
+    })
+  })
+}
+
+export let updateStrategyReports = () : Promise<StrategyReport[]> => {
+  return new Promise(async (resolve) => {
+    return fetch(URL_UPDATE_STRATEGY_REPORTS, {
+      method: 'POST',
+      headers: HEADERS
+    })
+    .then(response => {
+      response.json().then(jsonObj => {
+        let reports: StrategyReport[] = jsonObj
+        console.log(colors.green(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} done.`))
+        resolve(reports)
+      })
+    })
+    .catch((err) => {
+      console.log(colors.red(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} thrown error: ` + err))
       resolve([])
     })
   })
