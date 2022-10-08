@@ -13,22 +13,22 @@ import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import EditIcon from '@mui/icons-material/Edit';
 import { CSSProperties } from "react";
 import { SpinnerComponent } from 'react-element-spinner';
-
+import "apercu-font";
 
 
 type PropsType = {
   strategies: Strategy[],
-  strategiesFecthing: boolean
+  strategiesFecthing: boolean,
+  selectedStrategy: Strategy
 }
+
 type StateType = {
-  selectedKey: string
 }
 
 
 class StrategyList extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
-    this.setState({selectedKey: ''})
   }
 
   setSelectedStrategy(
@@ -36,7 +36,6 @@ class StrategyList extends Component<PropsType, StateType> {
   ) {
     const strategy: Strategy = this.props.strategies.find((e) => e.name === strategyName)
     actions.setSelectedStrategy(strategy)
-    this.setState({selectedKey: strategyName})
   }
 
   addNewStrategy() {
@@ -51,22 +50,22 @@ class StrategyList extends Component<PropsType, StateType> {
   
   addNewStrategyStyle = { py: 0, minHeight: 32, display: 'flex', justifyContent:'center', color: 'white', backgroundColor: '#1976d2', borderRadius: '4px', "&:hover": {backgroundColor: '#1976d2'} }
   
-  itemFontStyle = { fontSize: 14, fontWeight: 'bold', color: '#56657f'}
-  selectedItemFontStyle = { fontSize: 14, fontWeight: 'bold', color: '#1976d2'}
+  itemFontStyle = { fontSize: 14, fontFamily: "apercu", fontWeight: 'bold', color: '#56657f'}
+  selectedItemFontStyle = { fontSize: 14, fontFamily: "apercu", fontWeight: 'bold', color: '#1976d2'}
   getItemFontStyle(strategyKey: string): any {
-    return this.state?.selectedKey === strategyKey ? this.selectedItemFontStyle : this.itemFontStyle
+    return this.props?.selectedStrategy?.name === strategyKey ? this.selectedItemFontStyle : this.itemFontStyle
   }
   
   strategyListItemButtonStyle = { py: 0, minHeight: 32, color: '#212936', "&:hover": {backgroundColor: '#212936'} }
   selectedStrategyListItemButtonStyle = { py: 0, minHeight: 32, backgroundColor: '#2b3648', borderBottomLeftRadius: '4px', borderTopLeftRadius: '4px', "&:hover": {backgroundColor: '#2b3648'}}
   getItemButtonStyle(strategyKey: string): any {
-    return this.state?.selectedKey === strategyKey ? this.selectedStrategyListItemButtonStyle : this.strategyListItemButtonStyle
+    return this.props?.selectedStrategy?.name === strategyKey ? this.selectedStrategyListItemButtonStyle : this.strategyListItemButtonStyle
   }
 
   editItemButtonStyle = { display: 'flex', justifyContent: "center", padding: 0, backgroundColor: '#212936', borderBottomRightRadius: '4px', borderTopRightRadius: '4px'}
   selectedEditItemButtonStyle = { display: 'flex', justifyContent: "center", padding: 0, backgroundColor: '#2b3648', borderBottomRightRadius: '4px', borderTopRightRadius: '4px', "&:hover": {backgroundColor: '#2b3648'}}
   getEditItemButtonStyle(strategyKey: string): any {
-    return this.state?.selectedKey === strategyKey ? this.selectedEditItemButtonStyle : this.editItemButtonStyle
+    return this.props?.selectedStrategy?.name === strategyKey ? this.selectedEditItemButtonStyle : this.editItemButtonStyle
   }
 
 

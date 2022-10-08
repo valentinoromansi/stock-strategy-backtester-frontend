@@ -9,7 +9,7 @@ import { store } from "../state/store";
 import * as types from '../state/types';
 import * as actions from "../state/actions";
 import UpdateIcon from '@mui/icons-material/Update';
-
+import "apercu-font";
 
 
 type PropsType = {
@@ -50,13 +50,11 @@ class Navigation extends Component<PropsType, StateType> {
     actions.getStrategies()
   }
 
-  navItemStyle = { py: 0, minHeight: 16, "&:hover": {backgroundColor: '#212936'} }
-  navItemTextStyle = {color: '#56657f'}
+  navItemTextStyle = {fontFamily: "apercu", color: '#56657f'}
 
   render() {
     const navStyle: CSSProperties = {
       width: '100%',
-      padding: '8px',
       backgroundColor: '#212936',
       display: 'flex',
       justifyContent:'left', 
@@ -67,20 +65,20 @@ class Navigation extends Component<PropsType, StateType> {
 
     return (
       <div style={navStyle}>
-        <div style={this.navItemStyle}>
+        <div>
           <Button variant="text" onClick={() => { this.updateStrategyReports()}}>
               <div>
-                <UpdateIcon fontSize="large"/>
+                <UpdateIcon style={{fontSize: "32px"}}/>
                 <div>
                   <b style={this.navItemTextStyle}>Regenerate reports</b>
                 </div>
               </div>
           </Button>
-          </div>
-          <div>
+        </div>
+        <div>
           <Button variant="text" onClick={() => { this.refetchStrategyReports();}}>
               <div>
-                <RefreshIcon fontSize="large"/>
+                <RefreshIcon style={{fontSize: "32px"}}/>
                 <div>
                 <b style={this.navItemTextStyle}>Refetch reports</b>
                 </div>
@@ -90,7 +88,7 @@ class Navigation extends Component<PropsType, StateType> {
         <div>
           <Button variant="text" onClick={() => { this.refetchStrategies();}}>
               <div>
-                <RefreshIcon fontSize="large"/>
+                <RefreshIcon style={{fontSize: "32px"}}/>
                 <div>
                 <b style={this.navItemTextStyle}>Refetch strategies</b>
                 </div>
