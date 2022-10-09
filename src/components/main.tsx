@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, CSSProperties } from "react";
 import { StrategyReport } from "../models/strategy-report";
 import StrategyReportTable from "./backtests-table";
 import Navigation from './navigation'
@@ -6,6 +6,7 @@ import StrategyList from './strategy-list'
 import * as actions from "../state/actions";
 import * as reducer from '../state/reducers';
 import { connect } from "react-redux";
+import Graph from "./graph";
 
 
 type PropsType = {
@@ -37,9 +38,10 @@ class Main extends Component<PropsType, StateType> {
       width: '90%',
       backgroundColor: '#212936'
     }
-    const graphStyle = {
+    const graphStyle: CSSProperties = {
       backgroundColor: 'yellow',
-      height: '70%'
+      height: '70%',
+      textAlign: 'start'
     }
     const backtestListStyle = {
     }
@@ -64,7 +66,9 @@ class Main extends Component<PropsType, StateType> {
         <div style={underNavStyle}>
           <StrategyList></StrategyList>
           <div style={graphBacktestListWrapperStyle}>
-            <div style={graphStyle}></div>
+            <div style={graphStyle}>
+              <Graph></Graph>
+            </div>
             <div style={backtestListStyle}>
             {/*backtestTableDiv*/}
             <StrategyReportTable></StrategyReportTable>

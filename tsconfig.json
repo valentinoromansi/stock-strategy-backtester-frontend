@@ -20,7 +20,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "strictNullChecks": false,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "typeRoots": [
+      "./src/external-module-types/",
+      "./node_modules/@types"
+    ],
+    "noImplicitAny": false
   },
   "include": [
     "src"
