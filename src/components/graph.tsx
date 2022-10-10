@@ -133,7 +133,6 @@ const mapStateToProps = (state: reducer.StateType) => {
 		panEvent: true,
 		zoomEvent: true,
 		clamp: false,
-		width: 1200,
   	ratio: 1,
 		data: [ { date: new Date("2010-01-03T23:00:00.000Z"), "open": 25.436282332605284, "high": 25.835021381744056, "low": 25.411360259406774, "close": 25.710416, "volume": 38409100, "split": "", "dividend": "", "absoluteChange": "", "percentChange": "" },
 		{ date: new Date("2010-01-03T23:05:00.000Z"), "open": 25.436282332605284, "high": 25.835021381744056, "low": 25.411360259406774, "close": 25.710416, "volume": 3840910, "split": "", "dividend": "", "absoluteChange": "", "percentChange": "" },

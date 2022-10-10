@@ -1,4 +1,4 @@
-import React, { Component, CSSProperties } from "react";
+import React, { Component, CSSProperties, useEffect, useRef, useState } from "react";
 import { StrategyReport } from "../models/strategy-report";
 import StrategyReportTable from "./backtests-table";
 import Navigation from './navigation'
@@ -13,7 +13,8 @@ type PropsType = {
   strategyBacktestResults?: StrategyReport
 }
 type StateType = {
-  strategyBacktestResults?: StrategyReport
+  strategyBacktestResults?: StrategyReport,
+  windowWidth: number
 }
 
 class Main extends Component<PropsType, StateType> {
@@ -21,14 +22,19 @@ class Main extends Component<PropsType, StateType> {
     super(props);
     actions.getStrategies();
     actions.getStrategyReports();
+
+    this.state = {windowWidth: window.innerWidth}
+
+    this.handleResize = this.handleResize.bind(this)    
+    window.addEventListener('resize', this.handleResize);
+  }
+
+  handleResize() {
+    this.setState({windowWidth: window.innerWidth})
+    console.log(window.innerWidth)
   }
 
   render() {
-    const navStyle = {
-      width: '100%',
-      height: '50px',
-      backgroundColor: 'red'
-    }
     const underNavStyle = {
       height: window.innerHeight - 50,
       display: 'flex',
@@ -67,7 +73,7 @@ class Main extends Component<PropsType, StateType> {
           <StrategyList></StrategyList>
           <div style={graphBacktestListWrapperStyle}>
             <div style={graphStyle}>
-              <Graph></Graph>
+              <Graph width={this.state.windowWidth * 0.85}></Graph>
             </div>
             <div style={backtestListStyle}>
             {/*backtestTableDiv*/}
