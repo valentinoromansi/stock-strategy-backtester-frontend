@@ -6,6 +6,9 @@ import { connect } from "react-redux";
 import * as reducer from '../state/reducers';
 import { Strategy } from "../models/strategy";
 import { SpinnerComponent } from 'react-element-spinner';
+import { BacktestResult } from "../models/backtest-result";
+import * as actions from "../state/actions";
+
 
 type PropsType = {
   selectedStrategy: Strategy | null,
@@ -33,13 +36,22 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     this.setSelectedStrategyReport(nextProps)
   }
 
+  onRowClick(row: BacktestResult) {
+    return {
+      onClick: event => {
+        actions.getStock(row.interval, row.stockName);
+        console.log(row)
+      }
+    }
+  }
+
   render() {
     let strategyReport = this.state?.selectedStrategyReport
     
     return (
       <div>
         <SpinnerComponent loading={this.props.strategyReportsFecthing} position="centered" />
-        <Table columns={columns} dataSource={strategyReport?.backtestResults}/>
+        <Table columns={columns} dataSource={strategyReport?.backtestResults} onRow={this.onRowClick}/>
       </div>
     );
   }

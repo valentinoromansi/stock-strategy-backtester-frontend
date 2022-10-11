@@ -18,6 +18,7 @@ type PropsType = {
   //selectedStrategyReport: StrategyReport
   type: any,
   width: any,
+	height: any,
   ratio: any,
   mouseMoveEvent: any,
   panEvent: any,
@@ -57,7 +58,7 @@ class Graph extends Component<PropsType, StateType> {
 
 		const margin = { left: 70, right: 70, top: 20, bottom: 30 };
 
-		const height = 400;
+		const height = this.props.height;
 
 		const gridHeight = height - margin.top - margin.bottom;
 		const gridWidth = width - margin.left - margin.right;
@@ -114,7 +115,7 @@ class Graph extends Component<PropsType, StateType> {
 						tickFormat={format(".2s")}
 						zoomEnabled={zoomEvent}
 					/>
-
+					{/* volume axis */}
 					<BarSeries yAccessor={d => d.volume} fill={(d) => d.close > d.open ? "#6BA583" : "#FF0000"} />
 				</Chart>
 				<CrossHairCursor />
@@ -126,6 +127,9 @@ class Graph extends Component<PropsType, StateType> {
 
 
 const mapStateToProps = (state: reducer.StateType) => {
+	console.log("state.selectedStock")
+
+	console.log(state.selectedStock)
   return {
     //selectedStrategyReport: state.selectedStrategyReport
 		type: "svg",
@@ -134,9 +138,7 @@ const mapStateToProps = (state: reducer.StateType) => {
 		zoomEvent: true,
 		clamp: false,
   	ratio: 1,
-		data: [ { date: new Date("2010-01-03T23:00:00.000Z"), "open": 25.436282332605284, "high": 25.835021381744056, "low": 25.411360259406774, "close": 25.710416, "volume": 38409100, "split": "", "dividend": "", "absoluteChange": "", "percentChange": "" },
-		{ date: new Date("2010-01-03T23:05:00.000Z"), "open": 25.436282332605284, "high": 25.835021381744056, "low": 25.411360259406774, "close": 25.710416, "volume": 3840910, "split": "", "dividend": "", "absoluteChange": "", "percentChange": "" },
-		{ date: new Date("2010-01-03T23:10:00.000Z"), "open": 25.436282332605284, "high": 25.835021381744056, "low": 25.411360259406774, "close": 25.710416, "volume": 3840910, "split": "", "dividend": "", "absoluteChange": "", "percentChange": "" }]
+		data: state.selectedStock
   };
 };
 

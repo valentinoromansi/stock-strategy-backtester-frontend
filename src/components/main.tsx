@@ -14,7 +14,8 @@ type PropsType = {
 }
 type StateType = {
   strategyBacktestResults?: StrategyReport,
-  windowWidth: number
+  windowWidth: number,
+  windowHeight: number
 }
 
 class Main extends Component<PropsType, StateType> {
@@ -23,15 +24,14 @@ class Main extends Component<PropsType, StateType> {
     actions.getStrategies();
     actions.getStrategyReports();
 
-    this.state = {windowWidth: window.innerWidth}
+    this.state = {windowWidth: window.innerWidth, windowHeight: window.innerHeight}
 
     this.handleResize = this.handleResize.bind(this)    
     window.addEventListener('resize', this.handleResize);
   }
 
   handleResize() {
-    this.setState({windowWidth: window.innerWidth})
-    console.log(window.innerWidth)
+    this.setState({windowWidth: window.innerWidth, windowHeight: window.innerHeight})
   }
 
   render() {
@@ -45,7 +45,7 @@ class Main extends Component<PropsType, StateType> {
       backgroundColor: '#212936'
     }
     const graphStyle: CSSProperties = {
-      backgroundColor: 'yellow',
+      backgroundColor: '#fff',
       height: '70%',
       textAlign: 'start'
     }
@@ -73,7 +73,7 @@ class Main extends Component<PropsType, StateType> {
           <StrategyList></StrategyList>
           <div style={graphBacktestListWrapperStyle}>
             <div style={graphStyle}>
-              <Graph width={this.state.windowWidth * 0.85}></Graph>
+              <Graph width={this.state.windowWidth * 0.85} height={this.state.windowHeight * 0.6}></Graph>
             </div>
             <div style={backtestListStyle}>
             {/*backtestTableDiv*/}

@@ -2,10 +2,34 @@ import { StrategyReport } from "../models/strategy-report"
 import colors from "colors"
 import { Strategy } from "../models/strategy"
 
+const URL_GET_STOCK: string = 'http://localhost:4000/get-stock'
 const URL_GET_STRATEGY_REPORTS: string = 'http://localhost:4000/get-strategy-reports'
 const URL_GET_STRATEGIES: string = 'http://localhost:4000/get-strategies'
 const URL_UPDATE_STRATEGY_REPORTS: string = 'http://localhost:4000/update-strategy-reports'
 const HEADERS: HeadersInit = {'Content-Type': 'application/json'}
+
+export let getStock = (interval: string, symbol: string) : Promise<[]> => {
+  return new Promise(async (resolve) => {
+    return fetch(URL_GET_STOCK, {
+      method: 'POST',
+      headers: HEADERS,
+      body: JSON.stringify({ "interval": interval, "symbol": symbol })
+    })
+    .then(response => {
+      response.json().then(jsonObj => {
+        console.log(colors.green(`Fetch ${URL_GET_STOCK} done.`))
+        for(const o of jsonObj)
+          o.date = new Date(o.date)
+        console.log(jsonObj[5])
+        resolve(jsonObj)
+      })
+    })
+    .catch((err) => {
+      console.log(colors.red(`Fetch ${URL_GET_STOCK} thrown error: ` + err))
+      resolve(null)
+    })
+  })
+}
 
 export let getStrategyReports = () : Promise<StrategyReport[]> => {
   return new Promise(async (resolve) => {

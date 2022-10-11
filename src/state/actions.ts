@@ -5,6 +5,13 @@ import { StrategyReport } from '../models/strategy-report';
 import { Strategy } from '../models/strategy';
 
 
+export function getStock(interval: string, symbol: string) {
+  store.dispatch({type: types.FETCHING_STOCK, payload: true})
+    http.getStock(interval, symbol).then((data: any) => {
+      store.dispatch({type: types.SET_SELECTED_STOCK, payload: data})
+      store.dispatch({type: types.FETCHING_STOCK, payload: false})
+  })
+}
 
 export function getStrategyReports() {
   store.dispatch({type: types.FETCHING_STRATEGY_REPORTS, payload: true})
