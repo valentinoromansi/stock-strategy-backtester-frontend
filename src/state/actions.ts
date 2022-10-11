@@ -3,6 +3,7 @@ import { store } from '../state/store'
 import * as http from "../http/http";
 import { StrategyReport } from '../models/strategy-report';
 import { Strategy } from '../models/strategy';
+import { BacktestResult } from '../models/backtest-result';
 
 
 export function getStock(interval: string, symbol: string) {
@@ -19,6 +20,10 @@ export function getStrategyReports() {
       store.dispatch({type: types.UPDATE_STRATEGY_REPORTS, payload: data})
       store.dispatch({type: types.FETCHING_STRATEGY_REPORTS, payload: false})
   })
+}
+
+export function setSelectedBacktestResult(backtestResult: BacktestResult) {
+  store.dispatch({type: types.SET_SELECTED_BACKTEST_RESULT, payload: backtestResult})
 }
 
 export function updateStrategyReports() {

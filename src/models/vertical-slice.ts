@@ -22,10 +22,5 @@ export class VerticalSlice {
   high: number
   low: number
   volume: number
-  next: VerticalSlice
-  prev: VerticalSlice
 
-  static copy(data: any): VerticalSlice {
-    return new VerticalSlice(new Date(data.time), +data.open, +data.close, +data.high, +data.low, +data.volume)
-  }
 }

@@ -12,18 +12,22 @@ import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
 import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
 import { fitWidth } from "react-stockcharts/lib/helper";
 import { last } from "react-stockcharts/lib/utils";
+import { VerticalSlice } from "../models/vertical-slice";
+import { Strategy } from "../models/strategy";
+import { BacktestResult } from "../models/backtest-result";
 
 
 type PropsType = {
-  //selectedStrategyReport: StrategyReport
-  type: any,
-  width: any,
-	height: any,
-  ratio: any,
-  mouseMoveEvent: any,
-  panEvent: any,
-  zoomEvent: any,
-  clamp: any,
+  selectedStrategy: Strategy,
+	selectedBacktestResult: BacktestResult,
+  type: string,
+  width: number,
+	height: number,
+  ratio: number,
+  mouseMoveRnabled: boolean,
+  panEnabled: boolean,
+  zoomEnabled: boolean,
+  clamp: boolean,
   data: any
 }
 
@@ -34,23 +38,19 @@ type StateType = {
 class Graph extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
-    console.log("REACT STOCKCHARTS:::")
   }
 
   render() {
     const { type, width, ratio } = this.props;
-		const { mouseMoveEvent, panEvent, zoomEvent } = this.props;
+		const { mouseMoveRnabled, panEnabled, zoomEnabled } = this.props;
 		const { clamp } = this.props;
 
-		const { data: initialData } = this.props;
-
-		const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(d => d.date);
 		const {
 			data,
 			xScale,
 			xAccessor,
 			displayXAccessor,
-		} = xScaleProvider(initialData);
+		} = discontinuousTimeScaleProvider.inputDateAccessor((d: VerticalSlice) => d.date)(this.props.data);
 
 		const start = xAccessor(last(data));
 		const end = xAccessor(data[Math.max(0, data.length - 150)]);
@@ -63,63 +63,72 @@ class Graph extends Component<PropsType, StateType> {
 		const gridHeight = height - margin.top - margin.bottom;
 		const gridWidth = width - margin.left - margin.right;
 
-		const showGrid = true;
-		const yGrid = showGrid ? { innerTickSize: -1 * gridWidth, tickStrokeOpacity: 0.1 } : {};
-		const xGrid = showGrid ? { innerTickSize: -1 * gridHeight, tickStrokeOpacity: 0.1 } : {};
+		const yGrid = { innerTickSize: -1 * gridWidth, tickStrokeOpacity: 0.1 }
+		const xGrid = { innerTickSize: -1 * gridHeight, tickStrokeOpacity: 0.1 }
+
+		const {selectedBacktestResult: backtest} = this.props
     
     return (
-			<ChartCanvas height={height}
-				ratio={ratio}
-				width={width}
-				margin={{ left: 70, right: 70, top: 10, bottom: 30 }}
-				mouseMoveEvent={mouseMoveEvent}
-				panEvent={panEvent}
-				zoomEvent={zoomEvent}
-				clamp={clamp}
-				type={type}
-				data={data}
-				xScale={xScale}
-				xExtents={xExtents}
-				xAccessor={xAccessor}
-				displayXAccessor={displayXAccessor}
-			>
-				{/* Chart */}
-				<Chart id={1} yExtents={d => [d.high, d.low]}>
-					{/* Date axis */}
-					<XAxis axisAt="bottom"
-						orient="bottom"
-						zoomEnabled={zoomEvent}
-						{...xGrid} />
-					{/* price axis */}
-					<YAxis axisAt="right"
-						orient="right"
-						ticks={5}
-						zoomEnabled={zoomEvent}
-						{...yGrid}
-					/>
-
-					<CandlestickSeries />
-					{/* Top left attributes */}
-					<OHLCTooltip origin={[-40, 0]}/>
-				</Chart>
-				{/* Volume */}
-				<Chart id={2}
-					yExtents={d => d.volume}
-					height={150} origin={(w, h) => [0, h - 150]}
+			<div>
+				<h1 style={{fontSize: '16px', paddingLeft: margin.left / 2, paddingTop : margin.top / 2}}>
+				{	
+					backtest &&
+					backtest.stockName + ' - ' + backtest.interval + ' - ' + backtest.rewardToRisk  + ':1' 
+				}
+				</h1>
+				<ChartCanvas height={height}
+					ratio={ratio}
+					width={width}
+					margin={margin}
+					mouseMoveEvent={mouseMoveRnabled}
+					panEvent={panEnabled}
+					zoomEvent={zoomEnabled}
+					clamp={clamp}
+					type={type}
+					data={data}
+					xScale={xScale}
+					xExtents={xExtents}
+					xAccessor={xAccessor}
+					displayXAccessor={displayXAccessor}
 				>
-					{/* volume axis */}
-					<YAxis
-						axisAt="left"
-						orient="left"
-						ticks={5}
-						tickFormat={format(".2s")}
-						zoomEnabled={zoomEvent}
-					/>
-					{/* volume axis */}
-					<BarSeries yAccessor={d => d.volume} fill={(d) => d.close > d.open ? "#6BA583" : "#FF0000"} />
-				</Chart>
-				<CrossHairCursor />
-			</ChartCanvas>
+
+					<Chart id={1} yExtents={(d: VerticalSlice) => [d.high, d.low]}>
+						{/* Date axis */}
+						<XAxis axisAt="bottom"
+							orient="bottom"
+							zoomEnabled={zoomEnabled}
+							{...xGrid} />
+						{/* price axis */}
+						<YAxis axisAt="right"
+							orient="right"
+							ticks={5}
+							zoomEnabled={zoomEnabled}
+							{...yGrid}
+						/>
+						{/* Candles */}
+						<CandlestickSeries />
+						{/* Top left attributes */}
+						<OHLCTooltip origin={[-40, 0]}/>
+					</Chart>
+					{/* Volume */}
+					<Chart id={2}
+						yExtents={(d: VerticalSlice) => d.volume}
+						height={150} origin={(w: number, h: number) => [0, h - 150]}
+					>
+						{/* volume axis */}
+						<YAxis
+							axisAt="left"
+							orient="left"
+							ticks={5}
+							tickFormat={format(".2s")}
+							zoomEnabled={zoomEnabled}
+						/>
+						{/* volume axis */}
+						<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? "#6BA583" : "#FF0000"} />
+					</Chart>
+					<CrossHairCursor />
+				</ChartCanvas>
+			</div>
 		);
   }
 
@@ -127,18 +136,16 @@ class Graph extends Component<PropsType, StateType> {
 
 
 const mapStateToProps = (state: reducer.StateType) => {
-	console.log("state.selectedStock")
-
-	console.log(state.selectedStock)
   return {
-    //selectedStrategyReport: state.selectedStrategyReport
+    selectedStrategy: state.selectedStrategy,
+		selectedBacktestResult: state.selectedBacktestResult,
 		type: "svg",
-		mouseMoveEvent: true,
-		panEvent: true,
-		zoomEvent: true,
+		mouseMoveRnabled: true,
+		panEnabled: true,
+		zoomEnabled: true,
 		clamp: false,
   	ratio: 1,
-		data: state.selectedStock
+		data: state.selectedStockVerticalSlices
   };
 };
 

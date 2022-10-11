@@ -38,9 +38,9 @@ class StrategyReportTable extends Component<PropsType, StateType> {
 
   onRowClick(row: BacktestResult) {
     return {
-      onClick: event => {
+      onClick: (event: any) => {
         actions.getStock(row.interval, row.stockName);
-        console.log(row)
+        actions.setSelectedBacktestResult(row)
       }
     }
   }
