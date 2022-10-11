@@ -24,7 +24,7 @@ type PropsType = {
   width: number,
 	height: number,
   ratio: number,
-  mouseMoveRnabled: boolean,
+  mouseMoveEnabled: boolean,
   panEnabled: boolean,
   zoomEnabled: boolean,
   clamp: boolean,
@@ -38,11 +38,16 @@ type StateType = {
 class Graph extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
+		this.setPageScroll = this.setPageScroll.bind(this)
   }
+
+	setPageScroll(enabled: boolean) {
+		document.querySelector('html').style.overflow = (enabled) ? 'visible' : 'hidden'
+	}
 
   render() {
     const { type, width, ratio } = this.props;
-		const { mouseMoveRnabled, panEnabled, zoomEnabled } = this.props;
+		const { mouseMoveEnabled, panEnabled, zoomEnabled } = this.props;
 		const { clamp } = this.props;
 
 		const {
@@ -56,7 +61,7 @@ class Graph extends Component<PropsType, StateType> {
 		const end = xAccessor(data[Math.max(0, data.length - 150)]);
 		const xExtents = [start, end];
 
-		const margin = { left: 70, right: 70, top: 20, bottom: 30 };
+		const margin = { left: 70, right: 70, top: 10, bottom: 30 };
 
 		const height = this.props.height;
 
@@ -70,64 +75,66 @@ class Graph extends Component<PropsType, StateType> {
     
     return (
 			<div>
-				<h1 style={{fontSize: '16px', paddingLeft: margin.left / 2, paddingTop : margin.top / 2}}>
+				<h1 style={{fontSize: '16px', paddingLeft: margin.left / 2, paddingTop : margin.top}}>
 				{	
 					backtest &&
 					backtest.stockName + ' - ' + backtest.interval + ' - ' + backtest.rewardToRisk  + ':1' 
 				}
 				</h1>
-				<ChartCanvas height={height}
-					ratio={ratio}
-					width={width}
-					margin={margin}
-					mouseMoveEvent={mouseMoveRnabled}
-					panEvent={panEnabled}
-					zoomEvent={zoomEnabled}
-					clamp={clamp}
-					type={type}
-					data={data}
-					xScale={xScale}
-					xExtents={xExtents}
-					xAccessor={xAccessor}
-					displayXAccessor={displayXAccessor}
-				>
-
-					<Chart id={1} yExtents={(d: VerticalSlice) => [d.high, d.low]}>
-						{/* Date axis */}
-						<XAxis axisAt="bottom"
-							orient="bottom"
-							zoomEnabled={zoomEnabled}
-							{...xGrid} />
-						{/* price axis */}
-						<YAxis axisAt="right"
-							orient="right"
-							ticks={5}
-							zoomEnabled={zoomEnabled}
-							{...yGrid}
-						/>
-						{/* Candles */}
-						<CandlestickSeries />
-						{/* Top left attributes */}
-						<OHLCTooltip origin={[-40, 0]}/>
-					</Chart>
-					{/* Volume */}
-					<Chart id={2}
-						yExtents={(d: VerticalSlice) => d.volume}
-						height={150} origin={(w: number, h: number) => [0, h - 150]}
+				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>
+					<ChartCanvas 
+						height={height}
+						ratio={ratio}
+						width={width}
+						margin={margin}
+						mouseMoveEvent={mouseMoveEnabled}
+						panEvent={panEnabled}
+						zoomEvent={zoomEnabled}
+						clamp={clamp}
+						type={type}
+						data={data}
+						xScale={xScale}
+						xExtents={xExtents}
+						xAccessor={xAccessor}
+						displayXAccessor={displayXAccessor}
 					>
-						{/* volume axis */}
-						<YAxis
-							axisAt="left"
-							orient="left"
-							ticks={5}
-							tickFormat={format(".2s")}
-							zoomEnabled={zoomEnabled}
-						/>
-						{/* volume axis */}
-						<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? "#6BA583" : "#FF0000"} />
-					</Chart>
-					<CrossHairCursor />
-				</ChartCanvas>
+							<Chart id={1} yExtents={(d: VerticalSlice) => [d.high, d.low]}>
+								{/* Date axis */}
+								<XAxis axisAt="bottom"
+									orient="bottom"
+									zoomEnabled={zoomEnabled}
+									{...xGrid} />
+								{/* price axis */}
+								<YAxis axisAt="right"
+									orient="right"
+									ticks={5}
+									zoomEnabled={zoomEnabled}
+									{...yGrid}
+								/>
+								{/* Candles */}
+								<CandlestickSeries />
+								{/* Top left attributes */}
+								<OHLCTooltip origin={[-40, 0]}/>
+							</Chart>
+						{/* Volume */}
+						<Chart id={2}
+							yExtents={(d: VerticalSlice) => d.volume}
+							height={150} origin={(w: number, h: number) => [0, h - 150]}
+						>
+							{/* volume axis */}
+							<YAxis
+								axisAt="left"
+								orient="left"
+								ticks={5}
+								tickFormat={format(".2s")}
+								zoomEnabled={zoomEnabled}
+								/>							
+							{/* volume axis */}
+							<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? "#6BA583" : "#FF0000"} />
+						</Chart>
+						<CrossHairCursor />
+					</ChartCanvas>
+				</div>
 			</div>
 		);
   }
@@ -140,7 +147,7 @@ const mapStateToProps = (state: reducer.StateType) => {
     selectedStrategy: state.selectedStrategy,
 		selectedBacktestResult: state.selectedBacktestResult,
 		type: "svg",
-		mouseMoveRnabled: true,
+		mouseMoveEnabled: true,
 		panEnabled: true,
 		zoomEnabled: true,
 		clamp: false,
