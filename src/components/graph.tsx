@@ -12,6 +12,7 @@ import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
 import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
 import { fitWidth } from "react-stockcharts/lib/helper";
 import { last } from "react-stockcharts/lib/utils";
+import { Annotate, LabelAnnotation } from "react-stockcharts/lib/annotation";
 import { VerticalSlice } from "../models/vertical-slice";
 import { Strategy } from "../models/strategy";
 import { BacktestResult } from "../models/backtest-result";
@@ -70,7 +71,10 @@ class Graph extends Component<PropsType, StateType> {
 		const yGrid = { innerTickSize: -1 * gridWidth, tickStrokeOpacity: 0.1 }
 		const xGrid = { innerTickSize: -1 * gridHeight, tickStrokeOpacity: 0.1 }
 
-		const {selectedBacktestResult: backtest} = this.props
+		const { selectedBacktestResult: backtest } = this.props
+		const profitDates: Date[] = this.props.selectedBacktestResult?.entryDatesOfProfitTrades?.map(strDate => new Date(strDate))
+		const lostDates: Date[] = this.props.selectedBacktestResult?.entryDatesOfLossTrades?.map(strDate => new Date(strDate)) 
+
     
     return (
 			<div>
@@ -114,12 +118,32 @@ class Graph extends Component<PropsType, StateType> {
 								<CandlestickSeries />
 								{/* Top left attributes */}
 								<OHLCTooltip origin={[-40, 0]}/>
+								{/* Anotations for won/lost trades */} 
+								{
+									profitDates &&
+									<Annotate with={LabelAnnotation} 
+										when={(d: VerticalSlice) => profitDates.some((date: Date) => date.getTime() === d.date.getTime())} 
+										usingProps={{
+											fontSize: 14,
+											opacity: 1,
+											text: "🔼",
+											y: ({ yScale }) => yScale.range()[0],
+										}}/>
+								}
+								{
+									lostDates &&
+									<Annotate with={LabelAnnotation} 
+										when={(d: VerticalSlice) => lostDates.some((date: Date) => date.getTime() === d.date.getTime())} 
+										usingProps={{
+											fontSize: 14,
+											opacity: 1,
+											text: "🔺",
+											y: ({ yScale }) => yScale.range()[0],
+										}}/>
+								}
 							</Chart>
 						{/* Volume */}
-						<Chart id={2}
-							yExtents={(d: VerticalSlice) => d.volume}
-							height={150} origin={(w: number, h: number) => [0, h - 150]}
-						>
+						<Chart id={2} yExtents={(d: VerticalSlice) => d.volume} height={150} origin={(w: number, h: number) => [0, h - 150]}>
 							{/* volume axis */}
 							<YAxis
 								axisAt="left"
@@ -127,7 +151,7 @@ class Graph extends Component<PropsType, StateType> {
 								ticks={5}
 								tickFormat={format(".2s")}
 								zoomEnabled={zoomEnabled}
-								/>							
+								/>
 							{/* volume axis */}
 							<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? "#6BA583" : "#FF0000"} />
 						</Chart>
