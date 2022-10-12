@@ -11,3 +11,32 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+/*
+ * Overriding Graph color properties
+*/
+.react-stockcharts-y-axis > g > g > text {	
+  fill: white;
+}
+.react-stockcharts-x-axis > g > g > text {	
+  fill: white;
+}
+
+.react-stockcharts-tooltip > tspan {
+  fill: white;
+}
+
+.react-stockcharts-tooltip > .react-stockcharts-tooltip-label {
+  fill: rgb(158, 158, 158);
+}
+
+.tick > line {
+  stroke: rgb(158, 158, 158);
+  opacity: 0.04;
+}
+
+.react-stockcharts-candlestick-wick > path {
+  stroke: rgb(158, 158, 158);
+  opacity: 0.4;
+}
+

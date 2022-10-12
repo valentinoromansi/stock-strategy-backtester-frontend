@@ -45,7 +45,7 @@ class Main extends Component<PropsType, StateType> {
       backgroundColor: '#212936'
     }
     const graphStyle: CSSProperties = {
-      backgroundColor: '#fff',
+      backgroundColor: '#1a2027',
       height: '70%',
       textAlign: 'start'
     }
@@ -76,8 +76,7 @@ class Main extends Component<PropsType, StateType> {
               <Graph width={this.state.windowWidth * 0.85} height={this.state.windowHeight * 0.6}></Graph>
             </div>
             <div style={backtestListStyle}>
-            {/*backtestTableDiv*/}
-            <StrategyReportTable></StrategyReportTable>
+              <StrategyReportTable></StrategyReportTable>
             </div>
           </div>
         </div>

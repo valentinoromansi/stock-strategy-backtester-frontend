@@ -34,7 +34,6 @@ type PropsType = {
 type StateType = {
 }
 
-
 class Graph extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
@@ -75,14 +74,14 @@ class Graph extends Component<PropsType, StateType> {
     
     return (
 			<div>
-				<h1 style={{fontSize: '16px', paddingLeft: margin.left / 2, paddingTop : margin.top}}>
+				<h1 style={{fontSize: '16px', paddingLeft: margin.left / 2, paddingTop : margin.top, color: 'rgb(158, 158, 158)'}}>
 				{	
 					backtest &&
 					backtest.stockName + ' - ' + backtest.interval + ' - ' + backtest.rewardToRisk  + ':1' 
 				}
 				</h1>
 				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>
-					<ChartCanvas 
+					<ChartCanvas
 						height={height}
 						ratio={ratio}
 						width={width}
