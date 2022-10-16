@@ -1,3 +1,15 @@
+import { TradeResult } from "../types/trade-result"
+
+interface TradeDateAndValues {
+  tradeResult: TradeResult,
+  enterDate: Date,
+  enterValue: number,
+  stopLossHitDate: Date,
+  stopLossValue: number,
+  profitHitDate: Date,
+  profitValue: number
+}
+
 export class BacktestResult {
   constructor(init?: Partial<BacktestResult>) {
     Object.assign(this, init)
@@ -13,5 +25,5 @@ export class BacktestResult {
   winRate: number = 0
   plRatio: number = 0
   plFactor: number = 0
-
+  tradeDateAndValues: TradeDateAndValues[] = []
 }

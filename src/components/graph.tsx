@@ -16,6 +16,7 @@ import { Annotate, LabelAnnotation } from "react-stockcharts/lib/annotation";
 import { VerticalSlice } from "../models/vertical-slice";
 import { Strategy } from "../models/strategy";
 import { BacktestResult } from "../models/backtest-result";
+import { number } from "prop-types";
 
 
 type PropsType = {
@@ -41,10 +42,24 @@ class Graph extends Component<PropsType, StateType> {
     super(props);
 		this.state = ({indicatorsActive: false})
 		this.setPageScroll = this.setPageScroll.bind(this)
+		this.tradeLineValue = this.tradeLineValue.bind(this)
   }
 
 	setPageScroll(enabled: boolean) {
 		document.querySelector('html').style.overflow = (enabled) ? 'visible' : 'hidden'
+	}
+
+	tradeLineValue(vs: VerticalSlice): number {
+		let val: number = 0
+		this.props.selectedBacktestResult?.tradeDateAndValues?.every(trade => {
+			const tradeEndDate = new Date(trade.profitHitDate || trade.stopLossHitDate)
+			if(vs.date >= new Date(trade.enterDate) && vs.date <= tradeEndDate) { // wHY IS THER ENOT A SINGLE RESULT
+				val = trade.enterValue
+				return false
+			}
+			return true			
+		});
+		return val
 	}
 
   render() {
@@ -76,7 +91,6 @@ class Graph extends Component<PropsType, StateType> {
 		const { selectedBacktestResult: backtest } = this.props
 		const profitDates: Date[] = this.props.selectedBacktestResult?.entryDatesOfProfitTrades?.map(strDate => new Date(strDate))
 		const lostDates: Date[] = this.props.selectedBacktestResult?.entryDatesOfLossTrades?.map(strDate => new Date(strDate)) 
-
     
     return (
 			<div>
@@ -143,13 +157,26 @@ class Graph extends Component<PropsType, StateType> {
 											y: ({ yScale }) => yScale.range()[0],
 										}}/>
 								}
-								{/* Profit line */}
+								{/* enter line */}
+							<LineSeries
+								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d)} 
+								strokeOpacity={1}
+								stroke="white"
+								/>
+								{/* stop loss line 
+							<LineSeries
+								yAccessor={(d: VerticalSlice) => (d.date > new Date('2022-02-24T03:24:00') )? 1.25 : 0} 
+								defined={(id: number) => id === 1.25} 
+								strokeOpacity={1}
+								stroke="red"
+								/>*/}
+								{/* take profit line
 							<LineSeries
 								yAccessor={(d: VerticalSlice) => (d.date > new Date('2022-02-24T03:24:00') )? 1.25 : 0} 
 								defined={(id: number) => id === 1.25} 
 								strokeOpacity={1}
 								stroke="green"
-								/>
+								/> */}
 
 						</Chart>
 
