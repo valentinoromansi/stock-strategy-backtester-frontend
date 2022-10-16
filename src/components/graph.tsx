@@ -17,6 +17,7 @@ import { VerticalSlice } from "../models/vertical-slice";
 import { Strategy } from "../models/strategy";
 import { BacktestResult } from "../models/backtest-result";
 import { number } from "prop-types";
+import { LineType } from "../types/line-type";
 
 
 type PropsType = {
@@ -49,12 +50,17 @@ class Graph extends Component<PropsType, StateType> {
 		document.querySelector('html').style.overflow = (enabled) ? 'visible' : 'hidden'
 	}
 
-	tradeLineValue(vs: VerticalSlice): number {
+	tradeLineValue(vs: VerticalSlice, lineType: LineType): number {
 		let val: number = 0
 		this.props.selectedBacktestResult?.tradeDateAndValues?.every(trade => {
 			const tradeEndDate = new Date(trade.profitHitDate || trade.stopLossHitDate)
-			if(vs.date >= new Date(trade.enterDate) && vs.date <= tradeEndDate) { // wHY IS THER ENOT A SINGLE RESULT
-				val = trade.enterValue
+			// console.log(vs.date + ' >= ' + new Date(trade.enterDate)) 				//?? 2022-04-13T13:30:00.000Z
+			//if([13, 14].includes(vs.date.getDate()) && [13, 14].includes(new Date(trade.enterDate).getDate()) && [3, 4].includes(vs.date.getMonth()) && [3, 4].includes(new Date(trade.enterDate).getMonth()))
+			//	console.log(vs.date + ' >= ' + new Date(trade.enterDate) + ' ' + (vs.date >= new Date(trade.enterDate)))
+			if(vs.date >= new Date(trade.enterDate) && vs.date <= tradeEndDate){
+				if(lineType === LineType.ENTER) val = trade.enterValue
+				else if(lineType === LineType.PROFIT) val = trade.profitValue
+				else if(lineType === LineType.STOP_LOSS) val = trade.stopLossValue
 				return false
 			}
 			return true			
@@ -89,8 +95,9 @@ class Graph extends Component<PropsType, StateType> {
 		const xGrid = { innerTickSize: -1 * gridHeight, tickStrokeOpacity: 0.1 }
 
 		const { selectedBacktestResult: backtest } = this.props
-		const profitDates: Date[] = this.props.selectedBacktestResult?.entryDatesOfProfitTrades?.map(strDate => new Date(strDate))
-		const lostDates: Date[] = this.props.selectedBacktestResult?.entryDatesOfLossTrades?.map(strDate => new Date(strDate)) 
+
+		const profitEntryDates: Date[] = this.props.selectedBacktestResult?.tradeDateAndValues?.filter(trade => trade.profitHitDate).map(trade => new Date(trade.enterDate))
+		const lossEntryDates: Date[] = this.props.selectedBacktestResult?.tradeDateAndValues?.filter(trade => trade.stopLossHitDate).map(trade => new Date(trade.enterDate))
     
     return (
 			<div>
@@ -134,11 +141,11 @@ class Graph extends Component<PropsType, StateType> {
 								<CandlestickSeries />
 								{/* Top left attributes */}
 								<OHLCTooltip origin={[-40, 0]}/>
-								{/* Anotations for won/lost trades */} 
+								{/* Anotations for enter date of won/lost trades */} 
 								{
-									profitDates &&
+									profitEntryDates &&
 									<Annotate with={LabelAnnotation} 
-										when={(d: VerticalSlice) => profitDates.some((date: Date) => date.getTime() === d.date.getTime())} 
+										when={(d: VerticalSlice) => profitEntryDates.some((date: Date) => date.getTime() === d.date.getTime())} 
 										usingProps={{
 											fontSize: 14,
 											opacity: 1,
@@ -147,9 +154,9 @@ class Graph extends Component<PropsType, StateType> {
 										}}/>
 								}
 								{
-									lostDates &&
+									lossEntryDates &&
 									<Annotate with={LabelAnnotation} 
-										when={(d: VerticalSlice) => lostDates.some((date: Date) => date.getTime() === d.date.getTime())} 
+										when={(d: VerticalSlice) => lossEntryDates.some((date: Date) => date.getTime() === d.date.getTime())} 
 										usingProps={{
 											fontSize: 14,
 											opacity: 1,
@@ -159,24 +166,25 @@ class Graph extends Component<PropsType, StateType> {
 								}
 								{/* enter line */}
 							<LineSeries
-								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d)} 
+								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d, LineType.ENTER)}
+								defined={(id: number) => id !== 0}
 								strokeOpacity={1}
 								stroke="white"
 								/>
-								{/* stop loss line 
+								{/* take profit line */}
 							<LineSeries
-								yAccessor={(d: VerticalSlice) => (d.date > new Date('2022-02-24T03:24:00') )? 1.25 : 0} 
-								defined={(id: number) => id === 1.25} 
-								strokeOpacity={1}
-								stroke="red"
-								/>*/}
-								{/* take profit line
-							<LineSeries
-								yAccessor={(d: VerticalSlice) => (d.date > new Date('2022-02-24T03:24:00') )? 1.25 : 0} 
-								defined={(id: number) => id === 1.25} 
+								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d, LineType.PROFIT)}
+								defined={(id: number) => id !== 0}
 								strokeOpacity={1}
 								stroke="green"
-								/> */}
+								/>
+								{/* stop loss line */}
+							<LineSeries
+								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d, LineType.STOP_LOSS)}
+								defined={(id: number) => id !== 0}
+								strokeOpacity={1}
+								stroke="red"
+								/>
 
 						</Chart>
 

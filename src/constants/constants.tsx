@@ -3,6 +3,7 @@ import Modal from "antd/lib/modal/Modal";
 import { ColumnsType } from "antd/lib/table";
 import TimestampList from "../components/timestamp-list";
 import { BacktestResult } from "../models/backtest-result";
+import { TradeResult } from "../types/trade-result";
 
 
 let getColorFromPlFactor = (plFactor: any) : string => {
@@ -109,9 +110,10 @@ export const columns: ColumnsType<BacktestResult> = [
   {
     title: 'Profit trade entries',
     render: ((value, record: BacktestResult) => {
-      const title = 'Profit entries - ' + record.entryDatesOfProfitTrades.length
+      const profitEnterDates = record.tradeDateAndValues.filter(trade => trade.tradeResult == TradeResult.PROFIT).map(trade => trade.enterDate)
+      const title = 'Profit entries - ' + profitEnterDates.length
       return <span>
-        <TimestampList title={title} timestamps={record.entryDatesOfProfitTrades}></TimestampList>
+        <TimestampList title={title} timestamps={profitEnterDates}></TimestampList>
       </span>
     })
   },
@@ -119,9 +121,10 @@ export const columns: ColumnsType<BacktestResult> = [
     title: 'Loss trade entries',
     width: '40%',
     render: ((value, record: BacktestResult) => {
-      const title = 'Loss entries - ' + record.entryDatesOfLossTrades.length
+      const lossEnterDates = record.tradeDateAndValues.filter(trade => trade.tradeResult == TradeResult.LOSS).map(trade => trade.enterDate)
+      const title = 'Loss entries - ' + lossEnterDates.length
       return <span>
-        <TimestampList title={title} timestamps={record.entryDatesOfLossTrades}></TimestampList>
+        <TimestampList title={title} timestamps={lossEnterDates}></TimestampList>
       </span>
     })
   }

@@ -16,8 +16,6 @@ export class BacktestResult {
   }
   stockName: string = ''
   interval: string = ''
-  entryDatesOfProfitTrades: Date[] = []
-  entryDatesOfLossTrades: Date[] = []
   rewardToRisk: number = 0
   timesProfited: number = 0
   timesLost: number = 0
