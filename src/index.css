@@ -47,3 +47,7 @@ code {
   fill: rgb(158, 158, 158);
 }
 
+/* Dotted crosshair lines*/
+.react-stockcharts-crosshair > line {
+  stroke: rgb(158, 158, 158);;
+}

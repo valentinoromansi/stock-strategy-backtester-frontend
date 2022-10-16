@@ -5,7 +5,7 @@ import "apercu-font";
 
 import { format } from "d3-format";
 import { ChartCanvas, Chart } from "react-stockcharts";
-import { BarSeries,	CandlestickSeries} from "react-stockcharts/lib/series";
+import { BarSeries,	CandlestickSeries, LineSeries } from "react-stockcharts/lib/series";
 import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 import { CrossHairCursor} from "react-stockcharts/lib/coordinates";
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
@@ -33,11 +33,13 @@ type PropsType = {
 }
 
 type StateType = {
+	indicatorsActive: boolean
 }
 
 class Graph extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
+		this.state = ({indicatorsActive: false})
 		this.setPageScroll = this.setPageScroll.bind(this)
   }
 
@@ -141,9 +143,20 @@ class Graph extends Component<PropsType, StateType> {
 											y: ({ yScale }) => yScale.range()[0],
 										}}/>
 								}
-							</Chart>
+								{/* Profit line */}
+							<LineSeries
+								yAccessor={(d: VerticalSlice) => (d.date > new Date('2022-02-24T03:24:00') )? 1.25 : 0} 
+								defined={(id: number) => id === 1.25} 
+								strokeOpacity={1}
+								stroke="green"
+								/>
+
+						</Chart>
+
 						{/* Volume */}
-						<Chart id={2} yExtents={(d: VerticalSlice) => d.volume} height={150} origin={(w: number, h: number) => [0, h - 150]}>
+						{
+						this.state.indicatorsActive &&
+						<Chart id={2} yExtents={(d: VerticalSlice) => d.volume} height={70} origin={(w: number, h: number) => [0, h - 70]}>
 							{/* volume axis */}
 							<YAxis
 								axisAt="left"
@@ -152,9 +165,14 @@ class Graph extends Component<PropsType, StateType> {
 								tickFormat={format(".2s")}
 								zoomEnabled={zoomEnabled}
 								/>
-							{/* volume axis */}
-							<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? "#6BA583" : "#FF0000"} />
+							{/* volume candles */}
+							<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? "#6BA583" : "#FF0000"} />						
+							
+
 						</Chart>
+						}
+
+
 						<CrossHairCursor />
 					</ChartCanvas>
 				</div>
