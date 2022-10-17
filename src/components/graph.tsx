@@ -18,7 +18,7 @@ import { Strategy } from "../models/strategy";
 import { BacktestResult } from "../models/backtest-result";
 import { number } from "prop-types";
 import { LineType } from "../types/line-type";
-
+import ReactApexChart from "react-apexcharts"
 
 type PropsType = {
   selectedStrategy: Strategy,
@@ -33,18 +33,65 @@ type PropsType = {
   clamp: boolean,
   data: any
 }
+/*
+[{
+				data: [{
+					x: '',
+					y: 1,
+					fillColor: '#00FF00'
+*/
+type BarChartDataType = [{data: {x: string, y: number, fillColor: string}[]}]
 
 type StateType = {
-	indicatorsActive: boolean
+	indicatorsActive: boolean,
+	selectedBacktestResultId: number,
+	barChartData: BarChartDataType,
+	options: any
 }
 
 class Graph extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
-		this.state = ({indicatorsActive: false})
 		this.setPageScroll = this.setPageScroll.bind(this)
 		this.tradeLineValue = this.tradeLineValue.bind(this)
+		this.dataPointSelection = this.dataPointSelection.bind(this)
+		this.state = ({
+			indicatorsActive: false, 
+			selectedBacktestResultId: 0, 
+			barChartData: [{data: [{x: '', y: 1, fillColor: 'rgb(26, 32, 39)'}]}],
+			options: {
+				plotOptions: {
+					bar: {
+						columnWidth: '98%',
+						dataLabels: {
+							maxItems: 0
+						}
+					}
+				},
+				chart: {
+					events: {
+						dataPointSelection: this.dataPointSelection
+					}
+				}
+			}
+		})
   }
+
+	componentDidUpdate(prevProps) {
+		if (prevProps.selectedBacktestResult !== this.props.selectedBacktestResult) {
+			this.setState({
+				barChartData: [{
+					data: this.props.selectedBacktestResult.tradeDateAndValues.map(trade => { 
+						return { 
+							x: '', 
+							y: 1, 
+							fillColor: trade.profitHitDate ? '#00FF00' : '#FF0000'
+						}
+					})
+				}]
+			})
+		}
+	}
 
 	setPageScroll(enabled: boolean) {
 		document.querySelector('html').style.overflow = (enabled) ? 'visible' : 'hidden'
@@ -68,6 +115,10 @@ class Graph extends Component<PropsType, StateType> {
 		return val
 	}
 
+	dataPointSelection(e: any, chart: any, options: any) { // { seriesIndex, dataPointIndex, config
+		this.setState({selectedBacktestResultId: options?.dataPointIndex})
+	}
+
   render() {
     const { type, width, ratio } = this.props;
 		const { mouseMoveEnabled, panEnabled, zoomEnabled } = this.props;
@@ -80,9 +131,25 @@ class Graph extends Component<PropsType, StateType> {
 			displayXAccessor,
 		} = discontinuousTimeScaleProvider.inputDateAccessor((d: VerticalSlice) => d.date)(this.props.data);
 
-		const start = xAccessor(last(data));
-		const end = xAccessor(data[Math.max(0, data.length - 150)]);
+		// xAccessor returns index of given verticalSlice
+		// use this.state.selectedBacktestResultId to find vertical sliceslice
+		const selectedTrade = this.props.selectedBacktestResult?.tradeDateAndValues[this.state.selectedBacktestResultId]
+		//const vertSliceToFocusId: number = this.props.data.map((vs, i) => { return {vs, i}}).filter(({vs, i}) => vs.date === selectedTrade?.enterDate)[0]?.i | 0
+		const vertSliceToFocusId: number = this.props.data
+		.map((vs, i) => { console.log('Index: ' + i); return {vs: vs, id: i}})
+		.filter(({vs, id}) => {
+			console.log(vs.date.getTime() + ' === ' + new Date(selectedTrade?.enterDate).getTime() + ' ' + (vs.date.getTime() === new Date(selectedTrade?.enterDate).getTime())); 
+			return vs.date.getTime() === new Date(selectedTrade?.enterDate).getTime()
+		})[0]?.id || 0
+
+		console.log(selectedTrade)
+		console.log(vertSliceToFocusId)
+		//const focusedSliceId = 10
+		const start = xAccessor(data[Math.max(vertSliceToFocusId - 30, 0)]);
+		const end = xAccessor(data[Math.min(vertSliceToFocusId + 30, data.length - 1)]);
 		const xExtents = [start, end];
+		console.log(start + ' ' + end + ' ' + data.length)
+
 
 		const margin = { left: 70, right: 70, top: 10, bottom: 30 };
 
@@ -101,12 +168,17 @@ class Graph extends Component<PropsType, StateType> {
     
     return (
 			<div>
+				{
+					this.state.selectedBacktestResultId &&
+					'selected: ' + this.state.selectedBacktestResultId
+				}
 				<h1 style={{fontSize: '16px', paddingLeft: margin.left / 2, paddingTop : margin.top, color: 'rgb(158, 158, 158)'}}>
 				{	
 					backtest &&
 					backtest.stockName + ' - ' + backtest.interval + ' - ' + backtest.rewardToRisk  + ':1' 
 				}
 				</h1>
+				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" height={150} width={'100%'}/>
 				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>
 					<ChartCanvas
 						height={height}
@@ -201,9 +273,7 @@ class Graph extends Component<PropsType, StateType> {
 								zoomEnabled={zoomEnabled}
 								/>
 							{/* volume candles */}
-							<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? "#6BA583" : "#FF0000"} />						
-							
-
+							<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? "#6BA583" : "#FF0000"} />	
 						</Chart>
 						}
 

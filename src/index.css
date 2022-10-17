@@ -51,3 +51,15 @@ code {
 .react-stockcharts-crosshair > line {
   stroke: rgb(158, 158, 158);;
 }
+
+
+
+/* Apex charts*/
+.apexcharts-xaxis,
+.apexcharts-yaxis,
+.apexcharts-menu-icon,
+.apexcharts-grid,
+.apexcharts-data-labels > text
+{
+  visibility: hidden;
+}

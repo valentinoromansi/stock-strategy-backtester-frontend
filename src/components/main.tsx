@@ -46,7 +46,7 @@ class Main extends Component<PropsType, StateType> {
     }
     const graphStyle: CSSProperties = {
       backgroundColor: '#1a2027',
-      height: '70%',
+      minHeight: '70%',
       textAlign: 'start'
     }
     const backtestListStyle = {
