@@ -10,13 +10,10 @@ import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 import { CrossHairCursor} from "react-stockcharts/lib/coordinates";
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
 import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
-import { fitWidth } from "react-stockcharts/lib/helper";
-import { last } from "react-stockcharts/lib/utils";
 import { Annotate, LabelAnnotation } from "react-stockcharts/lib/annotation";
 import { VerticalSlice } from "../models/vertical-slice";
 import { Strategy } from "../models/strategy";
 import { BacktestResult } from "../models/backtest-result";
-import { number } from "prop-types";
 import { LineType } from "../types/line-type";
 import ReactApexChart from "react-apexcharts"
 
@@ -33,13 +30,7 @@ type PropsType = {
   clamp: boolean,
   data: any
 }
-/*
-[{
-				data: [{
-					x: '',
-					y: 1,
-					fillColor: '#00FF00'
-*/
+
 type BarChartDataType = [{data: {x: string, y: number, fillColor: string}[]}]
 
 type StateType = {
@@ -101,9 +92,6 @@ class Graph extends Component<PropsType, StateType> {
 		let val: number = 0
 		this.props.selectedBacktestResult?.tradeDateAndValues?.every(trade => {
 			const tradeEndDate = new Date(trade.profitHitDate || trade.stopLossHitDate)
-			// console.log(vs.date + ' >= ' + new Date(trade.enterDate)) 				//?? 2022-04-13T13:30:00.000Z
-			//if([13, 14].includes(vs.date.getDate()) && [13, 14].includes(new Date(trade.enterDate).getDate()) && [3, 4].includes(vs.date.getMonth()) && [3, 4].includes(new Date(trade.enterDate).getMonth()))
-			//	console.log(vs.date + ' >= ' + new Date(trade.enterDate) + ' ' + (vs.date >= new Date(trade.enterDate)))
 			if(vs.date >= new Date(trade.enterDate) && vs.date <= tradeEndDate){
 				if(lineType === LineType.ENTER) val = trade.enterValue
 				else if(lineType === LineType.PROFIT) val = trade.profitValue
@@ -120,65 +108,47 @@ class Graph extends Component<PropsType, StateType> {
 	}
 
   render() {
-    const { type, width, ratio } = this.props;
-		const { mouseMoveEnabled, panEnabled, zoomEnabled } = this.props;
-		const { clamp } = this.props;
-
+		const { tradeDateAndValues, stockName, interval, rewardToRisk } = this.props?.selectedBacktestResult || { tradeDateAndValues: [] }
+		const { type, width, ratio, mouseMoveEnabled, panEnabled, zoomEnabled, clamp, height } = this.props;
+		
+		// returned 'data' is same as 'this.props.data' but has addtional 'idx' property that is used when rendering
 		const {
 			data,
 			xScale,
 			xAccessor,
 			displayXAccessor,
 		} = discontinuousTimeScaleProvider.inputDateAccessor((d: VerticalSlice) => d.date)(this.props.data);
-
-		// xAccessor returns index of given verticalSlice
-		// use this.state.selectedBacktestResultId to find vertical sliceslice
-		const selectedTrade = this.props.selectedBacktestResult?.tradeDateAndValues[this.state.selectedBacktestResultId]
-		//const vertSliceToFocusId: number = this.props.data.map((vs, i) => { return {vs, i}}).filter(({vs, i}) => vs.date === selectedTrade?.enterDate)[0]?.i | 0
-		const vertSliceToFocusId: number = this.props.data
-		.map((vs, i) => { console.log('Index: ' + i); return {vs: vs, id: i}})
-		.filter(({vs, id}) => {
-			console.log(vs.date.getTime() + ' === ' + new Date(selectedTrade?.enterDate).getTime() + ' ' + (vs.date.getTime() === new Date(selectedTrade?.enterDate).getTime())); 
-			return vs.date.getTime() === new Date(selectedTrade?.enterDate).getTime()
-		})[0]?.id || 0
-
-		console.log(selectedTrade)
-		console.log(vertSliceToFocusId)
-		//const focusedSliceId = 10
-		const start = xAccessor(data[Math.max(vertSliceToFocusId - 30, 0)]);
-		const end = xAccessor(data[Math.min(vertSliceToFocusId + 30, data.length - 1)]);
+		
+		// xExtents - slices between start and end will be rendered, xAccessor returns index of given verticalSlice
+		const selectedTrade = tradeDateAndValues[this.state.selectedBacktestResultId]
+		const sliceToFocusId: number = data.findIndex(slice => slice.date.getTime() === new Date(selectedTrade?.enterDate).getTime()) || 0
+		const start = xAccessor(data[Math.max(sliceToFocusId - 30, 0)]);
+		const end = xAccessor(data[Math.min(sliceToFocusId + 30, data.length - 1)]);
 		const xExtents = [start, end];
-		console.log(start + ' ' + end + ' ' + data.length)
-
 
 		const margin = { left: 70, right: 70, top: 10, bottom: 30 };
-
-		const height = this.props.height;
-
 		const gridHeight = height - margin.top - margin.bottom;
 		const gridWidth = width - margin.left - margin.right;
-
 		const yGrid = { innerTickSize: -1 * gridWidth, tickStrokeOpacity: 0.1 }
 		const xGrid = { innerTickSize: -1 * gridHeight, tickStrokeOpacity: 0.1 }
 
-		const { selectedBacktestResult: backtest } = this.props
+		const profitEntryDates: Date[] = tradeDateAndValues?.filter(trade => trade.profitHitDate).map(trade => new Date(trade.enterDate))
+		const lossEntryDates: Date[] = tradeDateAndValues?.filter(trade => trade.stopLossHitDate).map(trade => new Date(trade.enterDate))
 
-		const profitEntryDates: Date[] = this.props.selectedBacktestResult?.tradeDateAndValues?.filter(trade => trade.profitHitDate).map(trade => new Date(trade.enterDate))
-		const lossEntryDates: Date[] = this.props.selectedBacktestResult?.tradeDateAndValues?.filter(trade => trade.stopLossHitDate).map(trade => new Date(trade.enterDate))
-    
+		// 0-200 trades will be scaled and displayed as 10%-100% width - Values over 200 are clamped at 100%
+		const [maxTradeNumBeforeClamp, minWidth, maxWidth] = [200, 10, 100]
+		const percentFraction = Math.min(tradeDateAndValues.length / maxTradeNumBeforeClamp, 1)
+		const tradeBarsWidth =  minWidth + ((maxWidth - minWidth) * percentFraction) + '%'
+
     return (
-			<div>
-				{
-					this.state.selectedBacktestResultId &&
-					'selected: ' + this.state.selectedBacktestResultId
-				}
+			<div>				
 				<h1 style={{fontSize: '16px', paddingLeft: margin.left / 2, paddingTop : margin.top, color: 'rgb(158, 158, 158)'}}>
 				{	
-					backtest &&
-					backtest.stockName + ' - ' + backtest.interval + ' - ' + backtest.rewardToRisk  + ':1' 
+					this.props.selectedBacktestResult &&
+					stockName + ' - ' + interval + ' - ' + rewardToRisk  + ':1' 
 				}
 				</h1>
-				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" height={150} width={'100%'}/>
+				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" height={80} width={tradeBarsWidth}/>
 				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>
 					<ChartCanvas
 						height={height}
