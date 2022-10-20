@@ -7,6 +7,8 @@ import * as actions from "../state/actions";
 import * as reducer from '../state/reducers';
 import { connect } from "react-redux";
 import Graph from "./graph";
+import styles from '../styles/global.module.sass'
+console.log(styles)
 
 
 type PropsType = {
@@ -39,11 +41,6 @@ class Main extends Component<PropsType, StateType> {
       height: window.innerHeight - 50,
       display: 'flex',
     }
-    
-    const graphBacktestListWrapperStyle = {
-      width: '90%',
-      backgroundColor: '#212936'
-    }
     const graphStyle: CSSProperties = {
       backgroundColor: '#1a2027',
       minHeight: '70%',
@@ -69,9 +66,10 @@ class Main extends Component<PropsType, StateType> {
     return (
       <div>
         <Navigation></Navigation>
+
         <div style={underNavStyle}>
           <StrategyList></StrategyList>
-          <div style={graphBacktestListWrapperStyle}>
+          <div className={styles.graphBacktestListWrapperStyle}>
             <div style={graphStyle}>
               <Graph width={this.state.windowWidth * 0.85} height={this.state.windowHeight * 0.6}></Graph>
             </div>
