@@ -1,3 +1,53 @@
+/** global **/
+/** Overriding Graph color properties **/
+$graph_gray: rgb(158, 158, 158)
+$graph_line_opacity: 0.3
+
+:global .react-stockcharts-axis-domain
+  stroke: $graph_gray
+  opacity: $graph_line_opacity
+
+:global .react-stockcharts-x-axis > g > g > text,
+:global .react-stockcharts-y-axis > g > g > text
+  fill: white
+  opacity: $graph_line_opacity
+
+:global .tick > line
+  stroke: $graph_gray
+  opacity: 0.04
+
+:global .react-stockcharts-candlestick-wick > path
+  stroke: $graph_gray
+  opacity: $graph_line_opacity
+
+/** Date, O, H, L, C, Vol. text **/
+:global .react-stockcharts-tooltip > tspan
+  fill: white
+  opacity: $graph_line_opacity
+
+:global .react-stockcharts-tooltip > .react-stockcharts-tooltip-label
+  fill: $graph_gray
+
+/** Dotted crosshair lines**/
+:global .react-stockcharts-crosshair > line
+  stroke: $graph_gray
+
+/* Apex charts*/
+:global .apexcharts-xaxis,
+:global .apexcharts-yaxis,
+:global .apexcharts-menu-icon,
+:global .apexcharts-grid,
+:global .apexcharts-data-labels > text
+  visibility: hidden
+
+/*******/
+/* graph */
+/*******/
+.graph_h1
+  font-size: 16px
+  color: $graph_gray
+  margin-left: 32px
+
 .graphBacktestListWrapperStyle
   width: 90%
   background-color: #212936

@@ -17,6 +17,9 @@ import { BacktestResult } from "../models/backtest-result";
 import { LineType } from "../types/line-type";
 import ReactApexChart from "react-apexcharts"
 
+import styles from '../styles/global.module.sass'
+
+
 type PropsType = {
   selectedStrategy: Strategy,
 	selectedBacktestResult: BacktestResult,
@@ -126,9 +129,8 @@ class Graph extends Component<PropsType, StateType> {
 		const end = xAccessor(data[Math.min(sliceToFocusId + 30, data.length - 1)]);
 		const xExtents = [start, end];
 
-		const margin = { left: 70, right: 70, top: 10, bottom: 30 };
-		const gridHeight = height - margin.top - margin.bottom;
-		const gridWidth = width - margin.left - margin.right;
+		const gridHeight = height
+		const gridWidth = width
 		const yGrid = { innerTickSize: -1 * gridWidth, tickStrokeOpacity: 0.1 }
 		const xGrid = { innerTickSize: -1 * gridHeight, tickStrokeOpacity: 0.1 }
 
@@ -142,7 +144,7 @@ class Graph extends Component<PropsType, StateType> {
 
     return (
 			<div>				
-				<h1 style={{fontSize: '16px', paddingLeft: margin.left / 2, paddingTop : margin.top, color: 'rgb(158, 158, 158)'}}>
+				<h1 className={styles.graph_h1}>
 				{	
 					this.props.selectedBacktestResult &&
 					stockName + ' - ' + interval + ' - ' + rewardToRisk  + ':1' 
@@ -154,7 +156,6 @@ class Graph extends Component<PropsType, StateType> {
 						height={height}
 						ratio={ratio}
 						width={width}
-						margin={margin}
 						mouseMoveEvent={mouseMoveEnabled}
 						panEvent={panEnabled}
 						zoomEvent={zoomEnabled}

@@ -8,7 +8,7 @@ import * as reducer from '../state/reducers';
 import { connect } from "react-redux";
 import Graph from "./graph";
 import styles from '../styles/global.module.sass'
-console.log(styles)
+
 
 
 type PropsType = {
