@@ -1,15 +1,15 @@
-/** global **/
-/** Overriding Graph color properties **/
-$graph_gray: rgb(158, 158, 158)
-$graph_line_opacity: 0.3
 $font: apercu
-$textColor: #56657f
+$textColorDark: #56657f
+$textColorLight: #9e9e9e
 $backgroundBlueLight: #212936
 $backgroundBlueDark: #1a2027
 $dividerColor: #374154
 
+/** Overriding Graph color properties **/
+$graph_line_opacity: 0.3
+
 :global .react-stockcharts-axis-domain
-  stroke: $graph_gray
+  stroke: $textColorLight
   opacity: $graph_line_opacity
 
 :global .react-stockcharts-x-axis > g > g > text,
@@ -18,11 +18,11 @@ $dividerColor: #374154
   opacity: $graph_line_opacity
 
 :global .tick > line
-  stroke: $graph_gray
+  stroke: $textColorLight
   opacity: 0.04
 
 :global .react-stockcharts-candlestick-wick > path
-  stroke: $graph_gray
+  stroke: $textColorLight
   opacity: $graph_line_opacity
 
 /** Date, O, H, L, C, Vol. text **/
@@ -31,11 +31,11 @@ $dividerColor: #374154
   opacity: $graph_line_opacity
 
 :global .react-stockcharts-tooltip > .react-stockcharts-tooltip-label
-  fill: $graph_gray
+  fill: $textColorLight
 
 /** Dotted crosshair lines**/
 :global .react-stockcharts-crosshair > line
-  stroke: $graph_gray
+  stroke: $textColorLight
 
 /* Apex charts*/
 :global .apexcharts-xaxis,
@@ -46,7 +46,6 @@ $dividerColor: #374154
   visibility: hidden
 
 :global .ant-spin-nested-loading
-  background: white
   .ant-spin-container
     .ant-pagination
       background: white
@@ -61,7 +60,7 @@ $dividerColor: #374154
   margin-left: 32px
   h1
     font-size: 16px
-    color: $graph_gray
+    color: $textColorLight
 
 .graphBacktestListWrapperStyle
   width: 90vw
@@ -87,11 +86,11 @@ $dividerColor: #374154
   display: flex
   justify-content: left
   flex-direction: row
-  gap: 10px
+  gap: 10p
 
 .navItemTextStyle
   font-family: $font
-  color: $textColor
+  color: $textColorDark
 
 /*****************/
 /* strategy-list */
@@ -116,7 +115,7 @@ $dividerColor: #374154
   font-size: 14
   font-family: $font
   font-weight: bold
-  color: $textColor
+  color: $textColorDark
 
 .strategySelectedItemText
   font-size: 14
@@ -135,6 +134,59 @@ $dividerColor: #374154
 .reportTableWrapper
   width: 90vw
   overflow: hidden
+  box-shadow: -1px 0px 8px 0px rgba(0,0,0,0.5)
+
+:global .ant-table-column-sorters
+  padding: 8px
+
+// table headings
+:global .ant-table-thead > tr > th
+  background: $backgroundBlueLight
+  color: $textColorLight
+  border-bottom: 1px solid $dividerColor
+
+// table content  
+:global .ant-table-cell,
+:global .ant-table-column-sorters,
+:global .ant-table-column-has-sorters
+  background: $backgroundBlueLight
+  color: $textColorLight
+  border-bottom: none
 
 :global .ant-table-tbody > tr > td
   padding: 2px 16px
+  border-bottom: 1px solid $dividerColor
+
+// navigation
+:global .ant-table-tbody > tr.ant-table-row:hover > td,
+:global .ant-pagination-prev .ant-pagination-item-link,
+:global .ant-pagination-next .ant-pagination-item-link,
+:global .ant-select:not(.ant-select-customize-input) .ant-select-selector,
+:global .anticon-filter > svg,
+:global .ant-pagination-item-link > span,
+:global .ant-pagination-item a,
+:global .ant-select-selection-search,
+:global .ant-select-selection-item,
+:global .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis,
+:global .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis,
+:global .td.ant-table-column-sort,
+:global .ant-pagination-item
+  background: $backgroundBlueDark
+  border: none
+  color: $textColorLight
+
+// navigation text
+:global .ant-pagination-item,
+:global .ant-select-selection-item
+  font-weight: bold
+
+// shared
+:global .ant-table-filter-trigger-container-open,
+:global .ant-table-filter-trigger-container,
+:global .ant-table-filter-trigger-container:hover,
+:global .ant-table-thead th.ant-table-column-has-sorters:hover,
+:global .ant-table-filter-column > span > span,
+:global td.ant-table-column-sort,
+:global .ant-table-thead th.ant-table-column-sort,
+:global .ant-spin-nested-loading .ant-spin-container .ant-pagination
+  background: $backgroundBlueLight
