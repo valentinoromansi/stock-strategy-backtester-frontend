@@ -1,13 +1,13 @@
 import React, { Component, CSSProperties, useEffect, useRef, useState } from "react";
 import { StrategyReport } from "../models/strategy-report";
-import StrategyReportTable from "./backtests-table";
+import StrategyReportTable from "./strategy-report-table";
 import Navigation from './navigation'
 import StrategyList from './strategy-list'
 import * as actions from "../state/actions";
 import * as reducer from '../state/reducers';
 import { connect } from "react-redux";
 import Graph from "./graph";
-import styles from '../styles/global.module.sass'
+import styles from 'styles/global.module.sass'
 
 
 

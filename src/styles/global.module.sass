@@ -3,6 +3,10 @@
 $graph_gray: rgb(158, 158, 158)
 $graph_line_opacity: 0.3
 $font: apercu
+$textColor: #56657f
+$backgroundBlueLight: #212936
+$backgroundBlueDark: #1a2027
+$dividerColor: #374154
 
 :global .react-stockcharts-axis-domain
   stroke: $graph_gray
@@ -60,46 +64,43 @@ $font: apercu
     color: $graph_gray
 
 .graphBacktestListWrapperStyle
-  width: 90%
-  background-color: #212936
+  width: 90vw
+  background-color: $backgroundBlueLight
 
 /*********/
 /* main */
 /*********/
 .underNavStyle
   display: flex
+  width: 100vw
 
 .graphStyle
-  background: #1a2027
+  background: $backgroundBlueDark
   text-align: start
 
 /**************/
 /* navigation */
 /**************/
 .navWrapper
-  width: 100%
-  background: #212936
+  width: 100vw
+  background: $backgroundBlueLight
   display: flex
   justify-content: left
   flex-direction: row
   gap: 10px
 
-.navIcon
-  font-size: 32px
-
 .navItemTextStyle
   font-family: $font
-  color: #56657f
+  color: $textColor
 
 /*****************/
 /* strategy-list */
 /*****************/
-$strategyListAddButton: #1976d2
 
 .strategyListWrapper
-  border-top: 1px solid #374154
-  width: 10%
-  background-color: #212936
+  border-top: 1px solid $dividerColor
+  width: 10vw
+  background-color: $backgroundBlueLight
   padding: 10px
 
 .strategyList
@@ -115,15 +116,25 @@ $strategyListAddButton: #1976d2
   font-size: 14
   font-family: $font
   font-weight: bold
-  color: #56657f
+  color: $textColor
 
 .strategySelectedItemText
   font-size: 14
   font-family: $font
   font-weight: bold
-  color: $strategyListAddButton
+  color: #1976d2
 
 .strategyLineSeparator
-  width: 100%
-  border-color: #56657f
-  height: 1px
+  border: 0
+  border-top: 1px solid $dividerColor
+  margin: 1rem 0
+
+/*************************/
+/* strategy report table */
+/*************************/
+.reportTableWrapper
+  width: 90vw
+  overflow: hidden
+
+:global .ant-table-tbody > tr > td
+  padding: 2px 16px

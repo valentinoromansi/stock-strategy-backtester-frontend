@@ -51,6 +51,9 @@ class Navigation extends Component<PropsType, StateType> {
     actions.getStrategies()
   }
 
+  readonly sxIconStyle = {
+    fontSize: '32px'
+  }
 
   render() {
     return (
@@ -58,7 +61,7 @@ class Navigation extends Component<PropsType, StateType> {
         <div>
           <Button variant="text" onClick={() => { this.updateStrategyReports()}}>
               <div>
-                <UpdateIcon className={styles.navIcon}/>
+                <UpdateIcon sx={this.sxIconStyle} /*className={styles.navIcon}*//>
                 <div>
                   <b className={styles.navItemTextStyle}>Regenerate reports</b>
                 </div>
@@ -68,7 +71,7 @@ class Navigation extends Component<PropsType, StateType> {
         <div>
           <Button variant="text" onClick={() => { this.refetchStrategyReports();}}>
               <div>
-                <RefreshIcon className={styles.navIcon}/>
+                <RefreshIcon sx={this.sxIconStyle} /*className={styles.navIcon}*//>
                 <div>
                 <b className={styles.navItemTextStyle}>Refetch reports</b>
                 </div>
@@ -78,7 +81,7 @@ class Navigation extends Component<PropsType, StateType> {
         <div>
           <Button variant="text" onClick={() => { this.refetchStrategies();}}>
               <div>
-                <RefreshIcon className={styles.navIcon}/>
+                <RefreshIcon sx={this.sxIconStyle} /*className={styles.navIcon}*//>
                 <div>
                 <b className={styles.navItemTextStyle}>Refetch strategies</b>
                 </div>

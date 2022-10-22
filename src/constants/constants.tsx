@@ -107,7 +107,7 @@ export const columns: ColumnsType<BacktestResult> = [
     title: 'Profit/loss trade historygram',
     render: ((value, record: BacktestResult) => {
       return <span>
-        <p>Same as bar chart but non clickable!</p>
+        Same as bar chart but non clickable!
       </span>
     })
   }

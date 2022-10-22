@@ -26,7 +26,8 @@
       "./src/external-module-types/",
       "./node_modules/@types"
     ],
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "baseUrl": "src"
   },
   "include": [
     "src"
