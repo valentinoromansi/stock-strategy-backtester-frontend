@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { Spin, Table, Tabs } from "antd";
-import { StrategyReport } from "../models/strategy-report";
-import { columns } from "../constants/constants";
+import { StrategyReport } from "../../models/strategy-report";
+import { columns } from "./strategy-report-columns";
 import { connect } from "react-redux";
-import * as reducer from '../state/reducers';
-import { Strategy } from "../models/strategy";
+import * as reducer from '../../state/reducers';
+import { Strategy } from "../../models/strategy";
 import { SpinnerComponent } from 'react-element-spinner';
-import { BacktestResult } from "../models/backtest-result";
-import * as actions from "../state/actions";
+import { BacktestResult } from "../../models/backtest-result";
+import * as actions from "../../state/actions";
 import styles from 'styles/global.module.sass'
 
 

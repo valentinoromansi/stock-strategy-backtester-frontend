@@ -1,6 +1,6 @@
 import React, { Component, CSSProperties, useEffect, useRef, useState } from "react";
 import { StrategyReport } from "../models/strategy-report";
-import StrategyReportTable from "./strategy-report-table";
+import StrategyReportTable from "./strategy-report-table/strategy-report-table";
 import Navigation from './navigation'
 import StrategyList from './strategy-list'
 import * as actions from "../state/actions";

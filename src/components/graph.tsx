@@ -13,7 +13,7 @@ import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
 import { Annotate, LabelAnnotation } from "react-stockcharts/lib/annotation";
 import { VerticalSlice } from "../models/vertical-slice";
 import { Strategy } from "../models/strategy";
-import { BacktestResult } from "../models/backtest-result";
+import { BacktestResult, TradeDateAndValues } from "../models/backtest-result";
 import { LineType } from "../types/line-type";
 import ReactApexChart from "react-apexcharts"
 
@@ -47,6 +47,7 @@ class Graph extends Component<PropsType, StateType> {
 	readonly enterTradeColor: string  = 'white'
 	readonly profitColor: string = '#00ff00'
 	readonly lossColor: string = '#ff0000'
+	readonly indecisiveColor: string = '#3e3e3e'
 	readonly barChartInitFill: string = 'rgb(26, 32, 39)'
 
   constructor(props: PropsType) {
@@ -76,6 +77,7 @@ class Graph extends Component<PropsType, StateType> {
 		})
   }
 
+	
 	componentDidUpdate(prevProps) {
 		if (prevProps.selectedBacktestResult !== this.props.selectedBacktestResult) {
 			this.setState({
@@ -84,12 +86,18 @@ class Graph extends Component<PropsType, StateType> {
 						return { 
 							x: '', 
 							y: 1, 
-							fillColor: trade.profitHitDate ? this.profitColor : this.lossColor
+							fillColor: this.getBarChartFillColor(trade)
 						}
 					})
 				}]
 			})
 		}
+	}
+	
+	getBarChartFillColor(trade: TradeDateAndValues): string {
+		if(!trade.profitHitDate && !trade.stopLossHitDate)
+			return this.indecisiveColor
+		return trade.profitHitDate ? this.profitColor : this.lossColor
 	}
 
 	setPageScroll(enabled: boolean) {

@@ -1,6 +1,6 @@
 import { TradeResult } from "../types/trade-result"
 
-interface TradeDateAndValues {
+export interface TradeDateAndValues {
   tradeResult: TradeResult,
   enterDate: Date,
   enterValue: number,
