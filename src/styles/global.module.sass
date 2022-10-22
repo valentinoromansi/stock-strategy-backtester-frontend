@@ -2,6 +2,7 @@
 /** Overriding Graph color properties **/
 $graph_gray: rgb(158, 158, 158)
 $graph_line_opacity: 0.3
+$font: apercu
 
 :global .react-stockcharts-axis-domain
   stroke: $graph_gray
@@ -40,14 +41,89 @@ $graph_line_opacity: 0.3
 :global .apexcharts-data-labels > text
   visibility: hidden
 
-/*******/
+:global .ant-spin-nested-loading
+  background: white
+  .ant-spin-container
+    .ant-pagination
+      background: white
+      margin: 0
+      padding: 12px
+
+/*********/
 /* graph */
-/*******/
+/*********/
 .graph_h1
-  font-size: 16px
-  color: $graph_gray
+  padding-top: 16px
   margin-left: 32px
+  h1
+    font-size: 16px
+    color: $graph_gray
 
 .graphBacktestListWrapperStyle
   width: 90%
   background-color: #212936
+
+/*********/
+/* main */
+/*********/
+.underNavStyle
+  display: flex
+
+.graphStyle
+  background: #1a2027
+  text-align: start
+
+/**************/
+/* navigation */
+/**************/
+.navWrapper
+  width: 100%
+  background: #212936
+  display: flex
+  justify-content: left
+  flex-direction: row
+  gap: 10px
+
+.navIcon
+  font-size: 32px
+
+.navItemTextStyle
+  font-family: $font
+  color: #56657f
+
+/*****************/
+/* strategy-list */
+/*****************/
+$strategyListAddButton: #1976d2
+
+.strategyListWrapper
+  border-top: 1px solid #374154
+  width: 10%
+  background-color: #212936
+  padding: 10px
+
+.strategyList
+  display: flex
+  flex-direction: column
+  row-gap: 6
+
+.strategyItemWrapper
+  display: flex
+  justify-content: center
+
+.strategyItemTextStyle
+  font-size: 14
+  font-family: $font
+  font-weight: bold
+  color: #56657f
+
+.strategySelectedItemText
+  font-size: 14
+  font-family: $font
+  font-weight: bold
+  color: $strategyListAddButton
+
+.strategyLineSeparator
+  width: 100%
+  border-color: #56657f
+  height: 1px

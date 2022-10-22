@@ -51,7 +51,10 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     return (
       <div>
         <SpinnerComponent loading={this.props.strategyReportsFecthing} position="centered" />
-        <Table columns={columns} dataSource={strategyReport?.backtestResults} onRow={this.onRowClick}/>
+        <Table 
+          columns={columns} 
+          dataSource={strategyReport?.backtestResults} 
+          onRow={this.onRowClick}/>
       </div>
     );
   }

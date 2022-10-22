@@ -10,6 +10,7 @@ import * as types from '../state/types';
 import * as actions from "../state/actions";
 import UpdateIcon from '@mui/icons-material/Update';
 import "apercu-font";
+import styles from '../styles/global.module.sass'
 
 
 type PropsType = {
@@ -50,27 +51,16 @@ class Navigation extends Component<PropsType, StateType> {
     actions.getStrategies()
   }
 
-  navItemTextStyle = {fontFamily: "apercu", color: '#56657f'}
 
   render() {
-    const navStyle: CSSProperties = {
-      width: '100%',
-      backgroundColor: '#212936',
-      display: 'flex',
-      justifyContent:'left', 
-      flexDirection: 'row',
-      gap: '10px'
-    }
-    
-
     return (
-      <div style={navStyle}>
+      <div className={styles.navWrapper}>
         <div>
           <Button variant="text" onClick={() => { this.updateStrategyReports()}}>
               <div>
-                <UpdateIcon style={{fontSize: "32px"}}/>
+                <UpdateIcon className={styles.navIcon}/>
                 <div>
-                  <b style={this.navItemTextStyle}>Regenerate reports</b>
+                  <b className={styles.navItemTextStyle}>Regenerate reports</b>
                 </div>
               </div>
           </Button>
@@ -78,9 +68,9 @@ class Navigation extends Component<PropsType, StateType> {
         <div>
           <Button variant="text" onClick={() => { this.refetchStrategyReports();}}>
               <div>
-                <RefreshIcon style={{fontSize: "32px"}}/>
+                <RefreshIcon className={styles.navIcon}/>
                 <div>
-                <b style={this.navItemTextStyle}>Refetch reports</b>
+                <b className={styles.navItemTextStyle}>Refetch reports</b>
                 </div>
               </div>
           </Button>
@@ -88,9 +78,9 @@ class Navigation extends Component<PropsType, StateType> {
         <div>
           <Button variant="text" onClick={() => { this.refetchStrategies();}}>
               <div>
-                <RefreshIcon style={{fontSize: "32px"}}/>
+                <RefreshIcon className={styles.navIcon}/>
                 <div>
-                <b style={this.navItemTextStyle}>Refetch strategies</b>
+                <b className={styles.navItemTextStyle}>Refetch strategies</b>
                 </div>
               </div>
           </Button>

@@ -1,9 +1,5 @@
-import { Button } from "antd";
-import Modal from "antd/lib/modal/Modal";
 import { ColumnsType } from "antd/lib/table";
-import TimestampList from "../components/timestamp-list";
 import { BacktestResult } from "../models/backtest-result";
-import { TradeResult } from "../types/trade-result";
 
 
 let getColorFromPlFactor = (plFactor: any) : string => {
@@ -108,23 +104,10 @@ export const columns: ColumnsType<BacktestResult> = [
     })
   },
   {
-    title: 'Profit trade entries',
+    title: 'Profit/loss trade historygram',
     render: ((value, record: BacktestResult) => {
-      const profitEnterDates = record.tradeDateAndValues.filter(trade => trade.tradeResult == TradeResult.PROFIT).map(trade => trade.enterDate)
-      const title = 'Profit entries - ' + profitEnterDates.length
       return <span>
-        <TimestampList title={title} timestamps={profitEnterDates}></TimestampList>
-      </span>
-    })
-  },
-  {
-    title: 'Loss trade entries',
-    width: '40%',
-    render: ((value, record: BacktestResult) => {
-      const lossEnterDates = record.tradeDateAndValues.filter(trade => trade.tradeResult == TradeResult.LOSS).map(trade => trade.enterDate)
-      const title = 'Loss entries - ' + lossEnterDates.length
-      return <span>
-        <TimestampList title={title} timestamps={lossEnterDates}></TimestampList>
+        <p>Same as bar chart but non clickable!</p>
       </span>
     })
   }
