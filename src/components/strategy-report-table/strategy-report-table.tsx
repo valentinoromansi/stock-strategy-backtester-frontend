@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import { Spin, Table, Tabs } from "antd";
-import { StrategyReport } from "../models/strategy-report";
-import { columns } from "../constants/constants";
+import { StrategyReport } from "../../models/strategy-report";
+import { columns } from "./strategy-report-columns";
 import { connect } from "react-redux";
-import * as reducer from '../state/reducers';
-import { Strategy } from "../models/strategy";
+import * as reducer from '../../state/reducers';
+import { Strategy } from "../../models/strategy";
 import { SpinnerComponent } from 'react-element-spinner';
-import { BacktestResult } from "../models/backtest-result";
-import * as actions from "../state/actions";
+import { BacktestResult } from "../../models/backtest-result";
+import * as actions from "../../state/actions";
+import styles from 'styles/global.module.sass'
 
 
 type PropsType = {
@@ -49,9 +50,13 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     let strategyReport = this.state?.selectedStrategyReport
     
     return (
-      <div>
+      <div className={styles.reportTableWrapper}>
         <SpinnerComponent loading={this.props.strategyReportsFecthing} position="centered" />
-        <Table columns={columns} dataSource={strategyReport?.backtestResults} onRow={this.onRowClick}/>
+        <Table 
+          columns={columns} 
+          dataSource={strategyReport?.backtestResults} 
+          onRow={this.onRowClick}
+          pagination={{ pageSize: 30 }}/>
       </div>
     );
   }

@@ -13,9 +13,12 @@ import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
 import { Annotate, LabelAnnotation } from "react-stockcharts/lib/annotation";
 import { VerticalSlice } from "../models/vertical-slice";
 import { Strategy } from "../models/strategy";
-import { BacktestResult } from "../models/backtest-result";
+import { BacktestResult, TradeDateAndValues } from "../models/backtest-result";
 import { LineType } from "../types/line-type";
 import ReactApexChart from "react-apexcharts"
+
+import styles from '../styles/global.module.sass'
+
 
 type PropsType = {
   selectedStrategy: Strategy,
@@ -41,6 +44,12 @@ type StateType = {
 }
 
 class Graph extends Component<PropsType, StateType> {
+	readonly enterTradeColor: string  = 'white'
+	readonly profitColor: string = '#00ff00'
+	readonly lossColor: string = '#ff0000'
+	readonly indecisiveColor: string = '#3e3e3e'
+	readonly barChartInitFill: string = 'rgb(26, 32, 39)'
+
   constructor(props: PropsType) {
     super(props);
 		this.setPageScroll = this.setPageScroll.bind(this)
@@ -49,25 +58,41 @@ class Graph extends Component<PropsType, StateType> {
 		this.state = ({
 			indicatorsActive: false, 
 			selectedBacktestResultId: 0, 
-			barChartData: [{data: [{x: '', y: 1, fillColor: 'rgb(26, 32, 39)'}]}],
+			barChartData: [{data: [{x: '', y: 1, fillColor: this.barChartInitFill}]}],
 			options: {
 				plotOptions: {
 					bar: {
-						columnWidth: '98%',
-						dataLabels: {
-							maxItems: 0
-						}
+						columnWidth: '99%'
 					}
 				},
 				chart: {
+					parentHeightOffset: 0,
 					events: {
 						dataPointSelection: this.dataPointSelection
+					}
+				},
+				tooltip: {
+					enabled: false
+				},
+				xaxis: {					
+					floating: true
+				},
+				yaxis: {					
+					show: false,
+				},
+				grid: {
+					padding: {
+						top: 0,
+						right: 0,
+						bottom: 0,
+						left: 0
 					}
 				}
 			}
 		})
   }
 
+	
 	componentDidUpdate(prevProps) {
 		if (prevProps.selectedBacktestResult !== this.props.selectedBacktestResult) {
 			this.setState({
@@ -76,12 +101,18 @@ class Graph extends Component<PropsType, StateType> {
 						return { 
 							x: '', 
 							y: 1, 
-							fillColor: trade.profitHitDate ? '#00FF00' : '#FF0000'
+							fillColor: this.getBarChartFillColor(trade)
 						}
 					})
 				}]
 			})
 		}
+	}
+	
+	getBarChartFillColor(trade: TradeDateAndValues): string {
+		if(!trade.profitHitDate && !trade.stopLossHitDate)
+			return this.indecisiveColor
+		return trade.profitHitDate ? this.profitColor : this.lossColor
 	}
 
 	setPageScroll(enabled: boolean) {
@@ -126,9 +157,8 @@ class Graph extends Component<PropsType, StateType> {
 		const end = xAccessor(data[Math.min(sliceToFocusId + 30, data.length - 1)]);
 		const xExtents = [start, end];
 
-		const margin = { left: 70, right: 70, top: 10, bottom: 30 };
-		const gridHeight = height - margin.top - margin.bottom;
-		const gridWidth = width - margin.left - margin.right;
+		const gridHeight = height
+		const gridWidth = width
 		const yGrid = { innerTickSize: -1 * gridWidth, tickStrokeOpacity: 0.1 }
 		const xGrid = { innerTickSize: -1 * gridHeight, tickStrokeOpacity: 0.1 }
 
@@ -142,19 +172,20 @@ class Graph extends Component<PropsType, StateType> {
 
     return (
 			<div>				
-				<h1 style={{fontSize: '16px', paddingLeft: margin.left / 2, paddingTop : margin.top, color: 'rgb(158, 158, 158)'}}>
-				{	
-					this.props.selectedBacktestResult &&
-					stockName + ' - ' + interval + ' - ' + rewardToRisk  + ':1' 
-				}
-				</h1>
-				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" height={80} width={tradeBarsWidth}/>
+				<div className={styles.graphSelectedReportText}>
+					<h1>
+					{	
+						this.props.selectedBacktestResult &&
+						stockName + ' - ' + interval + ' - ' + rewardToRisk  + ':1' 
+					}
+					</h1>
+				</div>
+				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" width={tradeBarsWidth} height={45}/>
 				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>
 					<ChartCanvas
 						height={height}
 						ratio={ratio}
 						width={width}
-						margin={margin}
 						mouseMoveEvent={mouseMoveEnabled}
 						panEvent={panEnabled}
 						zoomEvent={zoomEnabled}
@@ -191,7 +222,8 @@ class Graph extends Component<PropsType, StateType> {
 										usingProps={{
 											fontSize: 14,
 											opacity: 1,
-											text: "🔼",
+											text: "▲",
+											fill: this.profitColor,
 											y: ({ yScale }) => yScale.range()[0],
 										}}/>
 								}
@@ -202,7 +234,8 @@ class Graph extends Component<PropsType, StateType> {
 										usingProps={{
 											fontSize: 14,
 											opacity: 1,
-											text: "🔺",
+											text: "▲",
+											fill: this.lossColor,
 											y: ({ yScale }) => yScale.range()[0],
 										}}/>
 								}
@@ -211,23 +244,22 @@ class Graph extends Component<PropsType, StateType> {
 								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d, LineType.ENTER)}
 								defined={(id: number) => id !== 0}
 								strokeOpacity={1}
-								stroke="white"
+								stroke={this.enterTradeColor}
 								/>
 								{/* take profit line */}
 							<LineSeries
 								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d, LineType.PROFIT)}
 								defined={(id: number) => id !== 0}
 								strokeOpacity={1}
-								stroke="green"
+								stroke={this.profitColor}
 								/>
 								{/* stop loss line */}
 							<LineSeries
 								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d, LineType.STOP_LOSS)}
 								defined={(id: number) => id !== 0}
 								strokeOpacity={1}
-								stroke="red"
+								stroke={this.lossColor}
 								/>
-
 						</Chart>
 
 						{/* Volume */}
@@ -243,11 +275,9 @@ class Graph extends Component<PropsType, StateType> {
 								zoomEnabled={zoomEnabled}
 								/>
 							{/* volume candles */}
-							<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? "#6BA583" : "#FF0000"} />	
+							<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? this.profitColor : this.lossColor} />	
 						</Chart>
 						}
-
-
 						<CrossHairCursor />
 					</ChartCanvas>
 				</div>

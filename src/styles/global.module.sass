@@ -1,0 +1,206 @@
+$font: apercu
+$textColorDark: #56657f
+$textColorLight: #9e9e9e
+$backgroundBlueLight: #212936
+$backgroundBlueDark: #1a2027
+$dividerColor: #374154
+
+:global .ant-spin-nested-loading
+  .ant-spin-container
+    .ant-pagination
+      background: white
+      margin: 0
+      padding: 1.2rem
+
+/***************/
+/* Apex charts */
+/***************/
+:global .apexcharts-xaxis,
+:global .apexcharts-yaxis,
+:global .apexcharts-menu-icon,
+:global .apexcharts-grid,
+:global .apexcharts-data-labels > text
+  display: none
+
+/*********/
+/* graph */
+/*********/
+.graphSelectedReportText
+  padding-top: 0
+  h1
+    font-size: 1.6rem
+    color: $textColorLight
+    margin: 0px
+
+.graphBacktestListWrapperStyle
+  width: 90vw
+  background-color: $backgroundBlueLight
+
+.graphStyle
+  background: $backgroundBlueDark
+  text-align: start
+  padding-left: 2.5rem
+  padding-top: 1.6rem
+
+:global .react-stockchart > .react-stockchart > g
+  transform: translate(40px, 20px)
+
+$graph_line_opacity: 0.3
+
+:global .react-stockcharts-axis-domain
+  stroke: $textColorLight
+  opacity: $graph_line_opacity
+
+:global .react-stockcharts-x-axis > g > g > text,
+:global .react-stockcharts-y-axis > g > g > text
+  font-size: 1rem
+  fill: white
+  opacity: $graph_line_opacity
+
+:global .tick > line
+  stroke: $textColorLight
+  opacity: 0.04
+
+:global .react-stockcharts-candlestick-wick > path
+  stroke: $textColorLight
+  opacity: $graph_line_opacity
+
+// Date, O, H, L, C, Vol. text
+:global .react-stockcharts-tooltip > tspan
+  font-size: 1rem
+  fill: white
+  opacity: $graph_line_opacity
+
+:global .react-stockcharts-tooltip > .react-stockcharts-tooltip-label
+  fill: $textColorLight
+
+:global .react-stockcharts-crosshair > line
+  stroke: $textColorLight
+
+/****************************/
+/* under navigation wrapper */
+/****************************/
+.underNavStyle
+  display: flex
+  width: 100vw
+
+/**************/
+/* navigation */
+/**************/
+.navWrapper
+  width: 100vw
+  background: $backgroundBlueLight
+  display: flex
+  justify-content: left
+  flex-direction: row
+  gap: 0.8rem
+
+.navItemTextStyle
+  font-size: 1.4rem
+  font-family: $font
+  color: $textColorDark
+
+/*****************/
+/* strategy-list */
+/*****************/
+
+.strategyListWrapper
+  border-top: 1px solid $dividerColor
+  width: 10vw
+  background-color: $backgroundBlueLight
+  padding: 1rem
+
+.strategyList
+  display: flex
+  flex-direction: column
+
+.strategyItemWrapper
+  display: flex
+  justify-content: center
+
+.strategyItemTextStyle
+  font-size: 1.4rem
+  font-family: $font
+  font-weight: bold
+  color: $textColorDark
+
+.strategySelectedItemText
+  font-size: 1.4rem
+  font-family: $font
+  font-weight: bold
+  color: #1976d2
+
+.strategyLineSeparator
+  border: 0
+  border-top: 1px solid $dividerColor
+  margin: 1rem 0
+
+/*************************/
+/* strategy report table */
+/*************************/
+.reportTableWrapper
+  width: 90vw
+  overflow: hidden
+  box-shadow: -1px 0px 8px 0px rgba(0,0,0,0.5)
+
+.reportTableTitle
+  font-size: 1.4rem
+  font-weight: bold
+
+.reportTableColumn
+  font-size: 1.4rem
+
+:global .ant-table-column-sorters
+  padding: 0.8rem
+
+// table headings
+:global .ant-table-thead > tr > th
+  background: $backgroundBlueLight
+  color: $textColorLight
+  border-bottom: 1px solid $dividerColor
+
+// table content  
+:global .ant-table-cell,
+:global .ant-table-column-sorters,
+:global .ant-table-column-has-sorters
+  background: $backgroundBlueLight
+  color: $textColorLight
+  border-bottom: none
+
+:global .ant-table-tbody > tr > td
+  padding: 0.2rem 1.6rem
+  border-bottom: 1px solid $dividerColor
+
+// navigation
+:global .ant-table-tbody > tr.ant-table-row:hover > td,
+:global .ant-pagination-prev .ant-pagination-item-link,
+:global .ant-pagination-next .ant-pagination-item-link,
+:global .ant-select:not(.ant-select-customize-input) .ant-select-selector,
+:global .anticon-filter > svg,
+:global .ant-pagination-item-link > span,
+:global .ant-pagination-item a,
+:global .ant-select-selection-search,
+:global .ant-select-selection-item,
+:global .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis,
+:global .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis,
+:global .td.ant-table-column-sort,
+:global .ant-pagination-item
+  background: $backgroundBlueDark
+  border: none
+  color: $textColorLight
+
+// navigation text
+:global .ant-pagination-item,
+:global .ant-select-selection-item
+  font-weight: bold
+
+// shared
+:global .ant-table-filter-trigger-container-open,
+:global .ant-table-filter-trigger-container,
+:global .ant-table-filter-trigger-container:hover,
+:global .ant-table-thead th.ant-table-column-has-sorters:hover,
+:global .ant-table-filter-column > span > span,
+:global td.ant-table-column-sort,
+:global .ant-table-thead th.ant-table-column-sort,
+:global .ant-spin-nested-loading .ant-spin-container .ant-pagination
+  background: $backgroundBlueLight
