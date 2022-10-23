@@ -61,8 +61,8 @@ class StrategyList extends Component<PropsType, StateType> {
       py: 0, 
       minHeight: 32, 
       backgroundColor: '#2b3648', 
-      borderBottomLeftRadius: '4px', 
-      borderTopLeftRadius: '4px', 
+      borderBottomLeftRadius: '.4rem', 
+      borderTopLeftRadius: '.4rem', 
       "&:hover": {backgroundColor: '#2b3648'}
     },
     editItemButtonStyle: {
@@ -70,21 +70,20 @@ class StrategyList extends Component<PropsType, StateType> {
       justifyContent: "center", 
       padding: 0, 
       backgroundColor: '#212936', 
-      borderBottomRightRadius: '4px', 
-      borderTopRightRadius: '4px'
+      borderBottomRightRadius: '.4rem', 
+      borderTopRightRadius: '.4rem'
     },
     selectedEditItemButtonStyle: { 
       display: 'flex', 
       justifyContent: "center", 
       padding: 0, 
       backgroundColor: '#2b3648', 
-      borderBottomRightRadius: '4px', 
-      borderTopRightRadius: '4px', 
+      borderBottomRightRadius: '.4rem', 
+      borderTopRightRadius: '.4rem', 
       "&:hover": {backgroundColor: '#2b3648'}
     },
     addNewStrategyStyle: { 
-      py: 0, 
-      minHeight: 32, 
+      padding: '0.8rem', 
       display: 'flex', 
       justifyContent:'center', 
       color: 'white', 
@@ -93,7 +92,7 @@ class StrategyList extends Component<PropsType, StateType> {
       "&:hover": {backgroundColor: '#1976d2'} 
     },
     editIcon: { 
-      fontSize: 24, 
+      fontSize: '2.4rem', 
       fontWeight: 'bold', 
       color: '#56657f'
     }
@@ -132,7 +131,7 @@ class StrategyList extends Component<PropsType, StateType> {
           <hr className={styles.strategyLineSeparator}/>
         {/* Add new strategy  */}
         <ListItemButton sx={this.sxStyle.addNewStrategyStyle} onClick={() => this.addNewStrategy()}>
-          <LibraryAddIcon fontSize="medium"/>
+          <LibraryAddIcon sx={{fontSize: '2rem'}} />
         </ListItemButton>
         </List>
       </div>

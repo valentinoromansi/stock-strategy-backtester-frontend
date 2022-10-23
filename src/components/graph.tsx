@@ -62,15 +62,30 @@ class Graph extends Component<PropsType, StateType> {
 			options: {
 				plotOptions: {
 					bar: {
-						columnWidth: '98%',
-						dataLabels: {
-							maxItems: 0
-						}
+						columnWidth: '99%'
 					}
 				},
 				chart: {
+					parentHeightOffset: 0,
 					events: {
 						dataPointSelection: this.dataPointSelection
+					}
+				},
+				tooltip: {
+					enabled: false
+				},
+				xaxis: {					
+					floating: true
+				},
+				yaxis: {					
+					show: false,
+				},
+				grid: {
+					padding: {
+						top: 0,
+						right: 0,
+						bottom: 0,
+						left: 0
 					}
 				}
 			}
@@ -157,15 +172,15 @@ class Graph extends Component<PropsType, StateType> {
 
     return (
 			<div>				
-				<div className={styles.graph_h1}>
+				<div className={styles.graphSelectedReportText}>
 					<h1>
-				{	
-					this.props.selectedBacktestResult &&
-					stockName + ' - ' + interval + ' - ' + rewardToRisk  + ':1' 
-				}
-				</h1>
+					{	
+						this.props.selectedBacktestResult &&
+						stockName + ' - ' + interval + ' - ' + rewardToRisk  + ':1' 
+					}
+					</h1>
 				</div>
-				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" height={80} width={tradeBarsWidth}/>
+				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" width={tradeBarsWidth} height={45}/>
 				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>
 					<ChartCanvas
 						height={height}

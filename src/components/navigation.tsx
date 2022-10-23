@@ -52,7 +52,7 @@ class Navigation extends Component<PropsType, StateType> {
   }
 
   readonly sxIconStyle = {
-    fontSize: '32px'
+    fontSize: '3.2rem'
   }
 
   render() {

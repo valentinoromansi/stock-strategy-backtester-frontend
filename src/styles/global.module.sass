@@ -5,7 +5,46 @@ $backgroundBlueLight: #212936
 $backgroundBlueDark: #1a2027
 $dividerColor: #374154
 
-/** Overriding Graph color properties **/
+:global .ant-spin-nested-loading
+  .ant-spin-container
+    .ant-pagination
+      background: white
+      margin: 0
+      padding: 1.2rem
+
+/***************/
+/* Apex charts */
+/***************/
+:global .apexcharts-xaxis,
+:global .apexcharts-yaxis,
+:global .apexcharts-menu-icon,
+:global .apexcharts-grid,
+:global .apexcharts-data-labels > text
+  display: none
+
+/*********/
+/* graph */
+/*********/
+.graphSelectedReportText
+  padding-top: 0
+  h1
+    font-size: 1.6rem
+    color: $textColorLight
+    margin: 0px
+
+.graphBacktestListWrapperStyle
+  width: 90vw
+  background-color: $backgroundBlueLight
+
+.graphStyle
+  background: $backgroundBlueDark
+  text-align: start
+  padding-left: 2.5rem
+  padding-top: 1.6rem
+
+:global .react-stockchart > .react-stockchart > g
+  transform: translate(40px, 20px)
+
 $graph_line_opacity: 0.3
 
 :global .react-stockcharts-axis-domain
@@ -14,6 +53,7 @@ $graph_line_opacity: 0.3
 
 :global .react-stockcharts-x-axis > g > g > text,
 :global .react-stockcharts-y-axis > g > g > text
+  font-size: 1rem
   fill: white
   opacity: $graph_line_opacity
 
@@ -25,57 +65,24 @@ $graph_line_opacity: 0.3
   stroke: $textColorLight
   opacity: $graph_line_opacity
 
-/** Date, O, H, L, C, Vol. text **/
+// Date, O, H, L, C, Vol. text
 :global .react-stockcharts-tooltip > tspan
+  font-size: 1rem
   fill: white
   opacity: $graph_line_opacity
 
 :global .react-stockcharts-tooltip > .react-stockcharts-tooltip-label
   fill: $textColorLight
 
-/** Dotted crosshair lines**/
 :global .react-stockcharts-crosshair > line
   stroke: $textColorLight
 
-/* Apex charts*/
-:global .apexcharts-xaxis,
-:global .apexcharts-yaxis,
-:global .apexcharts-menu-icon,
-:global .apexcharts-grid,
-:global .apexcharts-data-labels > text
-  visibility: hidden
-
-:global .ant-spin-nested-loading
-  .ant-spin-container
-    .ant-pagination
-      background: white
-      margin: 0
-      padding: 12px
-
-/*********/
-/* graph */
-/*********/
-.graph_h1
-  padding-top: 16px
-  margin-left: 32px
-  h1
-    font-size: 16px
-    color: $textColorLight
-
-.graphBacktestListWrapperStyle
-  width: 90vw
-  background-color: $backgroundBlueLight
-
-/*********/
-/* main */
-/*********/
+/****************************/
+/* under navigation wrapper */
+/****************************/
 .underNavStyle
   display: flex
   width: 100vw
-
-.graphStyle
-  background: $backgroundBlueDark
-  text-align: start
 
 /**************/
 /* navigation */
@@ -86,9 +93,10 @@ $graph_line_opacity: 0.3
   display: flex
   justify-content: left
   flex-direction: row
-  gap: 10p
+  gap: 0.8rem
 
 .navItemTextStyle
+  font-size: 1.4rem
   font-family: $font
   color: $textColorDark
 
@@ -100,25 +108,24 @@ $graph_line_opacity: 0.3
   border-top: 1px solid $dividerColor
   width: 10vw
   background-color: $backgroundBlueLight
-  padding: 10px
+  padding: 1rem
 
 .strategyList
   display: flex
   flex-direction: column
-  row-gap: 6
 
 .strategyItemWrapper
   display: flex
   justify-content: center
 
 .strategyItemTextStyle
-  font-size: 14
+  font-size: 1.4rem
   font-family: $font
   font-weight: bold
   color: $textColorDark
 
 .strategySelectedItemText
-  font-size: 14
+  font-size: 1.4rem
   font-family: $font
   font-weight: bold
   color: #1976d2
@@ -136,8 +143,15 @@ $graph_line_opacity: 0.3
   overflow: hidden
   box-shadow: -1px 0px 8px 0px rgba(0,0,0,0.5)
 
+.reportTableTitle
+  font-size: 1.4rem
+  font-weight: bold
+
+.reportTableColumn
+  font-size: 1.4rem
+
 :global .ant-table-column-sorters
-  padding: 8px
+  padding: 0.8rem
 
 // table headings
 :global .ant-table-thead > tr > th
@@ -154,7 +168,7 @@ $graph_line_opacity: 0.3
   border-bottom: none
 
 :global .ant-table-tbody > tr > td
-  padding: 2px 16px
+  padding: 0.2rem 1.6rem
   border-bottom: 1px solid $dividerColor
 
 // navigation
