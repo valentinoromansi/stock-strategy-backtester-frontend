@@ -18,32 +18,7 @@ export type StateType = {
 // Initial (starting) state
 export const initialState: StateType = {
   stockVerticalSlicesFecthing: true,
-  selectedStockVerticalSlices: [
-    { 
-      date: new Date("2010-01-03T23:00:00.000Z"),
-      "open": 25.436282332605284, 
-      "high": 25.835021381744056, 
-      "low": 25.411360259406774, 
-      "close": 25.710416, 
-      "volume": 38409100
-    },
-    { 
-      date: new Date("2010-01-03T23:05:00.000Z"), 
-      "open": 25.436282332605284, 
-      "high": 25.835021381744056, 
-      "low": 25.411360259406774, 
-      "close": 25.710416, 
-      "volume": 3840910
-    },
-    { 
-      date: new Date("2010-01-03T23:10:00.000Z"), 
-      "open": 25.436282332605284, 
-      "high": 25.835021381744056, 
-      "low": 25.411360259406774, 
-      "close": 25.710416, 
-      "volume": 3840910
-    }
-  ],
+  selectedStockVerticalSlices: [],
   selectedBacktestResult: null,
   strategyReports: [],
   strategyReportsFecthing: true,

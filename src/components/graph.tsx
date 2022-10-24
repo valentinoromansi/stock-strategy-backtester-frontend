@@ -141,6 +141,13 @@ class Graph extends Component<PropsType, StateType> {
   render() {
 		const { tradeDateAndValues, stockName, interval, rewardToRisk } = this.props?.selectedBacktestResult || { tradeDateAndValues: [] }
 		const { type, width, ratio, mouseMoveEnabled, panEnabled, zoomEnabled, clamp, height } = this.props;
+
+		// ChartCanvas component breaks when data consits of less then 
+		const dataForRender = 
+			this.props.data?.length >= 2 ? 
+			this.props.data :
+			new Array(2).fill({date: new Date(), "open": 0, "high": 0, "low": 0, "close": 0, "volume": 0})
+			
 		
 		// returned 'data' is same as 'this.props.data' but has addtional 'idx' property that is used when rendering
 		const {
@@ -148,7 +155,7 @@ class Graph extends Component<PropsType, StateType> {
 			xScale,
 			xAccessor,
 			displayXAccessor,
-		} = discontinuousTimeScaleProvider.inputDateAccessor((d: VerticalSlice) => d.date)(this.props.data);
+		} = discontinuousTimeScaleProvider.inputDateAccessor((d: VerticalSlice) => d.date)(dataForRender);
 		
 		// xExtents - slices between start and end will be rendered, xAccessor returns index of given verticalSlice
 		const selectedTrade = tradeDateAndValues[this.state.selectedBacktestResultId]
@@ -170,8 +177,13 @@ class Graph extends Component<PropsType, StateType> {
 		const percentFraction = Math.min(tradeDateAndValues.length / maxTradeNumBeforeClamp, 1)
 		const tradeBarsWidth =  minWidth + ((maxWidth - minWidth) * percentFraction) + '%'
 
+		const contentVisible = this.props.data?.length > 1
+		// Set max-height to unreachable 101vh(hack for height transition effect for parent element of unknown height - depends on child elements)
+		const wrapperMaxHeight = contentVisible ? '101vh' : 0
+		const wrapperPadding = contentVisible ? '1.6rem' : 0
+
     return (
-			<div>				
+			<div className={styles.graphStyle} style={{padding: wrapperPadding, maxHeight: wrapperMaxHeight}}>
 				<div className={styles.graphSelectedReportText}>
 					<h1>
 					{	
@@ -180,12 +192,16 @@ class Graph extends Component<PropsType, StateType> {
 					}
 					</h1>
 				</div>
+				{/* Bar chart */}
 				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" width={tradeBarsWidth} height={45}/>
-				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>
+				{/* Stock graph */}
+				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>				
+				{
+					contentVisible &&				
 					<ChartCanvas
+						width={width}
 						height={height}
 						ratio={ratio}
-						width={width}
 						mouseMoveEvent={mouseMoveEnabled}
 						panEvent={panEnabled}
 						zoomEvent={zoomEnabled}
@@ -280,6 +296,7 @@ class Graph extends Component<PropsType, StateType> {
 						}
 						<CrossHairCursor />
 					</ChartCanvas>
+				}
 				</div>
 			</div>
 		);

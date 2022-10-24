@@ -39,8 +39,8 @@ $dividerColor: #374154
 .graphStyle
   background: $backgroundBlueDark
   text-align: start
-  padding-left: 2.5rem
-  padding-top: 1.6rem
+  overflow: hidden
+  transition: max-height 1s
 
 :global .react-stockchart > .react-stockchart > g
   transform: translate(40px, 20px)
@@ -153,19 +153,20 @@ $graph_line_opacity: 0.3
 :global .ant-table-column-sorters
   padding: 0.8rem
 
-// table headings
+// table
 :global .ant-table-thead > tr > th
   background: $backgroundBlueLight
   color: $textColorLight
   border-bottom: 1px solid $dividerColor
 
-// table content  
 :global .ant-table-cell,
 :global .ant-table-column-sorters,
-:global .ant-table-column-has-sorters
+:global .ant-table-column-has-sorters,
+:global .ant-table-container table > thead > tr:first-child th:first-child,
+:global .ant-table-container table > thead > tr:first-child th:last-child
   background: $backgroundBlueLight
   color: $textColorLight
-  border-bottom: none
+  border-radius: 0
 
 :global .ant-table-tbody > tr > td
   padding: 0.2rem 1.6rem
@@ -199,8 +200,9 @@ $graph_line_opacity: 0.3
 :global .ant-table-filter-trigger-container,
 :global .ant-table-filter-trigger-container:hover,
 :global .ant-table-thead th.ant-table-column-has-sorters:hover,
+:global .ant-table-thead th.ant-table-column-sort,
+:global .ant-table-thead,
 :global .ant-table-filter-column > span > span,
 :global td.ant-table-column-sort,
-:global .ant-table-thead th.ant-table-column-sort,
 :global .ant-spin-nested-loading .ant-spin-container .ant-pagination
   background: $backgroundBlueLight

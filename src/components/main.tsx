@@ -45,7 +45,7 @@ class Main extends Component<PropsType, StateType> {
 
   getGraphSize(): { width: number, height: number} {
     return {
-      width: window.innerWidth * 0.85,
+      width: window.innerWidth * 0.9,
       height: window.innerHeight * 0.6
     }
   }
@@ -62,9 +62,7 @@ class Main extends Component<PropsType, StateType> {
         <div className={styles.underNavStyle}>
           <StrategyList/>
           <div className={styles.graphBacktestListWrapperStyle}>
-            <div className={styles.graphStyle}>
-              <Graph width={graphWidth} height={graphHeight}/>
-            </div>
+            <Graph width={graphWidth} height={graphHeight}/>
             <StrategyReportTable/>
           </div>
         </div>
