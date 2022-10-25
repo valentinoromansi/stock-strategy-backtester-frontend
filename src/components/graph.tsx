@@ -18,6 +18,7 @@ import { LineType } from "../types/line-type";
 import ReactApexChart from "react-apexcharts"
 
 import styles from '../styles/global.module.sass'
+import { SpinnerComponent } from "react-element-spinner";
 
 
 type PropsType = {
@@ -31,7 +32,8 @@ type PropsType = {
   panEnabled: boolean,
   zoomEnabled: boolean,
   clamp: boolean,
-  data: any
+  data: any,
+	stockVerticalSlicesFecthing: boolean
 }
 
 type BarChartDataType = [{data: {x: string, y: number, fillColor: string}[]}]
@@ -181,7 +183,8 @@ class Graph extends Component<PropsType, StateType> {
 		const wrapperPadding = contentVisible ? '1.6rem' : 0
 
     return (
-			<div className={styles.graphStyle} style={{padding: wrapperPadding, maxHeight: wrapperMaxHeight}}>
+			<div className={styles.graphStyle} style={{padding: wrapperPadding, maxHeight: wrapperMaxHeight}}>        
+				<SpinnerComponent loading={this.props.stockVerticalSlicesFecthing} position="centered" />
 				<div className={styles.graphSelectedReportText}>
 					<h1>
 					{	
@@ -190,8 +193,9 @@ class Graph extends Component<PropsType, StateType> {
 					}
 					</h1>
 				</div>
-				{/* Bar chart */}
+				{/* Bar chart - this shit causes huge lags
 				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" width={tradeBarsWidth} height={45}/>
+				*/}
 				{/* Stock graph */}
 				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>				
 				{
@@ -313,7 +317,8 @@ const mapStateToProps = (state: reducer.StateType) => {
 		zoomEnabled: true,
 		clamp: false,
   	ratio: 1,
-		data: state.selectedStockVerticalSlices
+		data: state.selectedStockVerticalSlices,
+		stockVerticalSlicesFecthing: state.stockVerticalSlicesFecthing
   };
 };
 

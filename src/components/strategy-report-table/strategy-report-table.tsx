@@ -29,7 +29,7 @@ class StrategyReportTable extends Component<PropsType, StateType> {
   }
 
   setSelectedStrategyReport(props: PropsType) {
-    const selectedStrategyReport = props.strategyReports.filter(item => item.strategyName === props.selectedStrategy?.name)[0]
+    const selectedStrategyReport = props.strategyReports.find(item => item.strategyName === props.selectedStrategy?.name)
     this.setState({ selectedStrategyReport: selectedStrategyReport })
   }
 
@@ -50,7 +50,7 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     let strategyReport = this.state?.selectedStrategyReport
     
     return (
-      <div className={styles.reportTableWrapper}>
+      <div className={styles.reportTableWrapper}>        
         <SpinnerComponent loading={this.props.strategyReportsFecthing} position="centered" />
         <Table 
           columns={columns} 
