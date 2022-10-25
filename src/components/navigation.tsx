@@ -19,7 +19,6 @@ type PropsType = {
 }
 type StateType = {
   strategyBacktestResults?: StrategyReport[]
-  spinnerActive?: boolean
 }
 
 
