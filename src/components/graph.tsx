@@ -164,10 +164,8 @@ class Graph extends Component<PropsType, StateType> {
 		const end = xAccessor(data[Math.min(sliceToFocusId + 30, data.length - 1)]);
 		const xExtents = [start, end];
 
-		const gridHeight = height
-		const gridWidth = width
-		const yGrid = { innerTickSize: -1 * gridWidth, tickStrokeOpacity: 0.1 }
-		const xGrid = { innerTickSize: -1 * gridHeight, tickStrokeOpacity: 0.1 }
+		const yGrid = { innerTickSize: -1 * width, tickStrokeOpacity: 0.1 }
+		const xGrid = { innerTickSize: -1 * height, tickStrokeOpacity: 0.1 }
 
 		const profitEntryDates: Date[] = tradeDateAndValues?.filter(trade => trade.profitHitDate).map(trade => new Date(trade.enterDate))
 		const lossEntryDates: Date[] = tradeDateAndValues?.filter(trade => trade.stopLossHitDate).map(trade => new Date(trade.enterDate))
