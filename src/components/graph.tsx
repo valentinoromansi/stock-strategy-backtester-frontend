@@ -19,6 +19,8 @@ import ReactApexChart from "react-apexcharts"
 
 import styles from '../styles/global.module.sass'
 import { SpinnerComponent } from "react-element-spinner";
+import StrategyTradesBars from "./strategy-trades-bars";
+import { TradeResult } from "types/trade-result";
 
 
 type PropsType = {
@@ -196,6 +198,13 @@ class Graph extends Component<PropsType, StateType> {
 				{/* Bar chart - this shit causes huge lags
 				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" width={tradeBarsWidth} height={45}/>
 				*/}
+				<div style={{
+					width: '100%', 
+					height: '20px', 
+					background: 'linear-gradient(90deg, red 0.12%, red 0.12%, green 0.12%, green 20%, red 20%, green 30%, red 30%)'
+					}}>
+				</div>
+				<StrategyTradesBars tradeResultTypes={[TradeResult.PROFIT, TradeResult.LOSS, TradeResult.INDECISIVE, TradeResult.LOSS, TradeResult.PROFIT, TradeResult.PROFIT]}/>
 				{/* Stock graph */}
 				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>				
 				{
