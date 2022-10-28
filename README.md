@@ -1,46 +1,181 @@
-# Getting Started with Create React App
+background: 
+linear-gradient(90deg,
+lime 0%, lime 1%, 
+red 1%, red 2%, 
+lime 2%, lime 3%, 
+red 3%, red 4%, 
+lime 4%, lime 5%, 
+red 5%, red 6%, 
+lime 6%, lime 7%, 
+red 7%, red 8%, 
+lime 8%, lime 9%, 
+red 9%, red 10%, 
+lime 10%, lime 11%,
+red 11%, red 12%, 
+lime 12%, lime 13%, 
+red 13%, red 14%, 
+lime 14%, lime 15%, 
+red 15%, red 16%, 
+lime 16%, lime 17%, 
+red 17%, red 18%, 
+lime 18%, lime 19%, 
+red 19%, red 20%, 
+lime 20%, lime 21%, 
+red 21%, red 22%, 
+lime 22%, lime 23%, 
+red 23%, red 24%, 
+lime 24%, lime 25%, 
+red 25%, red 26%, 
+lime 26%, lime 27%, 
+red 27%, red 28%, 
+lime 28%, lime 29%, 
+red 29%, red 30%,
+transparent 30%, transparent 100%
+),
+linear-gradient(90deg,
+lime 30%, lime 31%, 
+red 31%, red 32%, 
+lime 32%, lime 33%, 
+red 33%, red 34%, 
+lime 34%, lime 35%, 
+red 35%, red 36%, 
+lime 36%, lime 37%, 
+red 37%, red 38%, 
+lime 38%, lime 39%, 
+red 39%, red 40%, 
+lime 40%, lime 41%, 
+red 41%, red 42%, 
+lime 42%, lime 43%, 
+red 43%, red 44%, 
+lime 44%, lime 45%, 
+red 45%, red 46%, 
+lime 46%, lime 47%, 
+red 47%, red 48%, 
+lime 48%, lime 49%, 
+red 49%, red 50%, 
+lime 50%, lime 51%,
+red 51%, red 52%, 
+lime 52%, lime 53%, 
+red 53%, red 54%, 
+lime 54%, lime 55%, 
+red 55%, red 56%, 
+lime 56%, lime 57%, 
+red 57%, red 58%, 
+lime 58%, lime 59%, 
+red 59%, red 60%, 
+lime 60%, lime 61%, 
+red 61%, red 62%, 
+lime 62%, lime 63%, 
+red 63%, red 64%,
+red 64%, red 65%, 
+lime 65%, lime 66%, 
+red 66%, red 67%, 
+lime 67%, lime 68%, 
+red 68%, red 69%, 
+lime 69%, lime 70%,
+transparent 70%, transparent 100%
+)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
 
-In the project directory, you can run:
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<div style="
+width: 1500px;
+height: 20px;
+background: linear-gradient(90deg,
+lime 0%, lime 1%, 
+red 1%, red 2%, 
+lime 2%, lime 3%, 
+red 3%, red 4%, 
+lime 4%, lime 5%, 
+red 5%, red 6%, 
+lime 6%, lime 7%, 
+red 7%, red 8%, 
+lime 8%, lime 9%, 
+red 9%, red 10%, 
+lime 10%, lime 11%,
+red 11%, red 12%, 
+lime 12%, lime 13%, 
+red 13%, red 14%, 
+lime 14%, lime 15%, 
+red 15%, red 16%, 
+lime 16%, lime 17%, 
+red 17%, red 18%, 
+lime 18%, lime 19%, 
+red 19%, red 20%, 
+lime 20%, lime 21%, 
+red 21%, red 22%, 
+lime 22%, lime 23%, 
+red 23%, red 24%, 
+lime 24%, lime 25%, 
+red 25%, red 26%, 
+lime 26%, lime 27%, 
+red 27%, red 28%, 
+lime 28%, lime 29%, 
+red 29%, red 30%, 
+lime 30%, lime 31%, 
+red 31%, red 32%, 
+lime 32%, lime 33%, 
+red 33%, red 34%, 
+lime 34%, lime 35%, 
+red 35%, red 36%, 
+lime 36%, lime 37%, 
+red 37%, red 38%, 
+lime 38%, lime 39%, 
+red 39%, red 40%, 
+lime 40%, lime 41%, 
+red 41%, red 42%, 
+lime 42%, lime 43%, 
+red 43%, red 44%, 
+lime 44%, lime 45%, 
+red 45%, red 46%, 
+lime 46%, lime 47%, 
+red 47%, red 48%, 
+lime 48%, lime 49%, 
+red 49%, red 50%, 
+lime 50%, lime 51%,
+red 51%, red 52%, 
+lime 52%, lime 53%, 
+red 53%, red 54%, 
+lime 54%, lime 55%, 
+red 55%, red 56%, 
+lime 56%, lime 57%, 
+red 57%, red 58%, 
+lime 58%, lime 59%, 
+red 59%, red 60%, 
+lime 60%, lime 61%, 
+red 61%, red 62%, 
+lime 62%, lime 63%, 
+red 63%, red 64%
+);"></div>
+
+</body>
+</html>
