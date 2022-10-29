@@ -15,10 +15,10 @@ import { VerticalSlice } from "../models/vertical-slice";
 import { Strategy } from "../models/strategy";
 import { BacktestResult, TradeDateAndValues } from "../models/backtest-result";
 import { LineType } from "../types/line-type";
-import ReactApexChart from "react-apexcharts"
 
 import styles from '../styles/global.module.sass'
 import { SpinnerComponent } from "react-element-spinner";
+import StrategyTradesBars from "./strategy-trades-bars";
 
 
 type PropsType = {
@@ -33,16 +33,13 @@ type PropsType = {
   zoomEnabled: boolean,
   clamp: boolean,
   data: any,
-	stockVerticalSlicesFecthing: boolean
+	stockVerticalSlicesFecthing: boolean,
+	selectedTrade: TradeDateAndValues
 }
-
-type BarChartDataType = [{data: {x: string, y: number, fillColor: string}[]}]
 
 type StateType = {
 	indicatorsActive: boolean,
-	selectedBacktestResultId: number,
-	barChartData: BarChartDataType,
-	options: any
+	selectedTrade: TradeDateAndValues
 }
 
 class Graph extends Component<PropsType, StateType> {
@@ -56,60 +53,20 @@ class Graph extends Component<PropsType, StateType> {
     super(props);
 		this.setPageScroll = this.setPageScroll.bind(this)
 		this.tradeLineValue = this.tradeLineValue.bind(this)
-		this.dataPointSelection = this.dataPointSelection.bind(this)
-		this.state = ({
-			indicatorsActive: false, 
-			selectedBacktestResultId: 0, 
-			barChartData: [{data: [{x: '', y: 1, fillColor: this.barChartInitFill}]}],
-			options: {
-				plotOptions: {
-					bar: {
-						columnWidth: '99%'
-					}
-				},
-				chart: {
-					parentHeightOffset: 0,
-					events: {
-						dataPointSelection: this.dataPointSelection
-					}
-				},
-				tooltip: {
-					enabled: false
-				},
-				xaxis: {					
-					floating: true
-				},
-				yaxis: {					
-					show: false,
-				},
-				grid: {
-					padding: {
-						top: 0,
-						right: 0,
-						bottom: 0,
-						left: 0
-					}
-				}
-			}
-		})
+		this.state = {
+			indicatorsActive: false,
+			selectedTrade: props.selectedTrade
+		}
   }
 
-	
-	componentDidUpdate(prevProps) {
-		if (prevProps.selectedBacktestResult !== this.props.selectedBacktestResult) {
-			this.setState({
-				barChartData: [{
-					data: this.props.selectedBacktestResult.tradeDateAndValues.map(trade => { 
-						return { 
-							x: '', 
-							y: 1, 
-							fillColor: this.getBarChartFillColor(trade)
-						}
-					})
-				}]
-			})
+
+	componentDidUpdate(prevProps: PropsType) {
+		if(prevProps.selectedTrade !== this.props.selectedTrade) {
+			this.setState({selectedTrade: this.props.selectedTrade});
 		}
+		//console.log(this.props.selectedTrade)
 	}
+
 	
 	getBarChartFillColor(trade: TradeDateAndValues): string {
 		if(!trade.profitHitDate && !trade.stopLossHitDate)
@@ -136,10 +93,6 @@ class Graph extends Component<PropsType, StateType> {
 		return val
 	}
 
-	dataPointSelection(e: any, chart: any, options: any) { // { seriesIndex, dataPointIndex, config
-		this.setState({selectedBacktestResultId: options?.dataPointIndex})
-	}
-
   render() {
 		const { tradeDateAndValues, stockName, interval, rewardToRisk } = this.props?.selectedBacktestResult || { tradeDateAndValues: [] }
 		const { type, width, ratio, mouseMoveEnabled, panEnabled, zoomEnabled, clamp, height } = this.props;
@@ -160,8 +113,7 @@ class Graph extends Component<PropsType, StateType> {
 		} = discontinuousTimeScaleProvider.inputDateAccessor((d: VerticalSlice) => d.date)(dataForRender);
 		
 		// xExtents - slices between start and end will be rendered, xAccessor returns index of given verticalSlice
-		const selectedTrade = tradeDateAndValues[this.state.selectedBacktestResultId]
-		const sliceToFocusId: number = data.findIndex(slice => slice.date.getTime() === new Date(selectedTrade?.enterDate).getTime()) || 0
+		const sliceToFocusId: number = data.findIndex(slice => slice.date.getTime() === new Date(this.state.selectedTrade?.enterDate).getTime()) || 0
 		const start = xAccessor(data[Math.max(sliceToFocusId - 30, 0)]);
 		const end = xAccessor(data[Math.min(sliceToFocusId + 30, data.length - 1)]);
 		const xExtents = [start, end];
@@ -193,9 +145,8 @@ class Graph extends Component<PropsType, StateType> {
 					}
 					</h1>
 				</div>
-				{/* Bar chart - this shit causes huge lags
-				<ReactApexChart options={this.state.options} series={this.state.barChartData} type="bar" width={tradeBarsWidth} height={45}/>
-				*/}
+				{/* Strategy trades bar */}
+				<StrategyTradesBars/>
 				{/* Stock graph */}
 				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>				
 				{
@@ -318,7 +269,8 @@ const mapStateToProps = (state: reducer.StateType) => {
 		clamp: false,
   	ratio: 1,
 		data: state.selectedStockVerticalSlices,
-		stockVerticalSlicesFecthing: state.stockVerticalSlicesFecthing
+		stockVerticalSlicesFecthing: state.stockVerticalSlicesFecthing,
+		selectedTrade: state.selectedTrade
   };
 };
 

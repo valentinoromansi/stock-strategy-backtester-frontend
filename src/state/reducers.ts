@@ -1,4 +1,4 @@
-import { BacktestResult } from '../models/backtest-result';
+import { BacktestResult, TradeDateAndValues } from '../models/backtest-result';
 import { Strategy } from '../models/strategy';
 import { StrategyReport } from '../models/strategy-report';
 import { VerticalSlice } from '../models/vertical-slice';
@@ -13,6 +13,7 @@ export type StateType = {
   strategies: Strategy[],
   selectedStrategy: Strategy | null,
   strategiesFecthing: boolean,
+  selectedTrade: TradeDateAndValues | null,
 }
 
 // Initial (starting) state
@@ -25,6 +26,7 @@ export const initialState: StateType = {
   strategies: [],
   strategiesFecthing: true,
   selectedStrategy: null,
+  selectedTrade: null
 };
 
 // Our root reducer starts with the initial state
@@ -47,6 +49,8 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
       return { ...state, stockVerticalSlicesFecthing: action.payload };
     case types.SET_SELECTED_BACKTEST_RESULT:
       return { ...state, selectedBacktestResult: action.payload };
+    case types.SET_SELECTED_TRADE:
+      return { ...state, selectedTrade: action.payload };
     default:
       return state;
   }
