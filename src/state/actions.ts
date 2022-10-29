@@ -3,7 +3,8 @@ import { store } from '../state/store'
 import * as http from "../http/http";
 import { StrategyReport } from '../models/strategy-report';
 import { Strategy } from '../models/strategy';
-import { BacktestResult } from '../models/backtest-result';
+import { BacktestResult, TradeDateAndValues } from '../models/backtest-result';
+import { TradeResult } from 'types/trade-result';
 
 
 export function getStock(interval: string, symbol: string) {
@@ -46,4 +47,8 @@ export function getStrategies() {
 
 export function setSelectedStrategy(strategy: Strategy) {
   store.dispatch({type: types.SET_SELECTED_STRATEGY, payload: strategy})
+}
+
+export function setSelectedTrade(trade: TradeDateAndValues) {
+  store.dispatch({type: types.SET_SELECTED_TRADE, payload: trade})
 }

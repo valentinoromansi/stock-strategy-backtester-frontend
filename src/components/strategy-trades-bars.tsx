@@ -1,17 +1,21 @@
-import { Component } from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as reducer from '../state/reducers';
 import "apercu-font";
 import { Strategy } from "models/strategy";
 import { TradeResult } from "types/trade-result";
+import { BacktestResult, TradeDateAndValues } from "models/backtest-result";
+import * as actions from "../state/actions";
+
 
 
 type PropsType = {
-	tradeResultTypes: TradeResult[]
+	selectedBacktestResult: BacktestResult
 }
 
 
 type StateType = {
+	selectedBacktestResult: BacktestResult
 }
 
 class StrategyTradesBars extends Component<PropsType, StateType> {
@@ -19,38 +23,59 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 	readonly lossColor: string = '#ff0000'
 	readonly indecisiveColor: string = '#3e3e3e'
 
+	divRef: any
+
   constructor(props: PropsType) {
     super(props);
+		this.divRef = React.createRef()
+		this.handleMouseClick = this.handleMouseClick.bind(this)
+		this.state = { selectedBacktestResult: props.selectedBacktestResult }
   }
+
+	componentDidUpdate(prevProps: PropsType) {
+		if(prevProps.selectedBacktestResult !== this.props.selectedBacktestResult) {
+			this.setState({selectedBacktestResult: this.props.selectedBacktestResult});
+		}
+	}
+
+	/**
+	 * localMouseX - mouse x cordinate in px inside element
+	 * mouseXPercentFrac -  mouse x cordinate in %fraction between element starting x position and element ending x position
+	 */
+	handleMouseClick(e: any) {
+		const localMouseX = e.clientX - e.target.offsetLeft 
+		const mouseXPercentFrac = localMouseX / this.divRef.current.offsetWidth
+		const barWidthPercentFrac = 1 / this.state.selectedBacktestResult.tradeDateAndValues?.length
+		const selectedBarIndex = Math.floor((mouseXPercentFrac / barWidthPercentFrac))
+		actions.setSelectedTrade(this.state.selectedBacktestResult.tradeDateAndValues[selectedBarIndex])
+	}
 	
-	getBarChartFillColor(tradeResult: TradeResult): string {
-		if(tradeResult === TradeResult.PROFIT)
+	getBarChartFillColor(tradeDateAndValues: TradeDateAndValues): string {
+		if(tradeDateAndValues.tradeResult === TradeResult.PROFIT)
 			return this.profitColor
-		else if(tradeResult === TradeResult.LOSS)
+		else if(tradeDateAndValues.tradeResult === TradeResult.LOSS)
 			return this.lossColor
 		return this.indecisiveColor
 	}
 
-
-
 	/**
 	 * return css property list of linear-gradient properties each consisting of 50 colors so blur can be avoided
 	 */
-	getLinearGradient(tradeResultTypes: TradeResult[]) {		
+	getLinearGradient(tradeDateAndValues: TradeDateAndValues[]) {
+		if(!tradeDateAndValues)
+			return ''
 		// Separate list into list of list with max 50 members
-		const chunkedTradeResultTypes: TradeResult[][] = []
+		const chunkedTradeResultTypes: TradeDateAndValues[][] = []
 		const chunkSize = 50
-		for (let i = 0; i < tradeResultTypes.length; i += chunkSize) {
-			chunkedTradeResultTypes.push(tradeResultTypes.slice(i, i + chunkSize))
+		for (let i = 0; i < tradeDateAndValues.length; i += chunkSize) {
+			chunkedTradeResultTypes.push(tradeDateAndValues.slice(i, i + chunkSize))
 		}
-		console.log('chunkedTradeResultTypes: ')
-		console.log(chunkedTradeResultTypes)
 		
 		// Construct linear-gradient property string 
-		const barWidthPercent = 100 / tradeResultTypes.length
+		const barWidthPercent = 100 / tradeDateAndValues.length
 		let fromPercent = 0
 		let toPercent = barWidthPercent
-		const linearGradient50Max = (tradeResultTypes: TradeResult[]): string => {
+		const linearGradient50Max = (tradeResultTypes: TradeDateAndValues[]): string => {
 			return tradeResultTypes.reduce(
 				(prev, curr, currIndex) => {
 					const color = this.getBarChartFillColor(curr)
@@ -72,25 +97,20 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 	}
 
 
-  render() {
-		
-		const tradeResultTypes = Array(250)
-		for (let i = 0; i < tradeResultTypes.length; i++)	{		
-			tradeResultTypes[i] = (i % 2 === 0) ? TradeResult.PROFIT : TradeResult.LOSS
-			tradeResultTypes[i] = (i % 5 === 0) ? TradeResult.INDECISIVE : tradeResultTypes[i]
-		}
-		
-		const linearGradientProperty = this.getLinearGradient(tradeResultTypes)
-		console.log(linearGradientProperty)
-
+  render() {		
+		const linearGradientProperty = this.getLinearGradient(this.state.selectedBacktestResult?.tradeDateAndValues)
 
     return (
 			<div>
-				<div style={{
-					width: '100%', 
-					height: '20px', 
-					background: linearGradientProperty
-					}}>
+				<div
+					ref={this.divRef} 
+					onMouseDown={this.handleMouseClick}
+					style={{
+						width: '100%', 
+						height: '20px', 
+						background: linearGradientProperty
+					}}
+					>
 				</div>
 			</div>
 		);
@@ -101,7 +121,7 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 
 const mapStateToProps = (state: reducer.StateType) => {
   return {
-    selectedStrategy: state.selectedStrategy
+		selectedBacktestResult: state.selectedBacktestResult
   };
 };
 

@@ -20,7 +20,6 @@ export let getStock = (interval: string, symbol: string) : Promise<[]> => {
         console.log(colors.green(`Fetch ${URL_GET_STOCK} done.`))
         for(const o of jsonObj)
           o.date = new Date(o.date)
-        console.log(jsonObj[5])
         resolve(jsonObj)
       })
     })
