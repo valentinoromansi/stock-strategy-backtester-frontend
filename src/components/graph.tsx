@@ -113,9 +113,9 @@ class Graph extends Component<PropsType, StateType> {
 		} = discontinuousTimeScaleProvider.inputDateAccessor((d: VerticalSlice) => d.date)(dataForRender);
 		
 		// xExtents - slices between start and end will be rendered, xAccessor returns index of given verticalSlice
-		const sliceToFocusId: number = data.findIndex(slice => slice.date.getTime() === new Date(this.state.selectedTrade?.enterDate).getTime()) || 0
-		const start = xAccessor(data[Math.max(sliceToFocusId - 30, 0)]);
-		const end = xAccessor(data[Math.min(sliceToFocusId + 30, data.length - 1)]);
+		const sliceToFocusIndex: number = data.findIndex(slice => slice.date.getTime() === new Date(this.state.selectedTrade?.enterDate).getTime()) || 0
+		const start = xAccessor(data[Math.max(sliceToFocusIndex - 30, 0)]);
+		const end = xAccessor(data[Math.min(sliceToFocusIndex + 30, data.length - 1)]);
 		const xExtents = [start, end];
 
 		const yGrid = { innerTickSize: -1 * width, tickStrokeOpacity: 0.1 }
@@ -123,6 +123,8 @@ class Graph extends Component<PropsType, StateType> {
 
 		const profitEntryDates: Date[] = tradeDateAndValues?.filter(trade => trade.profitHitDate).map(trade => new Date(trade.enterDate))
 		const lossEntryDates: Date[] = tradeDateAndValues?.filter(trade => trade.stopLossHitDate).map(trade => new Date(trade.enterDate))
+		const indecisiveEntryDates: Date[] = tradeDateAndValues?.filter(trade => (!trade.profitHitDate && !trade.stopLossHitDate)).map(trade => new Date(trade.enterDate))
+		console.log(tradeDateAndValues)
 
 		// 0-200 trades will be scaled and displayed as 10%-100% width - Values over 200 are clamped at 100%
 		const [maxTradeNumBeforeClamp, minWidth, maxWidth] = [200, 10, 100]
@@ -205,6 +207,18 @@ class Graph extends Component<PropsType, StateType> {
 											opacity: 1,
 											text: "▲",
 											fill: this.lossColor,
+											y: ({ yScale }) => yScale.range()[0],
+										}}/>
+								}
+								{
+									indecisiveEntryDates &&
+									<Annotate with={LabelAnnotation} 
+										when={(d: VerticalSlice) => indecisiveEntryDates.some((date: Date) => date.getTime() === d.date.getTime())} 
+										usingProps={{
+											fontSize: 14,
+											opacity: 1,
+											text: "▲",
+											fill: this.indecisiveColor,
 											y: ({ yScale }) => yScale.range()[0],
 										}}/>
 								}

@@ -15,13 +15,18 @@ type PropsType = {
 
 
 type StateType = {
-	selectedBacktestResult: BacktestResult
+	selectedBacktestResult: BacktestResult,
+	linearGradientBase: string,
+	linearGradientHiglight: string
 }
 
 class StrategyTradesBars extends Component<PropsType, StateType> {
-	readonly profitColor: string = '#00ff00'
-	readonly lossColor: string = '#ff0000'
-	readonly indecisiveColor: string = '#3e3e3e'
+	readonly profitColor: string = '#02de02'
+	readonly lossColor: string = '#e60000'
+	readonly indecisiveColor: string = '#2e2e2e'
+	readonly profitHighlightColor: string = '#00ff00'
+	readonly lossHighlightColor: string = '#ff0000'
+	readonly indecisiveHighlightColor: string = '#3e3e3e'
 
 	divRef: any
 
@@ -29,12 +34,18 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
     super(props);
 		this.divRef = React.createRef()
 		this.handleMouseClick = this.handleMouseClick.bind(this)
-		this.state = { selectedBacktestResult: props.selectedBacktestResult }
+		this.handleMouseMove = this.handleMouseMove.bind(this)
+		this.state = { 
+			selectedBacktestResult: props.selectedBacktestResult,
+			linearGradientBase: '',
+			linearGradientHiglight: 'linear-gradient(90deg, transparent 0%, transparent 100%)'
+		}
   }
 
 	componentDidUpdate(prevProps: PropsType) {
 		if(prevProps.selectedBacktestResult !== this.props.selectedBacktestResult) {
 			this.setState({selectedBacktestResult: this.props.selectedBacktestResult});
+			this.setState({linearGradientBase: this.getLinearGradientBase(this.props.selectedBacktestResult.tradeDateAndValues)});
 		}
 	}
 
@@ -49,6 +60,36 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 		const selectedBarIndex = Math.floor((mouseXPercentFrac / barWidthPercentFrac))
 		actions.setSelectedTrade(this.state.selectedBacktestResult.tradeDateAndValues[selectedBarIndex])
 	}
+
+	// linear-gradient(90deg, transparent 93.9086%, blue 93.9086%, blue 94.4162%, transparent  94.4162%),
+	handleMouseMove(e: any) {
+		const localMouseX = e.clientX - e.target.offsetLeft 
+		const mouseXPercentFrac = localMouseX / this.divRef.current.offsetWidth
+		const barWidthPercentFrac = 1 / this.state.selectedBacktestResult.tradeDateAndValues?.length
+		const selectedBarIndex = Math.floor((mouseXPercentFrac / barWidthPercentFrac))
+
+		const startBarPosPercent = (barWidthPercentFrac * 100) * selectedBarIndex
+		const endBarPosPercent = (barWidthPercentFrac * 100) * (selectedBarIndex + 1) 
+		const highlightColor = this.getBarHighlightColor(this.state.selectedBacktestResult.tradeDateAndValues[selectedBarIndex])
+
+		const linearGradientHiglight = `linear-gradient(
+			90deg, 
+			transparent ${startBarPosPercent}%, 
+			${highlightColor} ${startBarPosPercent}%, 
+			${highlightColor} ${endBarPosPercent}%, 
+			transparent  ${endBarPosPercent}%
+		)`
+		this.setState({linearGradientHiglight: linearGradientHiglight})
+	}
+
+	getBarHighlightColor(trade: TradeDateAndValues) {
+		if(trade.tradeResult === TradeResult.PROFIT)
+			return this.profitHighlightColor
+		else if(trade.tradeResult === TradeResult.LOSS)
+			return this.lossHighlightColor
+		return this.indecisiveHighlightColor
+
+	}
 	
 	getBarChartFillColor(tradeDateAndValues: TradeDateAndValues): string {
 		if(tradeDateAndValues.tradeResult === TradeResult.PROFIT)
@@ -58,10 +99,11 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 		return this.indecisiveColor
 	}
 
+	// linear-gradient(90deg, transparent 93.9086%, blue 93.9086%, blue 94.4162%, transparent  94.4162%),
 	/**
 	 * return css property list of linear-gradient properties each consisting of 50 colors so blur can be avoided
 	 */
-	getLinearGradient(tradeDateAndValues: TradeDateAndValues[]) {
+	getLinearGradientBase(tradeDateAndValues: TradeDateAndValues[]) {
 		if(!tradeDateAndValues)
 			return ''
 		// Separate list into list of list with max 50 members
@@ -98,12 +140,14 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 
 
   render() {		
-		const linearGradientProperty = this.getLinearGradient(this.state.selectedBacktestResult?.tradeDateAndValues)
+		const linearGradientProperty = this.state.linearGradientHiglight + ', ' + this.state.linearGradientBase
+		console.log(linearGradientProperty)
 
     return (
 			<div>
 				<div
-					ref={this.divRef} 
+					ref={this.divRef}
+					onMouseMove={this.handleMouseMove}
 					onMouseDown={this.handleMouseClick}
 					style={{
 						width: '100%', 
