@@ -14,6 +14,7 @@ export type StateType = {
   selectedStrategy: Strategy | null,
   strategiesFecthing: boolean,
   selectedTrade: TradeDateAndValues | null,
+  strategyEditorActive: boolean,
 }
 
 // Initial (starting) state
@@ -26,7 +27,8 @@ export const initialState: StateType = {
   strategies: [],
   strategiesFecthing: true,
   selectedStrategy: null,
-  selectedTrade: null
+  selectedTrade: null,
+  strategyEditorActive: false
 };
 
 // Our root reducer starts with the initial state
@@ -51,6 +53,8 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
       return { ...state, selectedBacktestResult: action.payload };
     case types.SET_SELECTED_TRADE:
       return { ...state, selectedTrade: action.payload };
+    case types.SET_STRATEGY_EDITOR_ACTIVE:
+      return { ...state, strategyEditorActive: action.payload };
     default:
       return state;
   }

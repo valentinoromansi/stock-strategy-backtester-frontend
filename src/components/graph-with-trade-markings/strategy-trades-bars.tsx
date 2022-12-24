@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import * as reducer from '../state/reducers';
+import * as reducer from '../../state/reducers';
 import "apercu-font";
 import { Strategy } from "models/strategy";
 import { TradeResult } from "types/trade-result";
 import { BacktestResult, TradeDateAndValues } from "models/backtest-result";
-import * as actions from "../state/actions";
+import * as actions from "../../state/actions";
 
 
 
