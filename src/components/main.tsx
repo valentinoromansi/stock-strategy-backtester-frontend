@@ -8,6 +8,7 @@ import * as reducer from '../state/reducers';
 import { connect } from "react-redux";
 import GraphWithTradeMarkings from "./graph-with-trade-markings/graph-with-trade-markings";
 import styles from '../styles/global.module.sass'
+import StrategyDesigner from "./strategy-designer/strategy-designer";
 
 
 
@@ -65,10 +66,12 @@ class Main extends Component<PropsType, StateType> {
           <div className={styles.graphBacktestListWrapperStyle}>
             {/* Render strategy editor or graph with trade markings */}
             {this.props.strategyEditorActive ?
-              <p>Editor active</p> :
-              <GraphWithTradeMarkings width={graphWidth} height={graphHeight}/>
-            }          
-            <StrategyReportTable/>
+              <StrategyDesigner/> :
+              <div>
+                <GraphWithTradeMarkings width={graphWidth} height={graphHeight}/>
+                <StrategyReportTable/>
+              </div>
+            }
           </div>
         </div>
       </div>

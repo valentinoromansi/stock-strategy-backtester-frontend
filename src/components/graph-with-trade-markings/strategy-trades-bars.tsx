@@ -141,7 +141,6 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 
   render() {		
 		const linearGradientProperty = this.state.linearGradientHiglight + ', ' + this.state.linearGradientBase
-		console.log(linearGradientProperty)
 
     return (
 			<div>

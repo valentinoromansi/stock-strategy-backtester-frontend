@@ -25,13 +25,18 @@ type StateType = {
 class StrategyReportTable extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
-    this.setSelectedStrategyReport(props)
   }
 
   setSelectedStrategyReport(props: PropsType) {
     const selectedStrategyReport = props.strategyReports.find(item => item.strategyName === props.selectedStrategy?.name)
-    this.setState({ selectedStrategyReport: selectedStrategyReport })
+    this.setState({ selectedStrategyReport: selectedStrategyReport})
   }
+
+  
+  componentDidMount() {
+    this.setSelectedStrategyReport(this.props)
+  }
+  
 
   componentWillReceiveProps(nextProps: PropsType) {
     this.setSelectedStrategyReport(nextProps)
