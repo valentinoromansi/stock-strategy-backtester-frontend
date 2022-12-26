@@ -6,8 +6,8 @@ import "apercu-font";
 import { Strategy } from "../../models/strategy";
 import styles from '../../styles/global.module.sass'
 import { IconButton } from "@mui/material";
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 
 type PropsType = {
@@ -40,12 +40,13 @@ class StrategyDesigner extends Component<PropsType, StateType> {
   render() {
 		const sidebarClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarVisible : styles.strategyDesignerSidebarHidden
 		const sidebarToggleButtonClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarToogleButtonVisible : styles.strategyDesignerSidebarToogleButtonHidden
+		const toogleIcon = this.state.sidebarVisible ? <ArrowBackIosNewIcon/> : <ArrowForwardIosIcon/>
 
     return (
 			<div className={styles.strategyDesignerWrapper}>
 				<div className={sidebarClass}>
-					<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}} color="primary" aria-label="add to shopping cart">
-        		<AddShoppingCartIcon />
+					<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}}>
+        		{ toogleIcon }
       		</IconButton>
 				</div>
 			</div>
