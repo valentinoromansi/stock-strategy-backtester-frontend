@@ -216,6 +216,7 @@ $graph_line_opacity: 0.3
 /*************************/
 /* strategy designer */
 /*************************/
+
 .strategyDesignerWrapper
   width: 100%
   height: 0 //hack for child percent height when parent has min-height
@@ -225,7 +226,7 @@ $graph_line_opacity: 0.3
   box-shadow: $backgroundBlueDark 0px 0px 0.25em, $backgroundBlueDark 0px 0.25em 1em
 
 .strategyDesignerSidebar
-  width: 10%
+  width: 30%
   height: 100%
   background: $backgroundBlueDark
   transition: all 0.5s ease-in-out
@@ -234,11 +235,10 @@ $graph_line_opacity: 0.3
     margin-left: 0
   &Hidden
     @extend .strategyDesignerSidebar
-    margin-left: -10%
+    margin-left: -30%
   &topButtons
     width: 100%
     display: flex
-    flex-direction: row
     justify-content: space-between
     box-shadow: -1px 0px 8px 0px rgba(0,0,0,0.5)
   &jsonButton
@@ -259,3 +259,48 @@ $graph_line_opacity: 0.3
   &Hidden
     @extend .strategyDesignerSidebarToogleButton
     transform: translateX(100%) !important
+
+$strategyDesignerSidebarListItemHorPadding: 4px
+
+.strategyDesignerSidebarListItem
+  display: flex
+  color: $textColorDark
+  overflow: hidden
+  border-bottom: 1px solid $dividerColor
+  font-size: 1vw
+  justify-content: space-between
+  padding: 4px
+  &RuleValue
+    display: flex
+    flex-direction: column
+    align-self: center
+    padding-inline: $strategyDesignerSidebarListItemHorPadding
+    width: 100%
+    margin: 0 auto
+    justify-content: center
+    gap: 4px
+    &Wrapper
+      width: 40%
+      display: flex
+      justify-content: space-between
+    &Divider
+      height: 80%
+      align-self: center
+      border-right: 1px solid $dividerColor
+    &Percent
+      align-self: center
+      padding-inline: $strategyDesignerSidebarListItemHorPadding
+
+.strategyDesignerSidebarSelect
+  background: $backgroundBlueLight !important
+  border: solid 1px $dividerColor !important
+  color: white !important
+  height: 50% !important
+  &Attribute
+    @extend .strategyDesignerSidebarSelect
+  &Position
+    @extend .strategyDesignerSidebarSelect
+    display: flex !important
+    align-self: center !important
+    padding-inline: $strategyDesignerSidebarListItemHorPadding !important
+    justify-content: center !important
