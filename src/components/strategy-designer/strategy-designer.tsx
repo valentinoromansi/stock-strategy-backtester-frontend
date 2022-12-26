@@ -8,6 +8,10 @@ import styles from '../../styles/global.module.sass'
 import { IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import Button from '@mui/material/Button';
+
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';						
 
 
 type PropsType = {
@@ -36,18 +40,28 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 		this.setState({sidebarVisible: !this.state.sidebarVisible})
 	}
 
-
+ 
   render() {
 		const sidebarClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarVisible : styles.strategyDesignerSidebarHidden
 		const sidebarToggleButtonClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarToogleButtonVisible : styles.strategyDesignerSidebarToogleButtonHidden
 		const toogleIcon = this.state.sidebarVisible ? <ArrowBackIosNewIcon/> : <ArrowForwardIosIcon/>
+		const jsonButton = <Button className={styles.strategyDesignerSidebarjsonButton} variant="text"> <b>JSON</b> </Button>
 
     return (
 			<div className={styles.strategyDesignerWrapper}>
 				<div className={sidebarClass}>
-					<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}}>
-        		{ toogleIcon }
-      		</IconButton>
+					<div className={styles.strategyDesignerSidebartopButtons}>
+						<Popup trigger={jsonButton} position="right center" modal>
+    					<pre style={{maxHeight: "95vh"}}>
+								{
+									JSON.stringify(this.props.selectedStrategy, null, "\t")
+								}
+							</pre>
+  					</Popup>
+						<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}} color="primary">
+        			{ toogleIcon }
+      			</IconButton>
+					</div>
 				</div>
 			</div>
 		);

@@ -235,15 +235,27 @@ $graph_line_opacity: 0.3
   &Hidden
     @extend .strategyDesignerSidebar
     margin-left: -10%
+  &topButtons
+    width: 100%
+    display: flex
+    flex-direction: row
+    justify-content: space-between
+    box-shadow: -1px 0px 8px 0px rgba(0,0,0,0.5)
+  &jsonButton
+    color: $textColorDark !important
+    border-right: 1px solid $backgroundBlueLight !important
+    border-radius: 0px !important
 
 .strategyDesignerSidebarToogleButton
-  margin-left: 100% !important
+  //margin-left: 100% !important
+  color: $textColorDark !important
   background: $backgroundBlueDark !important
   border-radius: 0 !important
   transition: all 0.5s ease-in-out !important
+  align-self: flex-end !important
+  color: $textColorDark !important
   &Visible
     @extend .strategyDesignerSidebarToogleButton
-    transform: translateX(-100%) !important
   &Hidden
     @extend .strategyDesignerSidebarToogleButton
-    transform: translateX(0%) !important
+    transform: translateX(100%) !important

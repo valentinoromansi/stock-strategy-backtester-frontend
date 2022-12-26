@@ -35,6 +35,7 @@
     "react-scripts": "4.0.3",
     "react-spinners": "^0.13.4",
     "react-stockcharts": "^0.7.8",
+    "reactjs-popup": "^2.0.5",
     "redux": "^4.2.0",
     "sass": "^1.55.0",
     "shortid": "^2.2.8",
