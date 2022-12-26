@@ -4,6 +4,10 @@ import * as reducer from '../../state/reducers';
 import "apercu-font";
 
 import { Strategy } from "../../models/strategy";
+import styles from '../../styles/global.module.sass'
+import { IconButton } from "@mui/material";
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+
 
 
 type PropsType = {
@@ -11,6 +15,7 @@ type PropsType = {
 }
 
 type StateType = {
+	sidebarVisible: boolean
 }
 
 class StrategyDesigner extends Component<PropsType, StateType> {
@@ -21,15 +26,28 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
   constructor(props: PropsType) {
     super(props);
+		this.state = {
+			sidebarVisible: true
+		}
   }
 
 
+	toogleSidebar() {
+		this.setState({sidebarVisible: !this.state.sidebarVisible})
+	}
+
+
   render() {
+		const sidebarClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarVisible : styles.strategyDesignerSidebarHidden
+		const sidebarToggleButtonClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarToogleButtonVisible : styles.strategyDesignerSidebarToogleButtonHidden
+
     return (
-			<div> {this.props.selectedStrategy?.name} 
-			{
-			//<SpinnerComponent loading={this.props.stockVerticalSlicesFecthing} position="centered" />
-			}				
+			<div className={styles.strategyDesignerWrapper}>
+				<div className={sidebarClass}>
+					<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}} color="primary" aria-label="add to shopping cart">
+        		<AddShoppingCartIcon />
+      		</IconButton>
+				</div>
 			</div>
 		);
   }

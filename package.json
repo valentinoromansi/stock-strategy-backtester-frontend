@@ -17,6 +17,7 @@
     "antd": "^4.6.2",
     "apercu-font": "^1.0.0",
     "apexcharts": "^3.36.0",
+    "classnames": "^2.3.2",
     "colors": "^1.4.0",
     "d3-dsv": "^1.0.8",
     "d3-format": "^1.2.1",

@@ -212,3 +212,38 @@ $graph_line_opacity: 0.3
 :global td.ant-table-column-sort,
 :global .ant-spin-nested-loading .ant-spin-container .ant-pagination
   background: $backgroundBlueLight
+
+/*************************/
+/* strategy designer */
+/*************************/
+.strategyDesignerWrapper
+  width: 100%
+  height: 0 //hack for child percent height when parent has min-height
+  min-height: 70vh
+  background: $backgroundBlueLight
+  overflow: hidden
+  box-shadow: $backgroundBlueDark 0px 0px 0.25em, $backgroundBlueDark 0px 0.25em 1em
+
+.strategyDesignerSidebar
+  width: 10%
+  height: 100%
+  background: $backgroundBlueDark
+  transition: all 0.5s ease-in-out
+  &Visible
+    @extend .strategyDesignerSidebar
+    margin-left: 0
+  &Hidden
+    @extend .strategyDesignerSidebar
+    margin-left: -10%
+
+.strategyDesignerSidebarToogleButton
+  margin-left: 100% !important
+  background: $backgroundBlueDark !important
+  border-radius: 0 !important
+  transition: all 0.5s ease-in-out !important
+  &Visible
+    @extend .strategyDesignerSidebarToogleButton
+    transform: translateX(-100%) !important
+  &Hidden
+    @extend .strategyDesignerSidebarToogleButton
+    transform: translateX(0%) !important
