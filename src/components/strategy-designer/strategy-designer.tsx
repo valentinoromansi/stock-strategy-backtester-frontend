@@ -9,6 +9,9 @@ import { IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Button from '@mui/material/Button';
+import { AttributeType } from "types/attribute-type";
+import { Position } from "types/position";
+import { setSelectedStrategy } from "state/actions";
 
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';						
@@ -17,9 +20,8 @@ import { ValueExtractionRule } from "models/value-extraction-rule";
 
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { AttributeType } from "types/attribute-type";
-import { Position } from "types/position";
-import { setSelectedStrategy } from "state/actions";
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
 
 
 type PropsType = {
@@ -122,9 +124,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 				{
 					isRelative &&					
 					<div className={styles.strategyDesignerSidebarListItemRuleValuePercent}>
-						{ percent }
+						<OutlinedInput
+						  id="sandbox"
+							value={percent}
+							endAdornment={<InputAdornment position="end">kg</InputAdornment>}/>
 					</div>
-				}			
+				}
 			</div>
 		)
 	}
@@ -170,7 +175,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 								}
 							</div>
         	    ))
-        	}
+        	}				
 				</div>
 			</div>
 		);
