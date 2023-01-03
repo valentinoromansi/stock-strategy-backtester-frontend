@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { ChangeEvent, Component } from "react";
 import { connect } from "react-redux";
 import * as reducer from '../../state/reducers';
 import "apercu-font";
@@ -22,6 +22,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
+import { isEnumMember } from "typescript";
 
 
 type PropsType = {
@@ -102,8 +103,20 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	}
 
 	ruleValueElement(rule: ValueExtractionRule, ruleIndex: number, topLvlAttributeNum: 1 | 2): any {
-		const isRelative: boolean = rule?.percent > 0
-		const percent = (rule?.percent) ? rule?.percent * 100 + '%': ''
+		const isRelative: boolean = rule?.percent != null
+		const percent = rule?.percent //(rule?.percent) ? rule?.percent * 100 /*+ '%'*/: ''
+		const onChangeHandler = (valueStr: string) => {
+			const isWholeANum = !isNaN(Number(valueStr))
+			const isLastANum = (valueStr.length > 0 && !isNaN(Number(valueStr.charAt(valueStr.length - 1))))
+			if(valueStr.length > 0 && (!isWholeANum || !isLastANum))
+				return
+			const value = Number(valueStr)					
+			console.log(value)
+			let newSelectedStrategy = this.state.selectedStrategy
+			const topLvlAttribute = (topLvlAttributeNum == 1) ? "valueExtractionRule1" : "valueExtractionRule2"
+			newSelectedStrategy.strategyConRules[ruleIndex][topLvlAttribute].percent = value
+			this.setState({selectedStrategy: newSelectedStrategy})
+		}
 		return ( 
 			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>
 				{/* value */}
@@ -123,11 +136,16 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 				{/* percentage */}
 				{
 					isRelative &&					
-					<div className={styles.strategyDesignerSidebarListItemRuleValuePercent}>
-						<OutlinedInput
-						  id="sandbox"
-							value={percent}
-							endAdornment={<InputAdornment position="end">kg</InputAdornment>}/>
+					<div className={styles.strategyDesignerSidebarListItemRuleValuePercentWrapper}>
+						<OutlinedInput className={styles.strategyDesignerSidebarListItemRuleValuePercent}
+							onChange={(e) => { onChangeHandler(e.target.value) }}
+							value={percent == 0 ? '' : percent}
+							endAdornment={
+								<InputAdornment 
+									className={styles.strategyDesignerSidebarListItemRuleValuePercentSymbol} 
+									position="end">
+										%
+								</InputAdornment>}/>
 					</div>
 				}
 			</div>
