@@ -261,13 +261,13 @@ $graph_line_opacity: 0.3
     transform: translateX(100%) !important
 
 $strategyDesignerSidebarListItemHorPadding: 4px
+$strategyDesignerSidebarFontSize: 0.7vw
 
 .strategyDesignerSidebarListItem
   display: flex
   color: $textColorDark
   overflow: hidden
   border-bottom: 1px solid $dividerColor
-  font-size: 1vw
   justify-content: space-between
   padding: 6px
   > div > svg
@@ -305,14 +305,16 @@ $strategyDesignerSidebarListItemHorPadding: 4px
       background: $backgroundBlueLight !important
       overflow: hidden
       padding-right: 4px !important
+      font-size: $strategyDesignerSidebarFontSize !important
       &Wrapper
         align-self: center
         padding-inline: $strategyDesignerSidebarListItemHorPadding
-        font-size: 150%
       &Symbol > p
         color: white !important
+        font-size: $strategyDesignerSidebarFontSize !important
 
 .strategyDesignerSidebarSelect
+  font-size: $strategyDesignerSidebarFontSize !important
   background: $backgroundBlueLight !important
   border: solid 1px $dividerColor !important
   color: white !important
@@ -329,3 +331,5 @@ $strategyDesignerSidebarListItemHorPadding: 4px
     align-self: center !important
     padding-inline: $strategyDesignerSidebarListItemHorPadding !important
     justify-content: center !important
+    > div
+      text-overflow: clip !important
