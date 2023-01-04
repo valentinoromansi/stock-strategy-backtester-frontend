@@ -269,7 +269,7 @@ $strategyDesignerSidebarListItemHorPadding: 4px
   border-bottom: 1px solid $dividerColor
   font-size: 1vw
   justify-content: space-between
-  padding: 4px
+  padding: 6px
   > div > svg
     color: white
   &RuleValue
@@ -283,8 +283,13 @@ $strategyDesignerSidebarListItemHorPadding: 4px
     gap: 4px
     > div > svg
       color: white
+    &Relative
+      @extend .strategyDesignerSidebarListItemRuleValue
+      width: 50%
+      > div > svg
+        color: white
     &Wrapper
-      width: 40%
+      width: 33.33% !important
       display: flex
       justify-content: space-between
     &Divider
@@ -292,11 +297,14 @@ $strategyDesignerSidebarListItemHorPadding: 4px
       align-self: center
       border-right: 1px solid $dividerColor
     &Percent
-      align-self: center
+      width: -webkit-fill-available !important
+      align-self: center !important
       padding-inline: $strategyDesignerSidebarListItemHorPadding
       border: solid 1px $dividerColor !important
       color: white !important
       background: $backgroundBlueLight !important
+      overflow: hidden
+      padding-right: 4px !important
       &Wrapper
         align-self: center
         padding-inline: $strategyDesignerSidebarListItemHorPadding
@@ -309,10 +317,14 @@ $strategyDesignerSidebarListItemHorPadding: 4px
   border: solid 1px $dividerColor !important
   color: white !important
   height: 50% !important
+  overflow: hidden !important
   &Attribute
     @extend .strategyDesignerSidebarSelect
+    > div
+      text-overflow: clip !important
   &Position
     @extend .strategyDesignerSidebarSelect
+    width: 33.33%
     display: flex !important
     align-self: center !important
     padding-inline: $strategyDesignerSidebarListItemHorPadding !important

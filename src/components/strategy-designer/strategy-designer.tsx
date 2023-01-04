@@ -103,12 +103,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	}
 
 	ruleValueElement(rule: ValueExtractionRule, ruleIndex: number, topLvlAttributeNum: 1 | 2): any {
-		const isRelative: boolean = rule?.percent != null
-		const percent = rule?.percent //(rule?.percent) ? rule?.percent * 100 /*+ '%'*/: ''
+		const isRelative: boolean = rule?.attribute1 != null && rule?.attribute2 != null
+		const percent = rule?.percent
 		const onChangeHandler = (valueStr: string) => {
 			const isWholeANum = !isNaN(Number(valueStr))
 			const isLastANum = (valueStr.length > 0 && !isNaN(Number(valueStr.charAt(valueStr.length - 1))))
-			if(valueStr.length > 0 && (!isWholeANum || !isLastANum))
+			if(valueStr.length > 2 || valueStr.length > 0 && (!isWholeANum || !isLastANum))
 				return
 			const value = Number(valueStr)					
 			console.log(value)
@@ -120,7 +120,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 		return ( 
 			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>
 				{/* value */}
-				<div className={styles.strategyDesignerSidebarListItemRuleValue}>
+				<div className={isRelative ? styles.strategyDesignerSidebarListItemRuleValueRelative : styles.strategyDesignerSidebarListItemRuleValue}>
 					{
 						(rule?.attribute1) && this.attributeSelectElement(rule?.attribute1, ruleIndex, topLvlAttributeNum, 1)
 					}
