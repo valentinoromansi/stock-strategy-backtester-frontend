@@ -24,6 +24,9 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { isEnumMember } from "typescript";
 
+import SaveIcon from '@mui/icons-material/Save';
+import RestorePageIcon from '@mui/icons-material/RestorePage';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 type PropsType = {
   selectedStrategy: Strategy
@@ -161,6 +164,17 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
     return (
 			<div className={styles.strategyDesignerWrapper}>
+				<div className={styles.strategyDesignerActionButtonsWrapper}>
+					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { alert("save strategy")}} color="primary">
+						<SaveIcon/>
+      		</IconButton>
+					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { alert("refresh strategy")}} color="primary">
+						<RestorePageIcon/>
+      		</IconButton>
+					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { alert("delete strategy")}} color="primary">
+						<DeleteForeverIcon/>
+      		</IconButton>
+				</div>
 				<div className={sidebarClass}>
 					{/* top buttons */}
 					<div className={styles.strategyDesignerSidebartopButtons}>
@@ -193,7 +207,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 								}
 							</div>
         	    ))
-        	}				
+        	}
 				</div>
 			</div>
 		);
