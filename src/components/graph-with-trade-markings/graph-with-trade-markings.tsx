@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { connect } from "react-redux";
-import * as reducer from '../state/reducers';
+import * as reducer from '../../state/reducers';
 import "apercu-font";
 
 import { format } from "d3-format";
@@ -11,12 +11,12 @@ import { CrossHairCursor} from "react-stockcharts/lib/coordinates";
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
 import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
 import { Annotate, LabelAnnotation } from "react-stockcharts/lib/annotation";
-import { VerticalSlice } from "../models/vertical-slice";
-import { Strategy } from "../models/strategy";
-import { BacktestResult, TradeDateAndValues } from "../models/backtest-result";
-import { LineType } from "../types/line-type";
+import { VerticalSlice } from "../../models/vertical-slice";
+import { Strategy } from "../../models/strategy";
+import { BacktestResult, TradeDateAndValues } from "../../models/backtest-result";
+import { LineType } from "../../types/line-type";
 
-import styles from '../styles/global.module.sass'
+import styles from '../../styles/global.module.sass'
 import { SpinnerComponent } from "react-element-spinner";
 import StrategyTradesBars from "./strategy-trades-bars";
 
@@ -42,7 +42,7 @@ type StateType = {
 	selectedTrade: TradeDateAndValues
 }
 
-class Graph extends Component<PropsType, StateType> {
+class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 	readonly enterTradeColor: string  = 'white'
 	readonly profitColor: string = '#00ff00'
 	readonly lossColor: string = '#ff0000'
@@ -288,4 +288,4 @@ const mapStateToProps = (state: reducer.StateType) => {
   };
 };
 
-export default connect(mapStateToProps)(Graph);
+export default connect(mapStateToProps)(GraphWithTradeMarkings);

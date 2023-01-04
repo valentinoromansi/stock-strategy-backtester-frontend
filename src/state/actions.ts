@@ -52,3 +52,7 @@ export function setSelectedStrategy(strategy: Strategy) {
 export function setSelectedTrade(trade: TradeDateAndValues) {
   store.dispatch({type: types.SET_SELECTED_TRADE, payload: trade})
 }
+
+export function setStrategyEditorActive(state: boolean) {
+  store.dispatch({type: types.SET_STRATEGY_EDITOR_ACTIVE, payload: state})
+}

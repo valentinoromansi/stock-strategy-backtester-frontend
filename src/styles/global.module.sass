@@ -212,3 +212,139 @@ $graph_line_opacity: 0.3
 :global td.ant-table-column-sort,
 :global .ant-spin-nested-loading .ant-spin-container .ant-pagination
   background: $backgroundBlueLight
+
+/*************************/
+/* strategy designer */
+/*************************/
+
+.strategyDesignerWrapper
+  width: 100%
+  height: 0 //hack for child percent height when parent has min-height
+  min-height: 70vh
+  background: $backgroundBlueLight
+  overflow: hidden
+  box-shadow: $backgroundBlueDark 0px 0px 0.25em, $backgroundBlueDark 0px 0.25em 1em
+
+.strategyDesignerSidebar
+  width: 30%
+  height: 100%
+  background: $backgroundBlueDark
+  transition: all 0.5s ease-in-out
+  &Visible
+    @extend .strategyDesignerSidebar
+    margin-left: 0
+  &Hidden
+    @extend .strategyDesignerSidebar
+    margin-left: -30%
+  &topButtons
+    width: 100%
+    display: flex
+    justify-content: space-between
+    box-shadow: -1px 0px 8px 0px rgba(0,0,0,0.5)
+  &jsonButton
+    color: $textColorDark !important
+    border-right: 1px solid $backgroundBlueLight !important
+    border-radius: 0px !important
+
+.strategyDesignerSidebarToogleButton
+  //margin-left: 100% !important
+  color: $textColorDark !important
+  background: $backgroundBlueDark !important
+  border-radius: 0 !important
+  transition: all 0.5s ease-in-out !important
+  align-self: flex-end !important
+  color: $textColorDark !important
+  &Visible
+    @extend .strategyDesignerSidebarToogleButton
+  &Hidden
+    @extend .strategyDesignerSidebarToogleButton
+    transform: translateX(100%) !important
+
+$strategyDesignerSidebarListItemHorPadding: 4px
+$strategyDesignerSidebarFontSize: 0.7vw
+
+.strategyDesignerSidebarListItem
+  display: flex
+  color: $textColorDark
+  overflow: hidden
+  border-bottom: 1px solid $dividerColor
+  justify-content: space-between
+  padding: 6px
+  > div > svg
+    color: white
+  &RuleValue
+    display: flex
+    flex-direction: column
+    align-self: center
+    padding-inline: $strategyDesignerSidebarListItemHorPadding
+    width: 100%
+    margin: 0 auto
+    justify-content: center
+    gap: 4px
+    > div > svg
+      color: white
+    &Relative
+      @extend .strategyDesignerSidebarListItemRuleValue
+      width: 50%
+      > div > svg
+        color: white
+    &Wrapper
+      width: 33.33% !important
+      display: flex
+      justify-content: space-between
+    &Divider
+      height: 80%
+      align-self: center
+      border-right: 1px solid $dividerColor
+    &Percent
+      width: -webkit-fill-available !important
+      align-self: center !important
+      padding-inline: $strategyDesignerSidebarListItemHorPadding
+      border: solid 1px $dividerColor !important
+      color: white !important
+      background: $backgroundBlueLight !important
+      overflow: hidden
+      padding-right: 4px !important
+      font-size: $strategyDesignerSidebarFontSize !important
+      &Wrapper
+        align-self: center
+        padding-inline: $strategyDesignerSidebarListItemHorPadding
+      &Symbol > p
+        color: white !important
+        font-size: $strategyDesignerSidebarFontSize !important
+
+.strategyDesignerSidebarSelect
+  font-size: $strategyDesignerSidebarFontSize !important
+  background: $backgroundBlueLight !important
+  border: solid 1px $dividerColor !important
+  color: white !important
+  height: 50% !important
+  overflow: hidden !important
+  &Attribute
+    @extend .strategyDesignerSidebarSelect
+    > div
+      text-overflow: clip !important
+  &Position
+    @extend .strategyDesignerSidebarSelect
+    width: 33.33%
+    display: flex !important
+    align-self: center !important
+    padding-inline: $strategyDesignerSidebarListItemHorPadding !important
+    justify-content: center !important
+    > div
+      text-overflow: clip !important
+
+.strategyDesignerActionButtonsWrapper
+  float: right
+  display: flex
+  gap: 1px
+
+.strategyDesignerActionButton
+  box-shadow: -1px 1px 4px rgba(0,0,0,0.7)
+  color: $textColorDark !important
+  background: $backgroundBlueDark !important
+  border-radius: 0 !important
+  align-self: flex-end !important
+  color: $textColorDark !important
+  > svg
+    font-size: 2rem !important

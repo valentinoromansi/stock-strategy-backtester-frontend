@@ -6,12 +6,14 @@ import StrategyList from './strategy-list'
 import * as actions from "../state/actions";
 import * as reducer from '../state/reducers';
 import { connect } from "react-redux";
-import Graph from "./graph";
-import styles from 'styles/global.module.sass'
+import GraphWithTradeMarkings from "./graph-with-trade-markings/graph-with-trade-markings";
+import styles from '../styles/global.module.sass'
+import StrategyDesigner from "./strategy-designer/strategy-designer";
 
 
 
 type PropsType = {
+  strategyEditorActive: boolean
 }
 type StateType = {
   strategyBacktestResults?: StrategyReport,
@@ -62,8 +64,14 @@ class Main extends Component<PropsType, StateType> {
         <div className={styles.underNavStyle}>
           <StrategyList/>
           <div className={styles.graphBacktestListWrapperStyle}>
-            <Graph width={graphWidth} height={graphHeight}/>
-            <StrategyReportTable/>
+            {/* Render strategy editor or graph with trade markings */}
+            {this.props.strategyEditorActive ?
+              <StrategyDesigner/> :
+              <div>
+                <GraphWithTradeMarkings width={graphWidth} height={graphHeight}/>
+                <StrategyReportTable/>
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -72,4 +80,12 @@ class Main extends Component<PropsType, StateType> {
 
 }
 
-export default Main;
+
+
+const mapStateToProps = (state: reducer.StateType) => {
+  return {
+		strategyEditorActive: state.strategyEditorActive
+  };
+};
+
+export default connect(mapStateToProps)(Main);

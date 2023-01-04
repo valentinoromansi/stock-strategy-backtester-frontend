@@ -29,21 +29,23 @@ class StrategyList extends Component<PropsType, StateType> {
     super(props);
   }
 
-  setSelectedStrategy(
-    strategyName: string
-  ) {
+  selectStrategy(strategyName: string) {
+    actions.setStrategyEditorActive(false)
     const strategy: Strategy = this.props.strategies.find((e) => e.name === strategyName)
     actions.setSelectedStrategy(strategy)
   }
 
-  addNewStrategy() {
-    alert('add new')
+  editStrategy(strategyName: string) {
+    actions.setStrategyEditorActive(true)
+    const strategy: Strategy = this.props.strategies.find((e) => e.name === strategyName)
+    actions.setSelectedStrategy(strategy)
   }
   
-  editStrategy(strategyName: string) {
-    this.setSelectedStrategy(strategyName)
-    alert(strategyName)
+  addNewStrategy() {
+    actions.setStrategyEditorActive(true)
+    actions.setSelectedStrategy(null)
   }
+  
 
  
   getItemTextClass(strategyKey: string): any {
@@ -118,7 +120,7 @@ class StrategyList extends Component<PropsType, StateType> {
             this.props.strategies.map((strategy) => (
             <div className={styles.strategyItemWrapper}>
               {/* Select strategy */}
-              <ListItemButton key={strategy.name} sx={this.getItemButtonStyle(strategy.name)} onClick={() => this.setSelectedStrategy(strategy.name)}>
+              <ListItemButton key={strategy.name} sx={this.getItemButtonStyle(strategy.name)} onClick={() => this.selectStrategy(strategy.name)}>
                 <ListItemText disableTypography primary={strategy.name.toUpperCase()} className={this.getItemTextClass(strategy.name)}/>
               </ListItemButton>
               {/* Edit strategy */}
