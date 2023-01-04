@@ -46,9 +46,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
 		this.state = {
-			selectedStrategy: props.selectedStrategy,
+			selectedStrategy: props.selectedStrategy, // copy this by value so props.selectedStrategy stays unchanged
 			sidebarVisible: true
 		}
+		this.onRefreshStrategy = this.onRefreshStrategy.bind(this)
+		this.onSaveStrategy = this.onSaveStrategy.bind(this)
+		this.onDeleteStrategy = this.onDeleteStrategy.bind(this)
   }
 
 	componentDidMount() {
@@ -61,6 +64,19 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
 	toogleSidebar() {
 		this.setState({sidebarVisible: !this.state.sidebarVisible})
+	}
+
+	onRefreshStrategy() {
+		console.log(this.props.selectedStrategy)
+		this.setState({selectedStrategy: this.props.selectedStrategy})
+	}
+
+	onSaveStrategy() {
+		alert("save")
+	}
+
+	onDeleteStrategy() {
+		alert("delete")
 	}
 
 	attributeSelectElement(currentVal: AttributeType, ruleIndex: number, topLvlAttributeNum: 1 | 2, lowLvlAttributeNum: 1 | 2): any {
@@ -165,13 +181,13 @@ class StrategyDesigner extends Component<PropsType, StateType> {
     return (
 			<div className={styles.strategyDesignerWrapper}>
 				<div className={styles.strategyDesignerActionButtonsWrapper}>
-					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { alert("save strategy")}} color="primary">
+					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { this.onSaveStrategy()}} color="primary">
 						<SaveIcon/>
       		</IconButton>
-					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { alert("refresh strategy")}} color="primary">
+					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { this.onRefreshStrategy()}} color="primary">
 						<RestorePageIcon/>
       		</IconButton>
-					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { alert("delete strategy")}} color="primary">
+					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { this.onDeleteStrategy()}} color="primary">
 						<DeleteForeverIcon/>
       		</IconButton>
 				</div>
