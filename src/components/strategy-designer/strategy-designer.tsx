@@ -1,4 +1,4 @@
-import { ChangeEvent, Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 import { connect } from "react-redux";
 import * as reducer from '../../state/reducers';
 import "apercu-font";
@@ -27,6 +27,7 @@ import { isEnumMember } from "typescript";
 import SaveIcon from '@mui/icons-material/Save';
 import RestorePageIcon from '@mui/icons-material/RestorePage';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { relative } from "path";
 
 type PropsType = {
   selectedStrategy: Strategy
@@ -37,14 +38,19 @@ type StateType = {
 	sidebarVisible: boolean
 }
 
+enum AttributeId {
+	ATTRIBUTE1 = 1,
+	ATTRIBUTE2 = 2
+}
+
 class StrategyDesigner extends Component<PropsType, StateType> {
 	readonly enterTradeColor: string  = 'white'
 	readonly profitColor: string = '#00ff00'
 	readonly lossColor: string = '#ff0000'
 	readonly indecisiveColor: string = '#3e3e3e'
 
-  constructor(props: PropsType) {
-    super(props);
+  	constructor(props: PropsType) {
+    	super(props);
 		this.state = {
 			selectedStrategy: props.selectedStrategy, // copy this by value so props.selectedStrategy stays unchanged
 			sidebarVisible: true
@@ -52,25 +58,23 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 		this.onRefreshStrategy = this.onRefreshStrategy.bind(this)
 		this.onSaveStrategy = this.onSaveStrategy.bind(this)
 		this.onDeleteStrategy = this.onDeleteStrategy.bind(this)
-  }
+	}
 
 	componentDidMount() {
-    this.setState({selectedStrategy: this.props.selectedStrategy})
-  }  
+    	this.setState({selectedStrategy: this.props.selectedStrategy})
+  	}  
 
-  componentWillReceiveProps(nextProps: PropsType) {
-    this.setState({selectedStrategy: nextProps.selectedStrategy})
-  }
+	componentWillReceiveProps(nextProps: PropsType) {
+    	this.setState({selectedStrategy: nextProps.selectedStrategy})
+  	}
 
-	toogleSidebar() {
-		this.setState({sidebarVisible: !this.state.sidebarVisible})
-	}
 
+	  
 	onRefreshStrategy() {
-		console.log(this.props.selectedStrategy)
-		this.setState({selectedStrategy: this.props.selectedStrategy})
+	  console.log(this.props.selectedStrategy)
+	  this.setState({selectedStrategy: this.props.selectedStrategy})
 	}
-
+	
 	onSaveStrategy() {
 		alert("save")
 	}
@@ -80,7 +84,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	}
 
 
-	getSelectElement(currentValue: AttributeType | Position, enumType: typeof AttributeType | typeof Position, onChange: (value: string) => void) {
+	toogleSidebar() {
+		this.setState({sidebarVisible: !this.state.sidebarVisible})
+	}
+	
+
+	selectElement(currentValue: AttributeType | Position, enumType: typeof AttributeType | typeof Position, onChange: (value: string) => void) {
 		let selectClass = '' 
 		switch(enumType) {
 			case AttributeType: selectClass = styles.strategyDesignerSidebarSelectAttribute; break
@@ -96,23 +105,23 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 						<MenuItem value={value}>{value}</MenuItem>
 					))
 				}
-  			</Select>
+			</Select>
 		)
 	}
 
-	attributeSelectElement(currentValue: AttributeType, ruleIndex: number, topLvlAttributeNum: 1 | 2, lowLvlAttributeNum: 1 | 2): any {
+	attributeSelectElement(currentValue: AttributeType, ruleIndex: number, mainAttributeIndex: AttributeId, subAttributeIndex: AttributeId): any {
 		const onChange = (value) => {
 			let newSelectedStrategy = this.state.selectedStrategy
-			const topLvlAttribute = (topLvlAttributeNum == 1) ? "valueExtractionRule1" : "valueExtractionRule2"
-			const lowLvlAttribute = (lowLvlAttributeNum == 1) ? "attribute1" : "attribute2"
+			const topLvlAttribute = (mainAttributeIndex == AttributeId.ATTRIBUTE1) ? "valueExtractionRule1" : "valueExtractionRule2"
+			const lowLvlAttribute = (subAttributeIndex == AttributeId.ATTRIBUTE1) ? "attribute1" : "attribute2"
 			newSelectedStrategy.strategyConRules[ruleIndex][topLvlAttribute][lowLvlAttribute] = value
 			this.setState({selectedStrategy: newSelectedStrategy})
 		}
 		return (
-			this.getSelectElement(currentValue, AttributeType, onChange)
+			this.selectElement(currentValue, AttributeType, onChange)
 		)
 	}
-
+	
 	positionSelectElement(currentValue: Position, ruleIndex: number): any {
 		const onChange = (value) => {
 			let newSelectedStrategy = this.state.selectedStrategy
@@ -120,14 +129,13 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 			this.setState({selectedStrategy: newSelectedStrategy})
 		}
 		return (
-			this.getSelectElement(currentValue, Position, onChange)
+			this.selectElement(currentValue, Position, onChange)
 		)
 	}
 
-	attributeElement(rule: ValueExtractionRule, ruleIndex: number, topLvlAttributeNum: 1 | 2): any {
-		const isRelative: boolean = rule?.attribute1 != null && rule?.attribute2 != null
-		const percent = rule?.percent
-		const onChangeHandler = (valueStr: string) => {
+
+	percentageElement(percent: number, ruleIndex: number, mainAttributeIndex: AttributeId) {
+		const onChange = (valueStr: string) => {
 			const isWholeANum = !isNaN(Number(valueStr))
 			const isLastANum = (valueStr.length > 0 && !isNaN(Number(valueStr.charAt(valueStr.length - 1))))
 			if(valueStr.length > 2 || valueStr.length > 0 && (!isWholeANum || !isLastANum))
@@ -135,44 +143,54 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 			const value = Number(valueStr)					
 			console.log(value)
 			let newSelectedStrategy = this.state.selectedStrategy
-			const topLvlAttribute = (topLvlAttributeNum == 1) ? "valueExtractionRule1" : "valueExtractionRule2"
+			const topLvlAttribute = (mainAttributeIndex == AttributeId.ATTRIBUTE1) ? "valueExtractionRule1" : "valueExtractionRule2"
 			newSelectedStrategy.strategyConRules[ruleIndex][topLvlAttribute].percent = value
 			this.setState({selectedStrategy: newSelectedStrategy})
-		}
+		}		
 		return (
-			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>
-				{/* value */}
-				<div className={isRelative ? styles.strategyDesignerSidebarListItemRuleValueRelative : styles.strategyDesignerSidebarListItemRuleValue}>
-					{
-						(rule?.attribute1) && this.attributeSelectElement(rule?.attribute1, ruleIndex, topLvlAttributeNum, 1)
-					}
-					{
-						(rule?.attribute2) && this.attributeSelectElement(rule?.attribute2, ruleIndex, topLvlAttributeNum, 2)
-					}
-				</div>				
-				{/* vertical divider */}
-				{
-					isRelative &&
-					<div className={styles.strategyDesignerSidebarListItemRuleValueDivider}></div>					
-				}
-				{/* percentage */}
-				{
-					isRelative &&					
-					<div className={styles.strategyDesignerSidebarListItemRuleValuePercentWrapper}>
-						<OutlinedInput className={styles.strategyDesignerSidebarListItemRuleValuePercent}
-							onChange={(e) => { onChangeHandler(e.target.value) }}
-							value={percent == 0 ? '' : percent}
-							endAdornment={
-								<InputAdornment 
-									className={styles.strategyDesignerSidebarListItemRuleValuePercentSymbol} 
-									position="end">
-										%
-								</InputAdornment>}/>
-					</div>
-				}
+			<div className={styles.strategyDesignerSidebarListItemRuleValuePercentWrapper}>
+				<OutlinedInput className={styles.strategyDesignerSidebarListItemRuleValuePercent}
+					onChange={(e) => { onChange(e.target.value) }}
+					value={percent == 0 ? '' : percent}
+					endAdornment={
+						<InputAdornment className={styles.strategyDesignerSidebarListItemRuleValuePercentSymbol} position="end">
+							%
+						</InputAdornment>}/>
 			</div>
 		)
 	}
+	
+	attributeElement(rule: ValueExtractionRule, ruleIndex: number, mainAttributeIndex: AttributeId): any {
+		const isRelative: boolean = rule?.attribute1 != null && rule?.attribute2 != null
+		const percent = rule?.percent
+		return (
+			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>
+				{ /* Simple attribute */}
+				{
+					!isRelative &&
+					<div className={styles.strategyDesignerSidebarListItemRuleValue}>
+						{ (rule?.attribute1) && this.attributeSelectElement(rule?.attribute1, ruleIndex, mainAttributeIndex, AttributeId.ATTRIBUTE1) }
+					</div>
+				}
+				{ /* Relative attribute */ }
+				{
+					isRelative &&
+					<React.Fragment>
+						{ /* Attributes */}
+						<div className={styles.strategyDesignerSidebarListItemRuleValueRelative}>
+							{ (rule?.attribute1) && this.attributeSelectElement(rule?.attribute1, ruleIndex, mainAttributeIndex, AttributeId.ATTRIBUTE1) }
+							{ (rule?.attribute2) && this.attributeSelectElement(rule?.attribute2, ruleIndex, mainAttributeIndex, AttributeId.ATTRIBUTE2) }
+						</div>
+						{ /* Vertical divider */}
+						<div className={styles.strategyDesignerSidebarListItemRuleValueDivider}></div>
+						{ /* Percentage */}
+						{ this.percentageElement(percent, ruleIndex, mainAttributeIndex) }
+					</React.Fragment>
+				}				
+			</div>
+		)
+	}
+
 
  
   render() {
@@ -201,10 +219,10 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 					<div className={styles.strategyDesignerSidebartopButtons}>
 						<Popup trigger={jsonButton} position="right center" modal>
     					<pre style={{maxHeight: "95vh"}}>
-								{
-									JSON.stringify(this.props.selectedStrategy, null, "\t")
-								}
-							</pre>
+							{
+								JSON.stringify(this.props.selectedStrategy, null, "\t")
+							}
+						</pre>
   					</Popup>
 					<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}} color="primary">
         				{ toogleIcon }
@@ -214,18 +232,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 					{
 						this.state.selectedStrategy?.strategyConRules.map((rule: ConditionalRule, i) => (
 							<div className={styles.strategyDesignerSidebarListItem}>
-								{/* Rule value 1 */}
-								{
-									this.attributeElement(rule?.valueExtractionRule1, i, 1)
-								}
+								{/* simple/relative attribute 1 */}
+								{ this.attributeElement(rule?.valueExtractionRule1, i, AttributeId.ATTRIBUTE1) }
 								{/* Rule condition */}
-								{
-									this.positionSelectElement(rule.position, i)
-								}
-								{/* Rule value 2 */}
-								{
-									this.attributeElement(rule?.valueExtractionRule2, i, 2)
-								}
+								{ this.positionSelectElement(rule.position, i) }
+								{/* simple/relative attribute 2 */}
+								{ this.attributeElement(rule?.valueExtractionRule2, i, AttributeId.ATTRIBUTE2) }
 							</div>
         	    		))
         			}
