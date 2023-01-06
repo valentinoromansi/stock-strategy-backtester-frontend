@@ -46,9 +46,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
 		this.state = {
-			selectedStrategy: props.selectedStrategy,
+			selectedStrategy: props.selectedStrategy, // copy this by value so props.selectedStrategy stays unchanged
 			sidebarVisible: true
 		}
+		this.onRefreshStrategy = this.onRefreshStrategy.bind(this)
+		this.onSaveStrategy = this.onSaveStrategy.bind(this)
+		this.onDeleteStrategy = this.onDeleteStrategy.bind(this)
   }
 
 	componentDidMount() {
@@ -63,8 +66,42 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 		this.setState({sidebarVisible: !this.state.sidebarVisible})
 	}
 
-	attributeSelectElement(currentVal: AttributeType, ruleIndex: number, topLvlAttributeNum: 1 | 2, lowLvlAttributeNum: 1 | 2): any {
-		const changeAttribute = (value) => {
+	onRefreshStrategy() {
+		console.log(this.props.selectedStrategy)
+		this.setState({selectedStrategy: this.props.selectedStrategy})
+	}
+
+	onSaveStrategy() {
+		alert("save")
+	}
+
+	onDeleteStrategy() {
+		alert("delete")
+	}
+
+
+	getSelectElement(currentValue: AttributeType | Position, enumType: typeof AttributeType | typeof Position, onChange: (value: string) => void) {
+		let selectClass = '' 
+		switch(enumType) {
+			case AttributeType: selectClass = styles.strategyDesignerSidebarSelectAttribute; break
+			case Position: selectClass = styles.strategyDesignerSidebarSelectPosition; break
+		}
+		return (
+			<Select 
+				className={selectClass} 
+				onChange={(e: SelectChangeEvent) => { onChange(e.target.value) }} 
+				value={currentValue}>
+				{
+					Object.values(enumType).map((value) => (
+						<MenuItem value={value}>{value}</MenuItem>
+					))
+				}
+  			</Select>
+		)
+	}
+
+	attributeSelectElement(currentValue: AttributeType, ruleIndex: number, topLvlAttributeNum: 1 | 2, lowLvlAttributeNum: 1 | 2): any {
+		const onChange = (value) => {
 			let newSelectedStrategy = this.state.selectedStrategy
 			const topLvlAttribute = (topLvlAttributeNum == 1) ? "valueExtractionRule1" : "valueExtractionRule2"
 			const lowLvlAttribute = (lowLvlAttributeNum == 1) ? "attribute1" : "attribute2"
@@ -72,40 +109,22 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 			this.setState({selectedStrategy: newSelectedStrategy})
 		}
 		return (
-			<Select 
-			className={styles.strategyDesignerSidebarSelectAttribute} 
-			onChange={(e: SelectChangeEvent) => { changeAttribute(e.target.value) }} 
-			value={currentVal}>
-				{
-					Object.values(AttributeType).map((value) => (
-						<MenuItem value={value}>{value}</MenuItem>
-					))
-				}
-  		</Select>
+			this.getSelectElement(currentValue, AttributeType, onChange)
 		)
 	}
 
-	positionSelectElement(currentVal: Position, ruleIndex: number): any {
-		const changePosition = (value) => {
+	positionSelectElement(currentValue: Position, ruleIndex: number): any {
+		const onChange = (value) => {
 			let newSelectedStrategy = this.state.selectedStrategy
 			newSelectedStrategy.strategyConRules[ruleIndex].position = value
 			this.setState({selectedStrategy: newSelectedStrategy})
 		}
 		return (
-			<Select 
-				className={styles.strategyDesignerSidebarSelectPosition} 
-				onChange={(e: SelectChangeEvent) => { changePosition(e.target.value) }} 
-				value={currentVal}>
-				{
-					Object.values(Position).map((value) => (
-						<MenuItem value={value}>{value}</MenuItem>
-					))
-				}
-  		</Select>
+			this.getSelectElement(currentValue, Position, onChange)
 		)
 	}
 
-	ruleValueElement(rule: ValueExtractionRule, ruleIndex: number, topLvlAttributeNum: 1 | 2): any {
+	attributeElement(rule: ValueExtractionRule, ruleIndex: number, topLvlAttributeNum: 1 | 2): any {
 		const isRelative: boolean = rule?.attribute1 != null && rule?.attribute2 != null
 		const percent = rule?.percent
 		const onChangeHandler = (valueStr: string) => {
@@ -120,7 +139,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 			newSelectedStrategy.strategyConRules[ruleIndex][topLvlAttribute].percent = value
 			this.setState({selectedStrategy: newSelectedStrategy})
 		}
-		return ( 
+		return (
 			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>
 				{/* value */}
 				<div className={isRelative ? styles.strategyDesignerSidebarListItemRuleValueRelative : styles.strategyDesignerSidebarListItemRuleValue}>
@@ -164,17 +183,19 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
     return (
 			<div className={styles.strategyDesignerWrapper}>
+				{/* Top right buttons */}
 				<div className={styles.strategyDesignerActionButtonsWrapper}>
-					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { alert("save strategy")}} color="primary">
+					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { this.onSaveStrategy()}} color="primary">
 						<SaveIcon/>
-      		</IconButton>
-					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { alert("refresh strategy")}} color="primary">
+      				</IconButton>
+					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { this.onRefreshStrategy()}} color="primary">
 						<RestorePageIcon/>
-      		</IconButton>
-					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { alert("delete strategy")}} color="primary">
+      				</IconButton>
+					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { this.onDeleteStrategy()}} color="primary">
 						<DeleteForeverIcon/>
-      		</IconButton>
+      				</IconButton>
 				</div>
+				{/* Left strategy rules sidebar */}
 				<div className={sidebarClass}>
 					{/* top buttons */}
 					<div className={styles.strategyDesignerSidebartopButtons}>
@@ -185,9 +206,9 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 								}
 							</pre>
   					</Popup>
-						<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}} color="primary">
-        			{ toogleIcon }
-      			</IconButton>
+					<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}} color="primary">
+        				{ toogleIcon }
+      				</IconButton>
 					</div>
 					{/* strategy rules */}
 					{
@@ -195,7 +216,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 							<div className={styles.strategyDesignerSidebarListItem}>
 								{/* Rule value 1 */}
 								{
-									this.ruleValueElement(rule?.valueExtractionRule1, i, 1)
+									this.attributeElement(rule?.valueExtractionRule1, i, 1)
 								}
 								{/* Rule condition */}
 								{
@@ -203,11 +224,11 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 								}
 								{/* Rule value 2 */}
 								{
-									this.ruleValueElement(rule?.valueExtractionRule2, i, 2)
+									this.attributeElement(rule?.valueExtractionRule2, i, 2)
 								}
 							</div>
-        	    ))
-        	}
+        	    		))
+        			}
 				</div>
 			</div>
 		);
