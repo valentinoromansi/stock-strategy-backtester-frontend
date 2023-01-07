@@ -5,7 +5,7 @@ import "apercu-font";
 
 import { Strategy } from "../../models/strategy";
 import styles from '../../styles/global.module.sass'
-import { IconButton } from "@mui/material";
+import { IconButton, Menu } from "@mui/material";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Button from '@mui/material/Button';
@@ -35,7 +35,11 @@ type PropsType = {
 
 type StateType = {
 	selectedStrategy: Strategy,
-	sidebarVisible: boolean
+	sidebarVisible: boolean,
+	menuAnchorElement: any,
+	hoveredAttributeIdentifier: AttributeIdentifier | null,
+	rcAttributeIdentifier: AttributeIdentifier | null,
+	canOpenMenu: boolean
 }
 
 enum AttributeId {
@@ -43,6 +47,12 @@ enum AttributeId {
 	ATTRIBUTE2 = 2
 }
 
+type AttributeIdentifier = {
+	ruleIndex: number,
+	mainAttributeIndex: AttributeId,
+	subAttributeIndex: AttributeId | null
+}
+ 
 class StrategyDesigner extends Component<PropsType, StateType> {
 	readonly enterTradeColor: string  = 'white'
 	readonly profitColor: string = '#00ff00'
@@ -53,11 +63,23 @@ class StrategyDesigner extends Component<PropsType, StateType> {
     	super(props);
 		this.state = {
 			selectedStrategy: props.selectedStrategy, // copy this by value so props.selectedStrategy stays unchanged
-			sidebarVisible: true
+			sidebarVisible: true,
+			menuAnchorElement: null,
+			hoveredAttributeIdentifier: null,
+			rcAttributeIdentifier: null,
+			canOpenMenu: true
 		}
 		this.onRefreshStrategy = this.onRefreshStrategy.bind(this)
 		this.onSaveStrategy = this.onSaveStrategy.bind(this)
 		this.onDeleteStrategy = this.onDeleteStrategy.bind(this)
+		document.addEventListener("contextmenu", (event: MouseEvent) => {
+			event.preventDefault();
+			if(this.state.hoveredAttributeIdentifier) {
+				this.setState({rcAttributeIdentifier: this.state.hoveredAttributeIdentifier})
+				this.setState({menuAnchorElement: event.target})
+				console.log(this.state)
+			}
+		});
 	}
 
 	componentDidMount() {
@@ -71,7 +93,6 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
 	  
 	onRefreshStrategy() {
-	  console.log(this.props.selectedStrategy)
 	  this.setState({selectedStrategy: this.props.selectedStrategy})
 	}
 	
@@ -89,36 +110,43 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	}
 	
 
-	selectElement(currentValue: AttributeType | Position, enumType: typeof AttributeType | typeof Position, onChange: (value: string) => void) {
+	selectElement(attributeIdentifier: AttributeIdentifier | null, currentValue: AttributeType | Position, prefix: string, enumType: typeof AttributeType | typeof Position, onChange: (value: string) => void) {
 		let selectClass = '' 
 		switch(enumType) {
 			case AttributeType: selectClass = styles.strategyDesignerSidebarSelectAttribute; break
 			case Position: selectClass = styles.strategyDesignerSidebarSelectPosition; break
 		}
 		return (
-			<Select 
+			<Select
 				className={selectClass} 
 				onChange={(e: SelectChangeEvent) => { onChange(e.target.value) }} 
-				value={currentValue}>
+				//onOpen={(e) => { this.setState({ menuAnchorElement: null}) }}
+				value={currentValue}
+				onMouseOver={(e) =>  { this.setState({ hoveredAttributeIdentifier: attributeIdentifier}) }}
+				onMouseLeave={(e) =>  { this.setState({ hoveredAttributeIdentifier: null}) }}
+				onOpen={(e) =>  { this.setState({ canOpenMenu: false}) }}
+				onClose={(e) =>  { this.setState({ canOpenMenu: true, menuAnchorElement: null}) }}
+			>
 				{
 					Object.values(enumType).map((value) => (
-						<MenuItem value={value}>{value}</MenuItem>
+						<MenuItem value={value}>{prefix + '' + value}</MenuItem>
 					))
 				}
 			</Select>
 		)
 	}
 
-	attributeSelectElement(currentValue: AttributeType, ruleIndex: number, mainAttributeIndex: AttributeId, subAttributeIndex: AttributeId): any {
+	attributeSelectElement(attributeIdentifier: AttributeIdentifier, currentValue: AttributeType): any {
+		let newSelectedStrategy = this.state.selectedStrategy
+		const topLvlAttribute = (attributeIdentifier.mainAttributeIndex == AttributeId.ATTRIBUTE1) ? "valueExtractionRule1" : "valueExtractionRule2"
+		const lowLvlAttribute = (attributeIdentifier.subAttributeIndex == AttributeId.ATTRIBUTE1) ? "attribute1" : "attribute2"
 		const onChange = (value) => {
-			let newSelectedStrategy = this.state.selectedStrategy
-			const topLvlAttribute = (mainAttributeIndex == AttributeId.ATTRIBUTE1) ? "valueExtractionRule1" : "valueExtractionRule2"
-			const lowLvlAttribute = (subAttributeIndex == AttributeId.ATTRIBUTE1) ? "attribute1" : "attribute2"
-			newSelectedStrategy.strategyConRules[ruleIndex][topLvlAttribute][lowLvlAttribute] = value
+			newSelectedStrategy.strategyConRules[attributeIdentifier.ruleIndex][topLvlAttribute][lowLvlAttribute] = value
 			this.setState({selectedStrategy: newSelectedStrategy})
 		}
+		const prefix = newSelectedStrategy.strategyConRules[attributeIdentifier.ruleIndex][topLvlAttribute].id?.toString() + '.'
 		return (
-			this.selectElement(currentValue, AttributeType, onChange)
+			this.selectElement(attributeIdentifier, currentValue, prefix, AttributeType, onChange)
 		)
 	}
 	
@@ -129,22 +157,21 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 			this.setState({selectedStrategy: newSelectedStrategy})
 		}
 		return (
-			this.selectElement(currentValue, Position, onChange)
+			this.selectElement(null, currentValue, '', Position, onChange)
 		)
 	}
 
 
-	percentageElement(percent: number, ruleIndex: number, mainAttributeIndex: AttributeId) {
+	percentageElement(percent: number, attributeIdentifier: AttributeIdentifier) {
 		const onChange = (valueStr: string) => {
 			const isWholeANum = !isNaN(Number(valueStr))
 			const isLastANum = (valueStr.length > 0 && !isNaN(Number(valueStr.charAt(valueStr.length - 1))))
 			if(valueStr.length > 2 || valueStr.length > 0 && (!isWholeANum || !isLastANum))
 				return
 			const value = Number(valueStr)					
-			console.log(value)
 			let newSelectedStrategy = this.state.selectedStrategy
-			const topLvlAttribute = (mainAttributeIndex == AttributeId.ATTRIBUTE1) ? "valueExtractionRule1" : "valueExtractionRule2"
-			newSelectedStrategy.strategyConRules[ruleIndex][topLvlAttribute].percent = value
+			const topLvlAttribute = (attributeIdentifier.mainAttributeIndex == AttributeId.ATTRIBUTE1) ? "valueExtractionRule1" : "valueExtractionRule2"
+			newSelectedStrategy.strategyConRules[attributeIdentifier.ruleIndex][topLvlAttribute].percent = value
 			this.setState({selectedStrategy: newSelectedStrategy})
 		}		
 		return (
@@ -155,7 +182,9 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 					endAdornment={
 						<InputAdornment className={styles.strategyDesignerSidebarListItemRuleValuePercentSymbol} position="end">
 							%
-						</InputAdornment>}/>
+						</InputAdornment>}
+				/>
+					
 			</div>
 		)
 	}
@@ -163,13 +192,14 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	attributeElement(rule: ValueExtractionRule, ruleIndex: number, mainAttributeIndex: AttributeId): any {
 		const isRelative: boolean = rule?.attribute1 != null && rule?.attribute2 != null
 		const percent = rule?.percent
+		const getAttributeIdentifier = (subAttributeIndex: AttributeId) : AttributeIdentifier  => { return { ruleIndex: ruleIndex, mainAttributeIndex: mainAttributeIndex, subAttributeIndex: subAttributeIndex}}
 		return (
-			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>
+			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>				
 				{ /* Simple attribute */}
 				{
 					!isRelative &&
 					<div className={styles.strategyDesignerSidebarListItemRuleValue}>
-						{ (rule?.attribute1) && this.attributeSelectElement(rule?.attribute1, ruleIndex, mainAttributeIndex, AttributeId.ATTRIBUTE1) }
+						{ (rule?.attribute1) && this.attributeSelectElement(getAttributeIdentifier(AttributeId.ATTRIBUTE1), rule?.attribute1) }
 					</div>
 				}
 				{ /* Relative attribute */ }
@@ -178,13 +208,13 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 					<React.Fragment>
 						{ /* Attributes */}
 						<div className={styles.strategyDesignerSidebarListItemRuleValueRelative}>
-							{ (rule?.attribute1) && this.attributeSelectElement(rule?.attribute1, ruleIndex, mainAttributeIndex, AttributeId.ATTRIBUTE1) }
-							{ (rule?.attribute2) && this.attributeSelectElement(rule?.attribute2, ruleIndex, mainAttributeIndex, AttributeId.ATTRIBUTE2) }
+							{ (rule?.attribute1) && this.attributeSelectElement(getAttributeIdentifier(AttributeId.ATTRIBUTE1), rule?.attribute1) }
+							{ (rule?.attribute2) && this.attributeSelectElement(getAttributeIdentifier(AttributeId.ATTRIBUTE2), rule?.attribute2) }
 						</div>
 						{ /* Vertical divider */}
 						<div className={styles.strategyDesignerSidebarListItemRuleValueDivider}></div>
 						{ /* Percentage */}
-						{ this.percentageElement(percent, ruleIndex, mainAttributeIndex) }
+						{ this.percentageElement(percent, { ruleIndex: ruleIndex, mainAttributeIndex: mainAttributeIndex, subAttributeIndex: null}) }
 					</React.Fragment>
 				}				
 			</div>
@@ -202,6 +232,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
     return (
 			<div className={styles.strategyDesignerWrapper}>
 				{/* Top right buttons */}
+				<Menu id="menu" anchorEl={this.state.menuAnchorElement} MenuListProps={{'aria-labelledby': 'basic-button'}}
+					open={this.state.menuAnchorElement != null && this.state.canOpenMenu}
+					onClose={() => {this.setState({menuAnchorElement: null})}}>
+			 		<MenuItem onClick={(e: any) => { alert(JSON.stringify(this.state.rcAttributeIdentifier))}}>Change VS id</MenuItem>
+			 		<MenuItem onClick={(e: any) => { this.setState({menuAnchorElement: null})} }>Cancel</MenuItem>
+		   		</Menu>
 				<div className={styles.strategyDesignerActionButtonsWrapper}>
 					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { this.onSaveStrategy()}} color="primary">
 						<SaveIcon/>
