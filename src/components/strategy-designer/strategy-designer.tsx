@@ -5,7 +5,7 @@ import "apercu-font";
 
 import { Strategy } from "../../models/strategy";
 import styles from '../../styles/global.module.sass'
-import { IconButton, Menu } from "@mui/material";
+import { IconButton, Input, Menu, TextField } from "@mui/material";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Button from '@mui/material/Button';
@@ -36,10 +36,10 @@ type PropsType = {
 type StateType = {
 	selectedStrategy: Strategy,
 	sidebarVisible: boolean,
-	menuAnchorElement: any,
+	rcMenuAnchorElement: any,
 	hoveredAttributeIdentifier: AttributeIdentifier | null,
 	rcAttributeIdentifier: AttributeIdentifier | null,
-	canOpenMenu: boolean
+	canOpenRcMenu: boolean
 }
 
 enum AttributeId {
@@ -64,10 +64,10 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 		this.state = {
 			selectedStrategy: props.selectedStrategy, // copy this by value so props.selectedStrategy stays unchanged
 			sidebarVisible: true,
-			menuAnchorElement: null,
+			rcMenuAnchorElement: null,
 			hoveredAttributeIdentifier: null,
 			rcAttributeIdentifier: null,
-			canOpenMenu: true
+			canOpenRcMenu: true
 		}
 		this.onRefreshStrategy = this.onRefreshStrategy.bind(this)
 		this.onSaveStrategy = this.onSaveStrategy.bind(this)
@@ -76,7 +76,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 			event.preventDefault();
 			if(this.state.hoveredAttributeIdentifier) {
 				this.setState({rcAttributeIdentifier: this.state.hoveredAttributeIdentifier})
-				this.setState({menuAnchorElement: event.target})
+				this.setState({rcMenuAnchorElement: event.target})
 				console.log(this.state)
 			}
 		});
@@ -124,8 +124,8 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 				value={currentValue}
 				onMouseOver={(e) =>  { this.setState({ hoveredAttributeIdentifier: attributeIdentifier}) }}
 				onMouseLeave={(e) =>  { this.setState({ hoveredAttributeIdentifier: null}) }}
-				onOpen={(e) =>  { this.setState({ canOpenMenu: false}) }}
-				onClose={(e) =>  { this.setState({ canOpenMenu: true, menuAnchorElement: null}) }}
+				onOpen={(e) =>  { this.setState({ canOpenRcMenu: false}) }}
+				onClose={(e) =>  { this.setState({ canOpenRcMenu: true, rcMenuAnchorElement: null}) }}
 			>
 				{
 					Object.values(enumType).map((value) => (
@@ -161,12 +161,10 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 		)
 	}
 
-
 	percentageElement(percent: number, attributeIdentifier: AttributeIdentifier) {
 		const onChange = (valueStr: string) => {
-			const isWholeANum = !isNaN(Number(valueStr))
-			const isLastANum = (valueStr.length > 0 && !isNaN(Number(valueStr.charAt(valueStr.length - 1))))
-			if(valueStr.length > 2 || valueStr.length > 0 && (!isWholeANum || !isLastANum))
+			const isNum = !isNaN(Number(valueStr))
+			if(valueStr.length > 2 || !isNum)
 				return
 			const value = Number(valueStr)					
 			let newSelectedStrategy = this.state.selectedStrategy
@@ -222,7 +220,42 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	}
 
 
- 
+	rightClickMenuElement() {
+		const ruleIndex = this.state.rcAttributeIdentifier?.ruleIndex
+		const mainAttributeVarName = this.state.rcAttributeIdentifier?.mainAttributeIndex == AttributeId.ATTRIBUTE1 ? "valueExtractionRule1" : "valueExtractionRule2"
+		const onChangeVsId = (newAttributeSliceIdStr: string) => {
+			let selectedStrategy = this.state.selectedStrategy
+			const newAttributeSliceId = Number(newAttributeSliceIdStr)
+			if(newAttributeSliceIdStr == '') {
+				selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName].id = 0
+				this.setState({selectedStrategy: selectedStrategy})
+				return
+			}
+			if(isNaN(newAttributeSliceId) || (newAttributeSliceId <= 0 && newAttributeSliceIdStr.length == 1) || newAttributeSliceId > 99)
+				return
+			selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName].id = newAttributeSliceId
+			this.setState({selectedStrategy: selectedStrategy})
+		}		
+		const attributeSliceId = this.state.selectedStrategy?.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.id
+		return(
+			<Menu id="menu" anchorEl={this.state.rcMenuAnchorElement} MenuListProps={{'aria-labelledby': 'basic-button'}}
+				open={this.state.rcMenuAnchorElement != null && this.state.canOpenRcMenu}
+				onClose={() => {this.setState({rcMenuAnchorElement: null})}}>
+				<TextField
+					style={{padding: "2px"}}
+					value={isNaN(attributeSliceId) ? '' : attributeSliceId}
+					id="filled-basic"
+					label="Vertical slice id"
+					variant="filled"
+					onChange={(e) => { onChangeVsId(e.target.value) }}
+        		/>
+				<MenuItem onClick={(e: any) => { this.setState({rcMenuAnchorElement: null})} }>Cancel</MenuItem>
+		   	</Menu>
+		)
+	}
+
+
+
   render() {
 		const sidebarClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarVisible : styles.strategyDesignerSidebarHidden
 		const sidebarToggleButtonClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarToogleButtonVisible : styles.strategyDesignerSidebarToogleButtonHidden
@@ -231,13 +264,9 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
     return (
 			<div className={styles.strategyDesignerWrapper}>
-				{/* Top right buttons */}
-				<Menu id="menu" anchorEl={this.state.menuAnchorElement} MenuListProps={{'aria-labelledby': 'basic-button'}}
-					open={this.state.menuAnchorElement != null && this.state.canOpenMenu}
-					onClose={() => {this.setState({menuAnchorElement: null})}}>
-			 		<MenuItem onClick={(e: any) => { alert(JSON.stringify(this.state.rcAttributeIdentifier))}}>Change VS id</MenuItem>
-			 		<MenuItem onClick={(e: any) => { this.setState({menuAnchorElement: null})} }>Cancel</MenuItem>
-		   		</Menu>
+				{/* Sidebar rule rightclick menu */}
+				{ this.rightClickMenuElement() }
+				{/* Top right buttons */}				
 				<div className={styles.strategyDesignerActionButtonsWrapper}>
 					<IconButton className={styles.strategyDesignerActionButton} onClick={() => { this.onSaveStrategy()}} color="primary">
 						<SaveIcon/>
@@ -254,12 +283,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 					{/* top buttons */}
 					<div className={styles.strategyDesignerSidebartopButtons}>
 						<Popup trigger={jsonButton} position="right center" modal>
-    					<pre style={{maxHeight: "95vh"}}>
-							{
-								JSON.stringify(this.props.selectedStrategy, null, "\t")
-							}
-						</pre>
-  					</Popup>
+    						<pre style={{maxHeight: "95vh"}}>
+								{
+									JSON.stringify(this.props.selectedStrategy, null, "\t")
+								}
+							</pre>
+  						</Popup>
 					<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}} color="primary">
         				{ toogleIcon }
       				</IconButton>
