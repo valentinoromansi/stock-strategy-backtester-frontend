@@ -29,6 +29,10 @@ import RestorePageIcon from '@mui/icons-material/RestorePage';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { relative } from "path";
 
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+
+
 type PropsType = {
   selectedStrategy: Strategy
 }
@@ -220,6 +224,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	}
 
 
+
 	rightClickMenuElement() {
 		const ruleIndex = this.state.rcAttributeIdentifier?.ruleIndex
 		const mainAttributeVarName = this.state.rcAttributeIdentifier?.mainAttributeIndex == AttributeId.ATTRIBUTE1 ? "valueExtractionRule1" : "valueExtractionRule2"
@@ -237,18 +242,38 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 			this.setState({selectedStrategy: selectedStrategy})
 		}		
 		const attributeSliceId = this.state.selectedStrategy?.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.id
+		let toogleAttributeTypeElement = () => {
+			let valSelected = 'simple'
+			let onChange = () => {
+			}
+			return(
+				<ToggleButtonGroup
+      		color="primary"
+      		value={valSelected}
+      		exclusive
+      		onChange={onChange}
+      		aria-label="Platform"
+    		>
+      	<ToggleButton value="simple">Simple</ToggleButton>
+      	<ToggleButton value="relative">Relative</ToggleButton>
+    	</ToggleButtonGroup>
+			)
+		}
 		return(
 			<Menu id="menu" anchorEl={this.state.rcMenuAnchorElement} MenuListProps={{'aria-labelledby': 'basic-button'}}
 				open={this.state.rcMenuAnchorElement != null && this.state.canOpenRcMenu}
 				onClose={() => {this.setState({rcMenuAnchorElement: null})}}>
 				<TextField
-					style={{padding: "2px"}}
+					style={{padding: "2px", width: "100%"}}
 					value={isNaN(attributeSliceId) ? '' : attributeSliceId}
 					id="filled-basic"
 					label="Vertical slice id"
 					variant="filled"
 					onChange={(e) => { onChangeVsId(e.target.value) }}
-        		/>
+        />
+				<div style={{padding: "2px"}}>
+					{toogleAttributeTypeElement()}
+				</div>
 				<MenuItem onClick={(e: any) => { this.setState({rcMenuAnchorElement: null})} }>Cancel</MenuItem>
 		   	</Menu>
 		)
