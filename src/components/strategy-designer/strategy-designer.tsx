@@ -77,11 +77,11 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 		this.onSaveStrategy = this.onSaveStrategy.bind(this)
 		this.onDeleteStrategy = this.onDeleteStrategy.bind(this)
 		document.addEventListener("contextmenu", (event: MouseEvent) => {
+			console.log(event.button)
 			event.preventDefault();
 			if(this.state.hoveredAttributeIdentifier) {
 				this.setState({rcAttributeIdentifier: this.state.hoveredAttributeIdentifier})
 				this.setState({rcMenuAnchorElement: event.target})
-				console.log(this.state)
 			}
 		});
 	}
@@ -192,21 +192,20 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	}
 	
 	attributeElement(rule: ValueExtractionRule, ruleIndex: number, mainAttributeIndex: AttributeId): any {
-		const isRelative: boolean = rule?.attribute1 != null && rule?.attribute2 != null
 		const percent = rule?.percent
 		const getAttributeIdentifier = (subAttributeIndex: AttributeId) : AttributeIdentifier  => { return { ruleIndex: ruleIndex, mainAttributeIndex: mainAttributeIndex, subAttributeIndex: subAttributeIndex}}
 		return (
 			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>				
 				{ /* Simple attribute */}
 				{
-					!isRelative &&
+					!rule.isRelative &&
 					<div className={styles.strategyDesignerSidebarListItemRuleValue}>
 						{ (rule?.attribute1) && this.attributeSelectElement(getAttributeIdentifier(AttributeId.ATTRIBUTE1), rule?.attribute1) }
 					</div>
 				}
 				{ /* Relative attribute */ }
 				{
-					isRelative &&
+					rule.isRelative &&
 					<React.Fragment>
 						{ /* Attributes */}
 						<div className={styles.strategyDesignerSidebarListItemRuleValueRelative}>
@@ -228,6 +227,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	rightClickMenuElement() {
 		const ruleIndex = this.state.rcAttributeIdentifier?.ruleIndex
 		const mainAttributeVarName = this.state.rcAttributeIdentifier?.mainAttributeIndex == AttributeId.ATTRIBUTE1 ? "valueExtractionRule1" : "valueExtractionRule2"
+		// For changing attribute slice id
 		const onChangeVsId = (newAttributeSliceIdStr: string) => {
 			let selectedStrategy = this.state.selectedStrategy
 			const newAttributeSliceId = Number(newAttributeSliceIdStr)
@@ -242,22 +242,28 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 			this.setState({selectedStrategy: selectedStrategy})
 		}		
 		const attributeSliceId = this.state.selectedStrategy?.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.id
-		let toogleAttributeTypeElement = () => {
-			let valSelected = 'simple'
-			let onChange = () => {
-			}
+		// For changing attribute type - simple/complex
+		let toogleAttributeTypeElement = (ruleIndex: number, mainAttributeVarName: string) => {
+			const isRelative = this.state.selectedStrategy.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.isRelative
+			let onToogleClick = (isRelative: boolean) => {
+				console.log(isRelative)
+				let selectedStrategy = this.state.selectedStrategy
+				selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName].isRelative = isRelative
+				selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName].attribute2 = isRelative ? AttributeType.OPEN : null
+				selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName].percent = isRelative ? 0 : null
+				this.setState({selectedStrategy: selectedStrategy, rcMenuAnchorElement: null})
+			}		
 			return(
 				<ToggleButtonGroup
-      		color="primary"
-      		value={valSelected}
-      		exclusive
-      		onChange={onChange}
-      		aria-label="Platform"
-    		>
-      	<ToggleButton value="simple">Simple</ToggleButton>
-      	<ToggleButton value="relative">Relative</ToggleButton>
-    	</ToggleButtonGroup>
-			)
+    			color="primary"
+    			value={isRelative}
+    			exclusive    			
+    			aria-label="Platform"
+				>
+    			<ToggleButton onClick={(e) => { onToogleClick(false)}} value={false}>Simple</ToggleButton>
+    			<ToggleButton onClick={(e) => { onToogleClick(true)}} value={true}>Relative</ToggleButton>
+    		</ToggleButtonGroup>
+			)	
 		}
 		return(
 			<Menu id="menu" anchorEl={this.state.rcMenuAnchorElement} MenuListProps={{'aria-labelledby': 'basic-button'}}
@@ -272,7 +278,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 					onChange={(e) => { onChangeVsId(e.target.value) }}
         />
 				<div style={{padding: "2px"}}>
-					{toogleAttributeTypeElement()}
+					{toogleAttributeTypeElement(ruleIndex, mainAttributeVarName)}
 				</div>
 				<MenuItem onClick={(e: any) => { this.setState({rcMenuAnchorElement: null})} }>Cancel</MenuItem>
 		   	</Menu>
