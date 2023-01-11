@@ -34,10 +34,12 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import StrategyDesignerSidebar from './strategy-designer-sidebar';
 
 import * as actions from "../../state/actions";
+import { saveStrategy } from "http/http";
 
 
 type PropsType = {
-  selectedStrategy: Strategy
+  selectedStrategy: Strategy,
+  strategyDesignerStrategy: Strategy
 }
 
 type StateType = {
@@ -84,11 +86,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
 	  
 	onRefreshStrategy() {
-	  this.setState({selectedStrategy: this.props.selectedStrategy})
+		this.setState({selectedStrategy: this.props.selectedStrategy})
 		actions.setStrategyDesignerStrategy(this.props.selectedStrategy)
 	}
 	
 	onSaveStrategy() {
+		saveStrategy(this.props.strategyDesignerStrategy)
 		alert("save")
 	}
 
@@ -126,7 +129,8 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
 const mapStateToProps = (state: reducer.StateType) => {
   return {
-    selectedStrategy: state.selectedStrategy
+    selectedStrategy: state.selectedStrategy,
+	strategyDesignerStrategy: state.strategyDesignerStrategy
   };
 };
 

@@ -123,7 +123,7 @@ class StrategyList extends Component<PropsType, StateType> {
             <div className={styles.strategyItemWrapper}>
               {/* Select strategy */}
               <ListItemButton key={strategy.name} sx={this.getItemButtonStyle(strategy.name)} onClick={() => this.selectStrategy(strategy.name)}>
-                <ListItemText disableTypography primary={strategy.name.toUpperCase()} className={this.getItemTextClass(strategy.name)}/>
+                <ListItemText disableTypography primary={strategy.name?.toUpperCase()} className={this.getItemTextClass(strategy.name)}/>
               </ListItemButton>
               {/* Edit strategy */}
               <ListItemButton sx={this.getEditItemButtonStyle(strategy.name)} onClick={() => this.editStrategy(strategy.name)}>

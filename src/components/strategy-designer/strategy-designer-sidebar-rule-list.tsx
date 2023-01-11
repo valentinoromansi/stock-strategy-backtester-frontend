@@ -203,14 +203,14 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>				
 				{ /* Simple attribute */}
 				{
-					!rule().isRelative &&
+					!rule()?.isRelative &&
 					<div className={styles.strategyDesignerSidebarListItemRuleValue}>
 						{ (rule()?.attribute1) && this.attributeSelectElement(getAttributeIdentifier(AttributeId.ATTRIBUTE1), rule()?.attribute1) }
 					</div>
 				}
 				{ /* Relative attribute */ }
 				{
-					rule().isRelative &&
+					rule()?.isRelative &&
 					<React.Fragment>
 						{ /* Attributes */}
 						<div className={styles.strategyDesignerSidebarListItemRuleValueRelative}>
@@ -400,12 +400,12 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 				{/* Strategy name field */}
 				<TextField 
 					style={{width: '100%', padding: '10px'}} label="Strategy name" variant="filled" 
-					value={this.props.strategyDesignerStrategy.name}
+					value={this.props.strategyDesignerStrategy?.name}
 					onChange={(e) => { this.onNameChange(e) }}
 					/>
 				{/* Rules list */}
 				{
-					this.props.strategyDesignerStrategy?.strategyConRules.map((rule: ConditionalRule, i) => (
+					this.props.strategyDesignerStrategy?.strategyConRules?.map((rule: ConditionalRule, i) => (
 						<div className={styles.strategyDesignerSidebarListItem}>
 							{/* simple/relative attribute 1 */}
 							{ this.attributeElement({ ruleIndex: i, mainAttributeIndex: AttributeId.ATTRIBUTE1, subAttributeIndex: null, isEnterTradeRule: null, isStoplossRule: null}) }
