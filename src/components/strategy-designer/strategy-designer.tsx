@@ -34,7 +34,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import StrategyDesignerSidebar from './strategy-designer-sidebar';
 
 import * as actions from "../../state/actions";
-import { saveStrategy } from "http/http";
+import { deleteStrategy, saveStrategy } from "http/http";
 
 
 type PropsType = {
@@ -92,11 +92,10 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	
 	onSaveStrategy() {
 		saveStrategy(this.props.strategyDesignerStrategy)
-		alert("save")
 	}
 
 	onDeleteStrategy() {
-		alert("delete")
+		deleteStrategy(this.props.selectedStrategy?.name)
 	}
 	
 
