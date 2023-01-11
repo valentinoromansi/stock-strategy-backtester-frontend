@@ -28,6 +28,9 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import * as actions from "../../state/actions";
 
+import { deepCopy } from "../../utils/utils";
+
+
 
 type PropsType = {
 	strategyDesignerStrategy: Strategy
@@ -237,6 +240,13 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
     		</ToggleButtonGroup>
 			)	
 		}
+		// on delete
+		let onDelete = (ruleIndex: number) => {
+			let newStrategy = deepCopy(this.props.strategyDesignerStrategy)
+			newStrategy.strategyConRules.splice(ruleIndex, 1)
+			actions.setStrategyDesignerStrategy(newStrategy)
+			this.setState({rcMenuAnchorElement: null})
+		}
 		return(
 			<Menu id="menu" anchorEl={this.state.rcMenuAnchorElement} MenuListProps={{'aria-labelledby': 'basic-button'}}
 				open={this.state.rcMenuAnchorElement != null && this.state.canOpenRcMenu}
@@ -252,7 +262,7 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 				<div style={{padding: "2px"}}>
 					{toogleAttributeTypeElement(ruleIndex, mainAttributeVarName)}
 				</div>
-				<MenuItem onClick={(e: any) => { this.setState({rcMenuAnchorElement: null})} }>Cancel</MenuItem>
+				<Button onClick={(e) => { onDelete(ruleIndex) }} variant="contained" color="error"> DELETE </Button>
 		   	</Menu>
 		)
 	}
