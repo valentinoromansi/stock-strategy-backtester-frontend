@@ -5,7 +5,7 @@ import "apercu-font";
 
 import { Strategy } from "../../models/strategy";
 import styles from '../../styles/global.module.sass'
-import { IconButton, Input, Menu, TextField } from "@mui/material";
+import { IconButton, Input, ListItemButton, Menu, TextField } from "@mui/material";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Button from '@mui/material/Button';
@@ -29,6 +29,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import * as actions from "../../state/actions";
 
 import { deepCopy } from "../../utils/utils";
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 
 
 
@@ -269,6 +270,51 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 
 
 
+
+	readonly sxStyle = {
+		addNewRuleStyle: { 
+			padding: '0.8rem', 
+			display: 'flex', 
+			justifyContent:'center', 
+			color: 'white', 
+			backgroundColor: '#212936', 
+			borderRadius: '4px', 
+			"&:hover": {backgroundColor: '#212936'} 
+		}
+	}
+
+	addNewRuleButton() {
+		const onClick = () => {
+			let newStrategy: Strategy = deepCopy(this.props.strategyDesignerStrategy)
+			newStrategy.strategyConRules.push(new ConditionalRule({
+				valueExtractionRule1: new ValueExtractionRule({
+					attribute1: AttributeType.OPEN,
+					id: 0,
+					isRelative: false
+				}),
+				position: Position.ABOVE,
+				valueExtractionRule2: new ValueExtractionRule({
+					attribute1: AttributeType.OPEN,
+					id: 0,
+					isRelative: false
+				})
+			}))
+			actions.setStrategyDesignerStrategy(newStrategy)
+			this.setState({rcMenuAnchorElement: null})
+		}
+
+		return(
+			<div style={{padding: "1rem"}}>
+				<ListItemButton onClick={() => onClick()} sx={this.sxStyle.addNewRuleStyle}>
+          <LibraryAddIcon sx={{fontSize: '2rem'}} />
+        </ListItemButton>
+			</div>
+		)
+	}
+
+
+
+
   render() {
 
     return (
@@ -285,6 +331,8 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 						</div>
         	))
         }
+				{/* Add new rule */}
+				{this.addNewRuleButton()}
 				{/* Sidebar rule right click menu */}
 				{ this.props.strategyDesignerStrategy && this.rightClickMenuElement() }
 			</div>
