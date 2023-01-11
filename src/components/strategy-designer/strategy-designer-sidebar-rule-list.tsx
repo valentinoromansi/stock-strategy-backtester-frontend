@@ -26,13 +26,14 @@ import InputAdornment from '@mui/material/InputAdornment';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
+import * as actions from "../../state/actions";
+
 
 type PropsType = {
-  selectedStrategy: Strategy
+	strategyDesignerStrategy: Strategy
 }
 
 type StateType = {
-	selectedStrategy: Strategy,
 	rcMenuAnchorElement: any,
 	hoveredAttributeIdentifier: AttributeIdentifier | null,
 	rcAttributeIdentifier: AttributeIdentifier | null,
@@ -65,7 +66,6 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
   	constructor(props: PropsType) {
     	super(props);
 			this.state = {
-				selectedStrategy: props.selectedStrategy, // copy this by value so props.selectedStrategy stays unchanged
 				rcMenuAnchorElement: null,
 				hoveredAttributeIdentifier: null,
 				rcAttributeIdentifier: null,
@@ -73,21 +73,11 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 			}
 			// Disabling default right click and setting flags for opening menu component
 			document.addEventListener("contextmenu", (event: MouseEvent) => {
-				console.log(event.button)
 				event.preventDefault();
 				if(this.state.hoveredAttributeIdentifier) 
 					this.setState({rcAttributeIdentifier: this.state.hoveredAttributeIdentifier, rcMenuAnchorElement: event.target})
 			});
 	}
-
-	componentDidMount() {
-    	this.setState({selectedStrategy: this.props.selectedStrategy})
-  	}  
-
-	componentWillReceiveProps(nextProps: PropsType) {
-    	this.setState({selectedStrategy: nextProps.selectedStrategy})
-  	}
-	
 
 	selectElement(attributeIdentifier: AttributeIdentifier | null, currentValue: AttributeType | Position, prefix: string, enumType: typeof AttributeType | typeof Position, onChange: (value: string) => void) {
 		let selectClass = '' 
@@ -116,14 +106,14 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 	}
 
 	attributeSelectElement(attributeIdentifier: AttributeIdentifier, currentValue: AttributeType): any {
-		let newSelectedStrategy = this.state.selectedStrategy
 		const mainAttributeVarName = mainAttributeVarNameMap[attributeIdentifier.mainAttributeIndex]
 		const subAttributeVarName = subAttributeVarNameMap[attributeIdentifier.subAttributeIndex]
+		let newStrategy = this.props.strategyDesignerStrategy
 		const onChange = (value) => {
-			newSelectedStrategy.strategyConRules[attributeIdentifier.ruleIndex][mainAttributeVarName][subAttributeVarName] = value
-			this.setState({selectedStrategy: newSelectedStrategy})
+			newStrategy.strategyConRules[attributeIdentifier.ruleIndex][mainAttributeVarName][subAttributeVarName] = value
+			actions.setStrategyDesignerStrategy(newStrategy)
 		}
-		const prefix = newSelectedStrategy.strategyConRules[attributeIdentifier.ruleIndex][mainAttributeVarName].id?.toString() + '.'
+		const prefix = newStrategy.strategyConRules[attributeIdentifier.ruleIndex][mainAttributeVarName].id?.toString() + '.'
 		return (
 			this.selectElement(attributeIdentifier, currentValue, prefix, AttributeType, onChange)
 		)
@@ -131,9 +121,9 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 	
 	positionSelectElement(currentValue: Position, ruleIndex: number): any {
 		const onChange = (value) => {
-			let newSelectedStrategy = this.state.selectedStrategy
-			newSelectedStrategy.strategyConRules[ruleIndex].position = value
-			this.setState({selectedStrategy: newSelectedStrategy})
+			let newStrategy = this.props.strategyDesignerStrategy
+			newStrategy.strategyConRules[ruleIndex].position = value
+			actions.setStrategyDesignerStrategy(newStrategy)
 		}
 		return (
 			this.selectElement(null, currentValue, '', Position, onChange)
@@ -146,10 +136,10 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 			if(valueStr.length > 2 || !isNum)
 				return
 			const value = Number(valueStr)					
-			let newSelectedStrategy = this.state.selectedStrategy
+			let newStrategy = this.props.strategyDesignerStrategy
 			const mainAttributeVarName = mainAttributeVarNameMap[attributeIdentifier.mainAttributeIndex]
-			newSelectedStrategy.strategyConRules[attributeIdentifier.ruleIndex][mainAttributeVarName].percent = value
-			this.setState({selectedStrategy: newSelectedStrategy})
+			newStrategy.strategyConRules[attributeIdentifier.ruleIndex][mainAttributeVarName].percent = value
+			actions.setStrategyDesignerStrategy(newStrategy)
 		}		
 		return (
 			<div className={styles.strategyDesignerSidebarListItemRuleValuePercentWrapper}>
@@ -168,9 +158,14 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 	
 	attributeElement(ruleIndex: number, mainAttributeIndex: AttributeId): any {
 		const mainAttributeVarName = mainAttributeVarNameMap[mainAttributeIndex]
-		const rule = this.state.selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName]
+		const rule = this.props.strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName]
 		const percent = rule?.percent
-		const getAttributeIdentifier = (subAttributeIndex: AttributeId) : AttributeIdentifier  => { return { ruleIndex: ruleIndex, mainAttributeIndex: mainAttributeIndex, subAttributeIndex: subAttributeIndex}}
+		const getAttributeIdentifier = (subAttributeIndex: AttributeId) : AttributeIdentifier  => { 
+			return { 
+				ruleIndex: ruleIndex, 
+				mainAttributeIndex: mainAttributeIndex, 
+				subAttributeIndex: subAttributeIndex
+			}}
 		return (
 			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>				
 				{ /* Simple attribute */}
@@ -206,28 +201,29 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 		const mainAttributeVarName = mainAttributeVarNameMap[this.state.rcAttributeIdentifier?.mainAttributeIndex]
 		// For changing attribute slice id
 		const onChangeVsId = (newAttributeSliceIdStr: string) => {
-			let selectedStrategy = this.state.selectedStrategy
+			let strategyDesignerStrategy = this.props.strategyDesignerStrategy
 			const newAttributeSliceId = Number(newAttributeSliceIdStr)
 			if(newAttributeSliceIdStr == '') {
-				selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName].id = 0
-				this.setState({selectedStrategy: selectedStrategy})
+				strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].id = 0
+				actions.setStrategyDesignerStrategy(strategyDesignerStrategy)
 				return
 			}
 			if(isNaN(newAttributeSliceId) || (newAttributeSliceId <= 0 && newAttributeSliceIdStr.length == 1) || newAttributeSliceId > 99)
 				return
-			selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName].id = newAttributeSliceId
-			this.setState({selectedStrategy: selectedStrategy})
+				strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].id = newAttributeSliceId
+				actions.setStrategyDesignerStrategy(strategyDesignerStrategy)
 		}		
-		const attributeSliceId = this.state.selectedStrategy?.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.id
+		const attributeSliceId = this.props.strategyDesignerStrategy?.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.id
 		// For changing attribute type - simple/complex
 		let toogleAttributeTypeElement = (ruleIndex: number, mainAttributeVarName: string) => {
-			const isRelative = this.state.selectedStrategy.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.isRelative
+			const isRelative = this.props.strategyDesignerStrategy.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.isRelative
 			let onToogleClick = (isRelative: boolean) => {
-				let selectedStrategy = this.state.selectedStrategy
-				selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName].isRelative = isRelative
-				selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName].attribute2 = isRelative ? AttributeType.OPEN : null
-				selectedStrategy.strategyConRules[ruleIndex][mainAttributeVarName].percent = isRelative ? 0 : null
-				this.setState({selectedStrategy: selectedStrategy, rcMenuAnchorElement: null})
+				let strategyDesignerStrategy = this.props.strategyDesignerStrategy
+				strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].isRelative = isRelative
+				strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].attribute2 = isRelative ? AttributeType.OPEN : null
+				strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].percent = isRelative ? 0 : null
+				this.setState({rcMenuAnchorElement: null})
+				actions.setStrategyDesignerStrategy(strategyDesignerStrategy)
 			}		
 			return(
 				<ToggleButtonGroup
@@ -268,7 +264,7 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
     return (
 			<div>
 				{
-					this.state.selectedStrategy?.strategyConRules.map((rule: ConditionalRule, i) => (
+					this.props.strategyDesignerStrategy?.strategyConRules.map((rule: ConditionalRule, i) => (
 						<div className={styles.strategyDesignerSidebarListItem}>
 							{/* simple/relative attribute 1 */}
 							{ this.attributeElement(i, AttributeId.ATTRIBUTE1) }
@@ -280,7 +276,7 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
         	))
         }
 				{/* Sidebar rule right click menu */}
-				{ this.rightClickMenuElement() }
+				{ this.props.strategyDesignerStrategy && this.rightClickMenuElement() }
 			</div>
 		);
   }
@@ -290,7 +286,7 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 
 const mapStateToProps = (state: reducer.StateType) => {
   return {
-    selectedStrategy: state.selectedStrategy
+		strategyDesignerStrategy: state.strategyDesignerStrategy
   };
 };
 

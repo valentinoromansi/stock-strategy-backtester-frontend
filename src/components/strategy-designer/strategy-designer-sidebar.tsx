@@ -30,11 +30,10 @@ import StrategyDesignerSidebarRuleList from './strategy-designer-sidebar-rule-li
 
 
 type PropsType = {
-  selectedStrategy: Strategy
+	strategyDesignerStrategy: Strategy
 }
 
 type StateType = {
-	selectedStrategy: Strategy,
 	sidebarVisible: boolean
 }
 
@@ -46,7 +45,9 @@ enum AttributeId {
 type AttributeIdentifier = {
 	ruleIndex: number,
 	mainAttributeIndex: AttributeId,
-	subAttributeIndex: AttributeId | null
+	subAttributeIndex: AttributeId | null,
+	isEnterTradeRule: boolean,
+	isStopLossRule: boolean
 }
  
 class StrategyDesignerSidebar extends Component<PropsType, StateType> {
@@ -54,18 +55,9 @@ class StrategyDesignerSidebar extends Component<PropsType, StateType> {
   	constructor(props: PropsType) {
     	super(props);
 			this.state = {
-				selectedStrategy: props.selectedStrategy, // copy this by value so props.selectedStrategy stays unchanged
 				sidebarVisible: true
 			}
 	}
-
-	componentDidMount() {
-    	this.setState({selectedStrategy: this.props.selectedStrategy})
-  	}  
-
-	componentWillReceiveProps(nextProps: PropsType) {
-    	this.setState({selectedStrategy: nextProps.selectedStrategy})
-  	}
 
 	
 
@@ -79,7 +71,7 @@ class StrategyDesignerSidebar extends Component<PropsType, StateType> {
 		const sidebarClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarVisible : styles.strategyDesignerSidebarHidden
 		const sidebarToggleButtonClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarToogleButtonVisible : styles.strategyDesignerSidebarToogleButtonHidden
 		const toogleIcon = this.state.sidebarVisible ? <ArrowBackIosNewIcon/> : <ArrowForwardIosIcon/>
-		const jsonButton = <Button className={styles.strategyDesignerSidebarjsonButton} variant="text"> <b>JSON</b> </Button>	
+		const jsonButton = <Button className={styles.strategyDesignerSidebarjsonButton} variant="text"> <b>JSON</b> </Button>
 
     return (
 			<div className={sidebarClass}>
@@ -88,7 +80,7 @@ class StrategyDesignerSidebar extends Component<PropsType, StateType> {
 						<Popup trigger={jsonButton} position="right center" modal>
     						<pre style={{maxHeight: "95vh"}}>
 								{
-									JSON.stringify(this.props.selectedStrategy, null, "\t")
+									JSON.stringify(this.props.strategyDesignerStrategy, null, "\t")
 								}
 							</pre>
   					</Popup>
@@ -107,7 +99,7 @@ class StrategyDesignerSidebar extends Component<PropsType, StateType> {
 
 const mapStateToProps = (state: reducer.StateType) => {
   return {
-    selectedStrategy: state.selectedStrategy
+		strategyDesignerStrategy: state.strategyDesignerStrategy
   };
 };
 

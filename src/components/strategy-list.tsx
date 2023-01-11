@@ -12,6 +12,7 @@ import { CSSProperties } from "react";
 import { SpinnerComponent } from 'react-element-spinner';
 import "apercu-font";
 import styles from '../styles/global.module.sass'
+import { deepCopy } from "utils/utils";
 
 
 type PropsType = {
@@ -39,6 +40,7 @@ class StrategyList extends Component<PropsType, StateType> {
     actions.setStrategyEditorActive(true)
     const strategy: Strategy = this.props.strategies.find((e) => e.name === strategyName)
     actions.setSelectedStrategy(strategy)
+    actions.setStrategyDesignerStrategy(strategy)
   }
   
   addNewStrategy() {

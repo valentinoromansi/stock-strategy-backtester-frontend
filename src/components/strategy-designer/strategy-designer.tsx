@@ -33,6 +33,8 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import StrategyDesignerSidebar from './strategy-designer-sidebar';
 
+import * as actions from "../../state/actions";
+
 
 type PropsType = {
   selectedStrategy: Strategy
@@ -50,7 +52,9 @@ enum AttributeId {
 type AttributeIdentifier = {
 	ruleIndex: number,
 	mainAttributeIndex: AttributeId,
-	subAttributeIndex: AttributeId | null
+	subAttributeIndex: AttributeId | null,
+	isEnterTradeRule: boolean,
+	isStopLossRule: boolean
 }
  
 class StrategyDesigner extends Component<PropsType, StateType> {
@@ -81,6 +85,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	  
 	onRefreshStrategy() {
 	  this.setState({selectedStrategy: this.props.selectedStrategy})
+		actions.setStrategyDesignerStrategy(this.props.selectedStrategy)
 	}
 	
 	onSaveStrategy() {
