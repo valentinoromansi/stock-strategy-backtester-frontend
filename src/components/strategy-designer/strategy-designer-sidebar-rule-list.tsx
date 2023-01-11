@@ -385,11 +385,25 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 
 
 
+	onNameChange(e: any) {
+		const strategy = this.props.strategyDesignerStrategy
+		strategy.name = e.target.value
+		actions.setStrategyDesignerStrategy(strategy)
+	};
+
+
 
   render() {
 
     return (
 			<div>
+				{/* Strategy name field */}
+				<TextField 
+					style={{width: '100%', padding: '10px'}} label="Strategy name" variant="filled" 
+					value={this.props.strategyDesignerStrategy.name}
+					onChange={(e) => { this.onNameChange(e) }}
+					/>
+				{/* Rules list */}
 				{
 					this.props.strategyDesignerStrategy?.strategyConRules.map((rule: ConditionalRule, i) => (
 						<div className={styles.strategyDesignerSidebarListItem}>

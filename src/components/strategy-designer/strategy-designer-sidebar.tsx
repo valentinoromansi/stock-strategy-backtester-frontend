@@ -5,7 +5,7 @@ import "apercu-font";
 
 import { Strategy } from "../../models/strategy";
 import styles from '../../styles/global.module.sass'
-import { IconButton, Input, Menu, TextField } from "@mui/material";
+import { IconButton, TextField } from "@mui/material";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Button from '@mui/material/Button';
@@ -26,7 +26,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-import StrategyDesignerSidebarRuleList from './strategy-designer-sidebar-rule-list'
+import StrategyDesignerSidebarRuleList from './strategy-designer-sidebar-rule-list';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
 
 
 type PropsType = {
@@ -78,16 +80,16 @@ class StrategyDesignerSidebar extends Component<PropsType, StateType> {
 					{/* top buttons - json and show/hide sidebar */}
 					<div className={styles.strategyDesignerSidebartopButtons}>
 						<Popup trigger={jsonButton} position="right center" modal>
-    						<pre style={{maxHeight: "95vh"}}>
+    					<pre style={{maxHeight: "95vh"}}>
 								{
 									JSON.stringify(this.props.strategyDesignerStrategy, null, "\t")
 								}
 							</pre>
-  					</Popup>
+  					</Popup>						
 						<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}} color="primary">
         			{ toogleIcon }
       			</IconButton>
-					</div>
+					</div>					
 					{/* strategy rules */}
 					<StrategyDesignerSidebarRuleList></StrategyDesignerSidebarRuleList>
 				</div>
