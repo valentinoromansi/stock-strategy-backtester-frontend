@@ -13,6 +13,8 @@ import { SpinnerComponent } from 'react-element-spinner';
 import "apercu-font";
 import styles from '../styles/global.module.sass'
 import { deepCopy } from "utils/utils";
+import { Box, Button, Divider, Grid, ListItemIcon, ListSubheader, Typography } from "@mui/material";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 
 type PropsType = {
@@ -25,7 +27,7 @@ type StateType = {
 }
 
 
-class StrategyList extends Component<PropsType, StateType> {
+class MenuStrategyList extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
   }
@@ -112,33 +114,44 @@ class StrategyList extends Component<PropsType, StateType> {
   
 
   render() {
-    
+
     return (
-      <div className={styles.strategyListWrapper}>
-        <SpinnerComponent loading={this.props.strategiesFecthing} position="centered" />
-        <List component="nav" aria-label="main mailbox folders" className={styles.strategyList}>
-          {/* Strategy list  */}
+        <List 
+          sx={{ paddingBottom: '10px', bgcolor: 'background.paper', borderRadius: '6px'} }
+          subheader={
+            <Typography sx={{ padding: '10px' }}>Strategy list</Typography>
+        }>
+          <Divider variant='middle' sx={{ }} orientation="horizontal" flexItem />
+          <SpinnerComponent loading={this.props.strategiesFecthing} position="centered" />         
           {!this.props.strategiesFecthing &&
             this.props.strategies.map((strategy) => (
-            <div className={styles.strategyItemWrapper}>
-              {/* Select strategy */}
-              <ListItemButton key={strategy.name} sx={this.getItemButtonStyle(strategy.name)} onClick={() => this.selectStrategy(strategy.name)}>
-                <ListItemText disableTypography primary={strategy.name?.toUpperCase()} className={this.getItemTextClass(strategy.name)}/>
-              </ListItemButton>
-              {/* Edit strategy */}
-              <ListItemButton sx={this.getEditItemButtonStyle(strategy.name)} onClick={() => this.editStrategy(strategy.name)}>
-                <EditIcon sx={this.sxStyle.editIcon}/>
-              </ListItemButton>
-              </div>
+            <Grid container alignItems='center'>
+              {/* Strategy name */}
+              <Grid item xs={9}>
+                <ListItemButton sx={{ height: 'auto', borderRadius: '8px', contain:'content'}} onClick={() => this.selectStrategy(strategy.name)}>
+                  { <Typography>{strategy.name}</Typography>  }
+                </ListItemButton>
+              </Grid>
+              {/* Strategy edit */}
+              <Grid item xs={3}>
+                <ListItemButton sx={{ paddingRight: 0, paddingLeft: 0, height: 'auto', borderRadius: '8px'}} onClick={() => this.editStrategy(strategy.name)}>
+                  {
+                  <ListItemIcon sx={{ paddingRight: 0, height: 'auto', minWidth: 'auto', margin: 'auto' }} >
+                      <EditIcon fontSize='large' />
+                  </ListItemIcon>
+                  }           
+                </ListItemButton>
+              </Grid>
+            </Grid>     
             ))
           }
-          <hr className={styles.strategyLineSeparator}/>
-        {/* Add new strategy  */}
-        <ListItemButton sx={this.sxStyle.addNewStrategyStyle} onClick={() => this.addNewStrategy()}>
-          <LibraryAddIcon sx={{fontSize: '2rem'}} />
-        </ListItemButton>
-        </List>
-      </div>
+          <Divider variant='middle' sx={{ paddingTop: '10px', marginBottom: '10px' }} orientation="horizontal" flexItem />
+          <Box sx={{display: "flex", flexDirection: "column", paddingLeft: '8px', paddingRight: '8px'}}>
+            <Button sx={{width: "auto", paddingLeft: '8px', paddingRight: '8px' }} variant="contained" endIcon={<AddCircleOutlineIcon/>} onClick={() => this.addNewStrategy()}>
+              add strategy
+            </Button>
+          </Box>
+      </List>
     );
   }
 }
@@ -152,4 +165,4 @@ const mapStateToProps = (state: reducer.StateType) => {
   };
 };
 
-export default connect(mapStateToProps)(StrategyList);
+export default connect(mapStateToProps)(MenuStrategyList);
