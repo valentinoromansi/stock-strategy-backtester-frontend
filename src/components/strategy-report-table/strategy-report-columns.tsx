@@ -151,5 +151,5 @@ export const columns: ColumnsType<BacktestResult> = [
     })
   }
 
-  
+
 ];

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import * as reducer from '../../state/reducers';
 import { Strategy } from "../../models/strategy";
 import { SpinnerComponent } from 'react-element-spinner';
-import { BacktestResult } from "../../models/backtest-result";
+import { BacktestResult, TradeDateAndValues } from "../../models/backtest-result";
 import * as actions from "../../state/actions";
 import styles from 'styles/global.module.sass'
 
@@ -16,7 +16,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownSharpIcon from '@mui/icons-material/KeyboardArrowDownSharp';
 import KeyboardArrowUpSharpIcon from '@mui/icons-material/KeyboardArrowUpSharp';
@@ -36,87 +36,156 @@ type StateType = {
   orderBy: ColumnKey
 }
 
-type ColumnKey = 'name' | 'code' | 'population' | 'size' | 'density'
-
+type ColumnKey = 'stockName' | 'interval' | 'plFactor' | 'plRatio' | 'avgTradeProfit'  | 'sampleWinLossIndecisiveRatio' | 'rewardToRisk' | 'profitToLossLas30Trades'
 
 const columnKeySortingFunMap: { [key in ColumnKey]: (a, b) => number } = {
-  "name": (a, b) => { return (a > b ? 1 : -1) },
-  "code": (a, b) => { return (a > b ? 1 : -1) },
-  "population": (a, b) => { return (a < b ? 1 : -1) },
-  "size": (a, b) => { return (a > b ? 1 : -1) },
-  "density": (a, b) => { return (a > b ? 1 : -1) }
+  "stockName": (a, b) => { return (a > b ? 1 : -1) },
+  "interval": (a, b) => {
+    const intervalSortOrderMap = {
+      '15min': 0,
+      '1h': 1,
+      '1day': 2
+    }
+    return (intervalSortOrderMap[a] > intervalSortOrderMap[b] ? 1 : -1) 
+  },
+  "plFactor": (a, b) => { return (a > b ? 1 : -1) },
+  "plRatio": (a, b) => { return (a > b ? 1 : -1) },
+  "avgTradeProfit": (a, b) => { return (a < b ? 1 : -1) },
+  "sampleWinLossIndecisiveRatio": (a, b) => { return (a < b ? 1 : -1) },
+  "rewardToRisk": (a, b) => { return (a < b ? 1 : -1) },
+  "profitToLossLas30Trades": (a, b) => { return (a < b ? 1 : -1) }
+}
+
+let getLastXTrades = (record: BacktestResult, numOfTrades: number): {profitTrades: TradeDateAndValues[], lossTrades: TradeDateAndValues[]} => {
+  const profitLossTrades = record.tradeDateAndValues.filter(t => t.profitHitDate || t.stopLossHitDate)
+  const lastXprofitLossTrades = profitLossTrades.slice(-Math.min(profitLossTrades.length, numOfTrades))
+  return {
+    profitTrades: lastXprofitLossTrades.filter(t => t.profitHitDate != null),
+    lossTrades: lastXprofitLossTrades.filter(t => t.stopLossHitDate != null)
+  }
+} 
+
+interface RowKey {
+  stockName: string,
+  interval: string,
+  rewardToRisk: string
 }
 
 interface Column {
-  key: ColumnKey;
-  label: string;
-  minWidth?: number;
-  align?: 'right';
-  format?: (value: number) => string;
+  key: ColumnKey
+  label: string
+  minWidth?: number
+  align?: "right" | "left" | "inherit" | "center" | "justify"
+  format?: (value: any) => any
 }
 
 const columns: readonly Column[] = [
-  { key: 'name', label: 'Name', minWidth: 170 },
-  { key: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
+  { key: 'stockName', label: 'Stock name', minWidth: 50, align: 'left', },
+  { key: 'interval', label: 'Interval', minWidth: 50, align: 'left', },
   {
-    key: 'population',
-    label: 'Population',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    key: 'plFactor',
+    label: 'P/L factor',
+    minWidth: 50,
+    align: 'left',
+    format: (backtest: BacktestResult) => {
+      const color = getColorFromPlFactor(backtest.plFactor)
+      return <Typography sx={{ color: color }}>{ backtest.plFactor.toFixed(3) }</Typography>
+    },
   },
   {
-    key: 'size',
-    label: 'Size\u00a0(km\u00b2)',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    key: 'plRatio',
+    label: 'P/L ratio',
+    minWidth: 50,
+    align: 'left',
+    format: (backtest: BacktestResult) => {
+      const color = getColorFromPlRatio(backtest.plRatio)
+      const plRatioText = backtest.timesLost == 0 ? '-' : backtest.plRatio.toFixed(2) 
+      return <Typography sx={{ color: color }}>{ plRatioText }</Typography>
+    },
   },
   {
-    key: 'density',
-    label: 'Density',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
+    key: 'avgTradeProfit',
+    label: 'Avg. profit per trade',
+    minWidth: 50,
+    align: 'left',
+    format: (backtest: BacktestResult) => {
+      const color = getColorFromAvgProfit(backtest.plRatio - 1)
+      const plRatioText = backtest.timesLost == 0 ? '-' : (backtest.plRatio - 1).toFixed(2) 
+      return <Typography sx={{ color: color }}>{ plRatioText }</Typography>
+    },
   },
+  {
+    key: 'sampleWinLossIndecisiveRatio',
+    label: 'Sample(win-loss-indecisive)',
+    minWidth: 50,
+    align: 'left',
+    format: (backtest: BacktestResult) => {
+      const sample = backtest.timesProfited + backtest.timesLost + backtest.timesIndecisive
+      return <Box sx={{display: "flex", flexDirection: "row"}}>
+        <Typography>{sample} (</Typography>
+        <Typography style={{ color: color.green }}>{( backtest.timesProfited / sample * 100 || 0).toFixed(2)}%</Typography>
+        <Typography> - </Typography>
+        <Typography style={{ color: color.red }}>{( backtest.timesLost / sample * 100 || 0).toFixed(2)}%</Typography>
+        <Typography> - </Typography>
+        <Typography style={{ color: color.neutral }}>{( backtest.timesIndecisive / sample * 100 || 0).toFixed(2)}%</Typography>
+        <Typography>)</Typography>
+      </Box>
+    }
+  },
+  {
+    key: 'rewardToRisk',
+    label: 'Reward : risk',
+    minWidth: 50,
+    align: 'left',
+    format: (backtest: BacktestResult) => {
+      return <Typography>{backtest.rewardToRisk}:1</Typography>
+    },
+  },
+  {
+    key: 'profitToLossLas30Trades',
+    label: 'Profit:loss for last 30 trades',
+    minWidth: 50,
+    align: 'left',
+    format: (backtest: BacktestResult) => {
+      const trades = getLastXTrades(backtest, 30)
+      const tradesSum = trades.profitTrades.length + trades.lossTrades.length
+      return <Box sx={{display: "flex", flexDirection: "row"}}>
+        <Typography style={{ color: color.green }}>{(trades.profitTrades.length / tradesSum * 100 || 0).toFixed(2) + '%'}</Typography>
+        <Typography> - </Typography>
+        <Typography style={{ color: color.red }}>{(trades.lossTrades.length / tradesSum * 100 || 0).toFixed(2) + '%'}</Typography>
+      </Box>
+    },
+  }
 ];
 
-
-interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-  density: number;
+const color = {
+  green: 'limegreen',
+  red: 'red',
+  neutral: '#9e9e9e'
 }
 
-function createData(
-  name: string,
-  code: string,
-  population: number,
-  size: number,
-  ): Data {
-    const density = population / size;
-    return { name, code, population, size, density };
-  }
+let getColorFromPlFactor = (plFactor: any) : string => {
+  if (plFactor < 0.5)
+    return color.red
+  else if (plFactor === 0.5)
+    return color.neutral
+  return color.green
+} 
+let getColorFromPlRatio = (plRatio: any) : string => {
+  if (plRatio < 1)
+    return color.red
+  else if (plRatio === 1)
+    return color.neutral
+  return color.green
+}
+let getColorFromAvgProfit = (avgProfit: any) : string => {
+  if (avgProfit < 0)
+    return color.red
+  else if (avgProfit === 0)
+    return color.neutral
+  return color.green
+}
   
-  let rows = [
-    createData('India', 'IN', 1324171354, 3287263),
-    createData('China', 'CN', 1403500365, 9596961),
-    createData('Italy', 'IT', 60483973, 301340),
-    createData('United States', 'US', 327167434, 9833520),
-    createData('Canada', 'CA', 37602103, 9984670),
-    createData('Australia', 'AU', 25475400, 7692024),
-    createData('Germany', 'DE', 83019200, 357578),
-    createData('Ireland', 'IE', 4857000, 70273),
-    createData('Mexico', 'MX', 126577691, 1972550),
-    createData('Japan', 'JP', 126317000, 377973),
-    createData('France', 'FR', 67022000, 640679),
-    createData('United Kingdom', 'GB', 67545757, 242495),
-    createData('Russia', 'RU', 146793744, 17098246),
-    createData('Nigeria', 'NG', 200962417, 923768),
-    createData('Brazil', 'BR', 210147125, 8515767),
-  ];
 
 class StrategyReportTable extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
@@ -129,7 +198,7 @@ class StrategyReportTable extends Component<PropsType, StateType> {
       page: 0,
       rowsPerPage: 10,
       orderDirection: "asc",
-      orderBy: "name"
+      orderBy: "stockName"
     }
   }
 
@@ -146,7 +215,8 @@ class StrategyReportTable extends Component<PropsType, StateType> {
 
   setSelectedStrategyReport(props: PropsType) {
     const selectedStrategyReport = props.strategyReports.find(item => item.strategyName === props.selectedStrategy?.name)
-    this.setState({ selectedStrategyReport: deepCopy(selectedStrategyReport)})
+    if(selectedStrategyReport)
+      this.setState({ selectedStrategyReport: deepCopy(selectedStrategyReport)})
   }
 
   
@@ -156,6 +226,7 @@ class StrategyReportTable extends Component<PropsType, StateType> {
 
   componentDidUpdate(prevProps: Readonly<PropsType>, prevState: Readonly<StateType>, snapshot?: any): void {
     console.log(this.state.orderDirection + ' ' + this.state.orderBy)
+    console.log(this.state.selectedStrategyReport?.backtestResults?.map(item => item.interval))
   }
   
 
@@ -176,13 +247,14 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     const { key } = props.column
     const onChange = (key: ColumnKey) => {
       const newSortOrder = this.state.orderDirection == 'asc' ? 'desc' : 'asc'
-      const sortedRows = rows.sort((a, b) => {
+      const sortedStrategyReport = this.state.selectedStrategyReport
+      sortedStrategyReport.backtestResults = sortedStrategyReport?.backtestResults?.sort((a, b) => {
         if(newSortOrder == 'asc')
           return columnKeySortingFunMap[key](a[key], b[key])
         return columnKeySortingFunMap[key](b[key], b[key])
       })
-      rows = sortedRows
       this.setState({
+        selectedStrategyReport: sortedStrategyReport,
         orderDirection: newSortOrder,
         orderBy: key
       })
@@ -207,19 +279,23 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     let strategyReport = this.state?.selectedStrategyReport
     const page = this.state.page
     const rowsPerPage = this.state.rowsPerPage
+
+    const backtests = this.state.selectedStrategyReport?.backtestResults
+    const rowNumber = this.state.selectedStrategyReport?.backtestResults?.length ?? 0
+
+    console.log(rowNumber)
     
     return (
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>     
+      <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)" }}>     
         <SpinnerComponent loading={this.props.strategyReportsFecthing} position="centered" />
-        <TableContainer sx={{ maxHeight: 440 }}>
+        <TableContainer sx={{ overflow: 'hidden' }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
               {columns.map((column) => (
                 <TableCell
                   key={column.key}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  align={'center'}
                 >                                   
                   <this.ColumnSort column={column}></this.ColumnSort>
                 </TableCell>
@@ -227,18 +303,17 @@ class StrategyReportTable extends Component<PropsType, StateType> {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
+            { backtests &&
+              backtests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((backtest, i) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={i}>
                     {columns.map((column) => {
-                      const value = row[column.key];
                       return (
                         <TableCell key={column.key} align={column.align}>
-                          {column.format && typeof value === 'number'
-                            ? column.format(value)
-                            : value}
+                          {column.format
+                            ? column.format(backtest)
+                            : backtest[column.key]}
                         </TableCell>
                       );
                     })}
@@ -247,23 +322,16 @@ class StrategyReportTable extends Component<PropsType, StateType> {
               })}
           </TableBody>
         </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={this.handleChangePage}
-        onRowsPerPageChange={this.handleChangeRowsPerPage}
-      />
-        
-        
-        {/* <Table 
-          columns={columns} 
-          dataSource={strategyReport?.backtestResults} 
-          onRow={this.onRowClick}
-          pagination={{ pageSize: 30 }}/> */}
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={rowNumber}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={this.handleChangePage}
+          onRowsPerPageChange={this.handleChangeRowsPerPage}
+        />
       </Paper>
     );
   }

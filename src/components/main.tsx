@@ -22,10 +22,14 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import StarBorder from '@mui/icons-material/StarBorder';
 import EditIcon from '@mui/icons-material/Edit';
+import { Strategy } from "models/strategy";
+import { BacktestResult } from "models/backtest-result";
 
 
 type PropsType = {
-  strategyEditorActive: boolean
+  strategyEditorActive: boolean,
+  strategyReports: StrategyReport[],
+  selectedStrategyReport: StrategyReport
 }
 type StateType = {
   strategyBacktestResults?: StrategyReport,
@@ -115,7 +119,6 @@ class Main extends Component<PropsType, StateType> {
     const { graphWidth, graphHeight} = this.state
 
     return (
-      <div>
         <Box sx={{ width: '100%', padding: '24px' }}>
           <Box sx={{ width: 'auto', display:'flex', flexDirection: 'row', gap: '16px'}}>
             {/* Action and strategy list */}
@@ -128,7 +131,7 @@ class Main extends Component<PropsType, StateType> {
               </Box>
             </Box>
             {/* Strategy designer, graph view, report table  */}
-            <Box sx={{ bgcolor: 'black', width: '100%', minWidth: '500px', display:'flex', flexDirection: 'column', gap: '16px'}}>
+            <Box sx={{ width: '100%', minWidth: '500px', display:'flex', flexDirection: 'column', gap: '16px'}}>
               {/* Strategy designer*/}
                 {this.props.strategyEditorActive ?
                   (
@@ -144,33 +147,18 @@ class Main extends Component<PropsType, StateType> {
                       <GraphWithTradeMarkings width={graphWidth} height={graphHeight}/>
                     </Box> */}
                     {/* Report table */}
-                    <Box sx={{ bgcolor: 'orange', width: '100%', display:'flex', flexDirection: 'column'}}>
-                      <StrategyReportTable/>
-                    </Box>
+                    {
+                      this.props.selectedStrategyReport?.backtestResults &&
+                      <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
+                        <StrategyReportTable/>
+                      </Box>
+                    }
                   </React.Fragment>
                   )                
                 }
             </Box>
           </Box>
         </Box>
-        { 
-
-        //<div className={styles.underNavStyle}>
-        }
-          { 
-          //<div className={styles.graphBacktestListWrapperStyle}>
-          //  {/* Render strategy editor or graph with trade markings */}
-          //  {this.props.strategyEditorActive ?
-          //    <StrategyDesigner/> :
-          //    <div>
-          //      <GraphWithTradeMarkings width={graphWidth} height={graphHeight}/>
-          //      <StrategyReportTable/>
-          //    </div>
-          //  }
-          //</div>          
-        //</div>
-          }
-      </div>
     );
   }
 
@@ -180,7 +168,9 @@ class Main extends Component<PropsType, StateType> {
 
 const mapStateToProps = (state: reducer.StateType) => {
   return {
-		strategyEditorActive: state.strategyEditorActive
+		strategyEditorActive: state.strategyEditorActive,
+    strategyReports: state.strategyReports,
+    selectedStrategyReport: state.strategyReports.find(item => item.strategyName === state.selectedStrategy?.name)
   };
 };
 
