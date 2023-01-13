@@ -39,7 +39,7 @@ class MenuMainActions extends Component<PropsType, StateType> {
     }
   }
 
-  updateStrategyReports() {
+  generateStrategyReports() {
     actions.updateStrategyReports()
   }
 
@@ -61,15 +61,15 @@ class MenuMainActions extends Component<PropsType, StateType> {
         <Grid container alignItems='center'>
           {/* Strategy name */}
           <Grid item xs={12} sx={{display: "flex", flexDirection: "column", gap: "8px", paddingLeft: '8px', paddingRight: '8px'}}>
-            <Button sx={{ width: "auto" }} variant="contained">
+            <Button sx={{ width: "auto" }} variant="contained" onClick={this.refetchStrategies}>
               Refetch strategies
             </Button>
             <Divider variant='middle' sx={{ paddingTop: '2px', marginBottom: '2px' }} orientation="horizontal" flexItem />
-            <Button sx={{width: "auto" }} variant="contained">
+            <Button sx={{width: "auto" }} variant="contained" onClick={this.refetchStrategyReports}>
               Refetch reports
             </Button>
             <Divider variant='middle' sx={{ paddingTop: '2px', marginBottom: '2px' }} orientation="horizontal" flexItem />            
-            <Button sx={{width: "auto" }} variant="contained">
+            <Button sx={{width: "auto" }} variant="contained" onClick={this.generateStrategyReports}>
               Regenerate reports
             </Button>
           </Grid>

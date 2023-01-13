@@ -93,7 +93,7 @@ class Main extends Component<PropsType, StateType> {
                 </ListItemButton>
               </Grid>
               <Grid item xs={3}>
-                <ListItemButton sx={{ paddingRight: 0, paddingLeft: 0, height: 'auto', borderRadius: '8px'}}>
+                <ListItemButton sx={{ paddingRight: 0, paddingLeft: 0, borderRadius: '8px'}}>
                   {
                   <ListItemIcon sx={{ paddingRight: 0, height: 'auto', minWidth: 'auto', margin: 'auto' }} >
                       <EditIcon fontSize='large' />
@@ -128,23 +128,34 @@ class Main extends Component<PropsType, StateType> {
               </Box>
             </Box>
             {/* Strategy designer, graph view, report table  */}
-            <Box sx={{ bgcolor: 'black', minHeight: '30vh', width: '100%', minWidth: '500px', display:'flex', flexDirection: 'column', gap: '16px'}}>
+            <Box sx={{ bgcolor: 'black', width: '100%', minWidth: '500px', display:'flex', flexDirection: 'column', gap: '16px'}}>
               {/* Strategy designer*/}
-              <Box sx={{ bgcolor: 'gray', minHeight: '30vh', width: '100%', display:'flex', flexDirection: 'column', gap: '16px'}}>
-              </Box>
-              {/* Graph view */}
-              <Box sx={{ bgcolor: 'gray', minHeight: '30vh', width: '100%', display:'flex', flexDirection: 'column', gap: '16px'}}>
-              </Box>
-              {/* Report table */}
-              <Box sx={{ bgcolor: 'gray', minHeight: '30vh', width: '100%', display:'flex', flexDirection: 'column', gap: '16px'}}>
-              </Box>
+                {this.props.strategyEditorActive ?
+                  (
+                  <Box sx={{ bgcolor: 'gray', width: '100%', display:'flex', flexDirection: 'column'}}>
+                    <StrategyDesigner/>
+                  </Box>
+                  )
+                :
+                  (
+                  <React.Fragment>
+                    {/* Graph */}
+                    <Box sx={{ bgcolor: 'gray', width: '100%', display:'flex', flexDirection: 'column'}}>
+                      <GraphWithTradeMarkings width={graphWidth} height={graphHeight}/>
+                    </Box>
+                    {/* Report table */}
+                    <Box sx={{ bgcolor: 'gray', width: '100%', display:'flex', flexDirection: 'column'}}>
+                      <StrategyReportTable/>
+                    </Box>
+                  </React.Fragment>
+                  )                
+                }
             </Box>
           </Box>
         </Box>
         { 
-        //<Navigation/>
+
         //<div className={styles.underNavStyle}>
-        //  <StrategyList/>
         }
           { 
           //<div className={styles.graphBacktestListWrapperStyle}>
