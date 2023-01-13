@@ -16,7 +16,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-
+import { Box, IconButton } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import KeyboardArrowDownSharpIcon from '@mui/icons-material/KeyboardArrowDownSharp';
+import KeyboardArrowUpSharpIcon from '@mui/icons-material/KeyboardArrowUpSharp';
+import { deepCopy } from "utils/utils";
 
 type PropsType = {
   selectedStrategy: Strategy | null,
@@ -27,11 +31,24 @@ type PropsType = {
 type StateType = {
   selectedStrategyReport: StrategyReport | null,
   page: number,
-  rowsPerPage: number
+  rowsPerPage: number,
+  orderDirection: 'asc' | 'desc',
+  orderBy: ColumnKey
+}
+
+type ColumnKey = 'name' | 'code' | 'population' | 'size' | 'density'
+
+
+const columnKeySortingFunMap: { [key in ColumnKey]: (a, b) => number } = {
+  "name": (a, b) => { return (a > b ? 1 : -1) },
+  "code": (a, b) => { return (a > b ? 1 : -1) },
+  "population": (a, b) => { return (a < b ? 1 : -1) },
+  "size": (a, b) => { return (a > b ? 1 : -1) },
+  "density": (a, b) => { return (a > b ? 1 : -1) }
 }
 
 interface Column {
-  id: 'name' | 'code' | 'population' | 'size' | 'density';
+  key: ColumnKey;
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -39,24 +56,24 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
+  { key: 'name', label: 'Name', minWidth: 170 },
+  { key: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
   {
-    id: 'population',
+    key: 'population',
     label: 'Population',
     minWidth: 170,
     align: 'right',
     format: (value: number) => value.toLocaleString('en-US'),
   },
   {
-    id: 'size',
+    key: 'size',
     label: 'Size\u00a0(km\u00b2)',
     minWidth: 170,
     align: 'right',
     format: (value: number) => value.toLocaleString('en-US'),
   },
   {
-    id: 'density',
+    key: 'density',
     label: 'Density',
     minWidth: 170,
     align: 'right',
@@ -83,7 +100,7 @@ function createData(
     return { name, code, population, size, density };
   }
   
-  const rows = [
+  let rows = [
     createData('India', 'IN', 1324171354, 3287263),
     createData('China', 'CN', 1403500365, 9596961),
     createData('Italy', 'IT', 60483973, 301340),
@@ -104,12 +121,15 @@ function createData(
 class StrategyReportTable extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
+    this.ColumnSort = this.ColumnSort.bind(this)
     this.handleChangePage = this.handleChangePage.bind(this)
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this)
     this.state = {
       selectedStrategyReport: null,
       page: 0,
-      rowsPerPage: 10
+      rowsPerPage: 10,
+      orderDirection: "asc",
+      orderBy: "name"
     }
   }
 
@@ -126,12 +146,16 @@ class StrategyReportTable extends Component<PropsType, StateType> {
 
   setSelectedStrategyReport(props: PropsType) {
     const selectedStrategyReport = props.strategyReports.find(item => item.strategyName === props.selectedStrategy?.name)
-    this.setState({ selectedStrategyReport: selectedStrategyReport})
+    this.setState({ selectedStrategyReport: deepCopy(selectedStrategyReport)})
   }
 
   
   componentDidMount() {
     this.setSelectedStrategyReport(this.props)
+  }
+
+  componentDidUpdate(prevProps: Readonly<PropsType>, prevState: Readonly<StateType>, snapshot?: any): void {
+    console.log(this.state.orderDirection + ' ' + this.state.orderBy)
   }
   
 
@@ -148,6 +172,37 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     }
   }
 
+  ColumnSort(props: { column: Column }): any {
+    const { key } = props.column
+    const onChange = (key: ColumnKey) => {
+      const newSortOrder = this.state.orderDirection == 'asc' ? 'desc' : 'asc'
+      const sortedRows = rows.sort((a, b) => {
+        if(newSortOrder == 'asc')
+          return columnKeySortingFunMap[key](a[key], b[key])
+        return columnKeySortingFunMap[key](b[key], b[key])
+      })
+      rows = sortedRows
+      this.setState({
+        orderDirection: newSortOrder,
+        orderBy: key
+      })
+    }
+    return (
+      <Box sx={{display: 'flex', flexDirection: 'row'}}>
+        <Box sx={{marginBlock: 'auto'}}>{key}</Box>
+        <IconButton aria-label="delete" size="large" onClick={() => onChange(key)}>
+          {
+            this.state.orderDirection === 'asc' ?
+            <KeyboardArrowDownSharpIcon fontSize="inherit" /> :
+            <KeyboardArrowUpSharpIcon fontSize="inherit" />
+          }
+        </IconButton>
+       </Box> 
+    )
+  }
+
+  
+
   render() {
     let strategyReport = this.state?.selectedStrategyReport
     const page = this.state.page
@@ -162,11 +217,11 @@ class StrategyReportTable extends Component<PropsType, StateType> {
             <TableRow>
               {columns.map((column) => (
                 <TableCell
-                  key={column.id}
+                  key={column.key}
                   align={column.align}
                   style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
+                >                                   
+                  <this.ColumnSort column={column}></this.ColumnSort>
                 </TableCell>
               ))}
             </TableRow>
@@ -178,9 +233,9 @@ class StrategyReportTable extends Component<PropsType, StateType> {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                     {columns.map((column) => {
-                      const value = row[column.id];
+                      const value = row[column.key];
                       return (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell key={column.key} align={column.align}>
                           {column.format && typeof value === 'number'
                             ? column.format(value)
                             : value}
