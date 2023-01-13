@@ -140,11 +140,11 @@ class Main extends Component<PropsType, StateType> {
                   (
                   <React.Fragment>
                     {/* Graph */}
-                    <Box sx={{ bgcolor: 'gray', width: '100%', display:'flex', flexDirection: 'column'}}>
+                    {/* <Box sx={{ bgcolor: 'gray', width: '100%', display:'flex', flexDirection: 'column'}}>
                       <GraphWithTradeMarkings width={graphWidth} height={graphHeight}/>
-                    </Box>
+                    </Box> */}
                     {/* Report table */}
-                    <Box sx={{ bgcolor: 'gray', width: '100%', display:'flex', flexDirection: 'column'}}>
+                    <Box sx={{ bgcolor: 'orange', width: '100%', display:'flex', flexDirection: 'column'}}>
                       <StrategyReportTable/>
                     </Box>
                   </React.Fragment>
