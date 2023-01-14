@@ -7,9 +7,16 @@ $dividerColor: #374154
 
 :global html
   font-size: 62.5%
+  -ms-overflow-style: none
+  scrollbar-width: none
+  ::-webkit-scrollbar
+    display: none
 
 :global body
   background-color: #e4e4e4
+
+
+
 
 :global .ant-spin-nested-loading
   .ant-spin-container
@@ -21,16 +28,12 @@ $dividerColor: #374154
 /***************/
 /* Apex charts */
 /***************/
-:global .apexcharts-xaxis,
-:global .apexcharts-yaxis,
-:global .apexcharts-menu-icon,
-:global .apexcharts-grid,
-:global .apexcharts-data-labels > text
-  display: none
+
 
 /*********/
 /* graph */
 /*********/
+  
 .graphSelectedReportText
   padding-top: 0
   h1
@@ -38,18 +41,8 @@ $dividerColor: #374154
     color: $textColorLight
     margin: 0px
 
-.graphBacktestListWrapperStyle
-  width: 90vw
-  background-color: $backgroundBlueLight
-
-.graphStyle
-  background: $backgroundBlueDark
-  text-align: start
-  overflow: hidden
-  transition: max-height 1s
-
 :global .react-stockchart > .react-stockchart > g
-  transform: translate(40px, 20px)
+  transform: translate(30px, 20px)
 
 $graph_line_opacity: 0.3
 
@@ -60,7 +53,7 @@ $graph_line_opacity: 0.3
 :global .react-stockcharts-x-axis > g > g > text,
 :global .react-stockcharts-y-axis > g > g > text
   font-size: 1rem
-  fill: white
+  fill: gray
   opacity: $graph_line_opacity
 
 :global .tick > line
@@ -72,39 +65,17 @@ $graph_line_opacity: 0.3
   opacity: $graph_line_opacity
 
 // Date, O, H, L, C, Vol. text
-:global .react-stockcharts-tooltip > tspan
-  font-size: 1rem
-  fill: white
-  opacity: $graph_line_opacity
-
-:global .react-stockcharts-tooltip > .react-stockcharts-tooltip-label
-  fill: $textColorLight
+:global .react-stockcharts-tooltip 
+  tspan
+    font-size: 1rem
+    fill: white
+    opacity: $graph_line_opacity
+  .react-stockcharts-tooltip-label
+    fill: $textColorLight
 
 :global .react-stockcharts-crosshair > line
   stroke: $textColorLight
 
-/****************************/
-/* under navigation wrapper */
-/****************************/
-.underNavStyle
-  display: flex
-  width: 100vw
-
-/**************/
-/* navigation */
-/**************/
-.navWrapper
-  width: 100vw
-  background: $backgroundBlueLight
-  display: flex
-  justify-content: left
-  flex-direction: row
-  gap: 0.8rem
-
-.navItemTextStyle
-  font-size: 1.4rem
-  font-family: $font
-  color: $textColorDark
 
 /*****************/
 /* strategy-list */

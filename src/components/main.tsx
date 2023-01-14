@@ -29,94 +29,54 @@ import { BacktestResult } from "models/backtest-result";
 type PropsType = {
   strategyEditorActive: boolean,
   strategyReports: StrategyReport[],
-  selectedStrategyReport: StrategyReport
+  selectedStrategyReport: StrategyReport,
+  selectedBacktestResult: BacktestResult
 }
 type StateType = {
   strategyBacktestResults?: StrategyReport,
-  graphWidth: number,
-  graphHeight: number,
-  actionMenuOpened: boolean
+  actionMenuOpened: boolean,
+  graphSize: { width: number, height: number }
 }
+
 
 class Main extends Component<PropsType, StateType> {
 
+
+  graphWrapperRef: React.RefObject<HTMLElement> = React.createRef();
+
   constructor(props: PropsType) {
     super(props);
-    this.handleActionMenuClick = this.handleActionMenuClick.bind(this)
     actions.getStrategies();
-    actions.getStrategyReports();
-    
+    actions.getStrategyReports();    
     this.state = {
-      graphWidth: this.getGraphSize().width,
-      graphHeight: this.getGraphSize().height,
-      actionMenuOpened: true
+      actionMenuOpened: true,
+      graphSize: { width: 0, height: 0}
     }
-    
-
-    this.handleResize = this.handleResize.bind(this)    
-    window.addEventListener('resize', this.handleResize);
+    this.updateGraphSize = this.updateGraphSize.bind(this)
+    this.handleActionMenuClick = this.handleActionMenuClick.bind(this)
   }
-
-  handleResize() {
-    this.setState({ 
-      graphWidth: this.getGraphSize().width,
-      graphHeight: this.getGraphSize().height
+  
+  
+  updateGraphSize() {
+    this.setState({
+      graphSize: {
+        width: this.graphWrapperRef?.current?.clientWidth,
+        height: window.innerHeight * 0.7
+      }
     })
   }
-
-  getGraphSize(): { width: number, height: number} {
-    return {
-      width: window.innerWidth * 0.9,
-      height: window.innerHeight * 0.6
-    }
+  
+  componentDidMount(): void {
+    this.updateGraphSize()
+    window.addEventListener('resize', this.updateGraphSize)
   }
-
+ 
   handleActionMenuClick() {
     this.setState({actionMenuOpened: !this.state.actionMenuOpened})
   }
 
-  actionListEl() {
-    return (
-      <List
-        sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', borderRadius: '8px'} }
-        component="nav"
-        aria-labelledby="nested-list-subheader"        
-      >
-        <Collapse in={this.state.actionMenuOpened} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <Grid container alignItems='center'>
-              <Grid item xs={9}>
-                <ListItemButton sx={{ height: 'auto', borderRadius: '8px', contain:'content'}}>
-                  { <Typography>nakjds dasd</Typography>  }
-                </ListItemButton>
-                <ListItemButton sx={{ height: 'auto', borderRadius: '8px'}}>
-                  { <Typography>nakjds dad asd asdasd</Typography>  }
-                </ListItemButton>
-                <ListItemButton sx={{ height: 'auto', borderRadius: '8px'}}>
-                  { <Typography>nakjds dasd</Typography>  }
-                </ListItemButton>
-              </Grid>
-              <Grid item xs={3}>
-                <ListItemButton sx={{ paddingRight: 0, paddingLeft: 0, borderRadius: '8px'}}>
-                  {
-                  <ListItemIcon sx={{ paddingRight: 0, height: 'auto', minWidth: 'auto', margin: 'auto' }} >
-                      <EditIcon fontSize='large' />
-                  </ListItemIcon>
-                  }           
-                </ListItemButton>
-              </Grid>
-            </Grid>                
-          </List>
-        </Collapse>
-      </List>
-    )
-  }
-
-
 
   render() {
-
-    const { graphWidth, graphHeight} = this.state
 
     return (
         <Box sx={{ width: '100%', padding: '24px' }}>
@@ -131,30 +91,29 @@ class Main extends Component<PropsType, StateType> {
               </Box>
             </Box>
             {/* Strategy designer, graph view, report table  */}
-            <Box sx={{ width: '100%', minWidth: '500px', display:'flex', flexDirection: 'column', gap: '16px'}}>
+            <Box sx={{ width: '100%', minWidth: '500px', display:'flex', flexDirection: 'column', gap: '16px'}} ref={this.graphWrapperRef}>
               {/* Strategy designer*/}
-                {this.props.strategyEditorActive ?
-                  (
+                {this.props.strategyEditorActive ?                  
                   <Box sx={{ bgcolor: 'gray', width: '100%', display:'flex', flexDirection: 'column'}}>
                     <StrategyDesigner/>
-                  </Box>
-                  )
+                  </Box>                  
                 :
-                  (
-                  <React.Fragment>
-                    {/* Graph */}
-                    {/* <Box sx={{ bgcolor: 'gray', width: '100%', display:'flex', flexDirection: 'column'}}>
-                      <GraphWithTradeMarkings width={graphWidth} height={graphHeight}/>
-                    </Box> */}
-                    {/* Report table */}
+                <React.Fragment>
+                    {/* Graph and Report table */}
                     {
                       this.props.selectedStrategyReport?.backtestResults &&
-                      <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
-                        <StrategyReportTable/>
-                      </Box>
-                    }
+                      <React.Fragment>                         
+                        { this.props.selectedBacktestResult &&
+                          <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
+                            <GraphWithTradeMarkings width={this.state.graphSize.width} height={this.state.graphSize.height}/>
+                          </Box> 
+                        }
+                        <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
+                          <StrategyReportTable/>
+                        </Box>
+                      </React.Fragment>
+                    }                                
                   </React.Fragment>
-                  )                
                 }
             </Box>
           </Box>
@@ -170,7 +129,8 @@ const mapStateToProps = (state: reducer.StateType) => {
   return {
 		strategyEditorActive: state.strategyEditorActive,
     strategyReports: state.strategyReports,
-    selectedStrategyReport: state.strategyReports.find(item => item.strategyName === state.selectedStrategy?.name)
+    selectedStrategyReport: state.strategyReports.find(item => item.strategyName === state.selectedStrategy?.name),
+    selectedBacktestResult: state.selectedBacktestResult
   };
 };
 

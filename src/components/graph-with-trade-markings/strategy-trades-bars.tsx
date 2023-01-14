@@ -42,6 +42,11 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 		}
   }
 
+  componentDidMount(): void {
+	  this.setState({selectedBacktestResult: this.props.selectedBacktestResult});
+	  this.setState({linearGradientBase: this.getLinearGradientBase(this.props.selectedBacktestResult.tradeDateAndValues)});
+  }
+
 	componentDidUpdate(prevProps: PropsType) {
 		if(prevProps.selectedBacktestResult !== this.props.selectedBacktestResult) {
 			this.setState({selectedBacktestResult: this.props.selectedBacktestResult});
@@ -83,12 +88,11 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 	}
 
 	getBarHighlightColor(trade: TradeDateAndValues) {
-		if(trade.tradeResult === TradeResult.PROFIT)
+    if(trade.tradeResult === TradeResult.PROFIT)
 			return this.profitHighlightColor
 		else if(trade.tradeResult === TradeResult.LOSS)
 			return this.lossHighlightColor
 		return this.indecisiveHighlightColor
-
 	}
 	
 	getBarChartFillColor(tradeDateAndValues: TradeDateAndValues): string {

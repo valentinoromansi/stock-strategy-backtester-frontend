@@ -242,7 +242,6 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 				strategyDesignerStrategy.enterValueExRule.id = id
 			else if(this.state.rcAttributeIdentifier.isStoplossRule)
 				strategyDesignerStrategy.stopLossValueExRule.id = id
-			console.log(id)
 			actions.setStrategyDesignerStrategy(strategyDesignerStrategy)
 		}
 		// For changing attribute slice id

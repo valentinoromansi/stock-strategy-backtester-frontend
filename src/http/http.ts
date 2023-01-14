@@ -41,7 +41,6 @@ export let getStrategyReports = () : Promise<StrategyReport[]> => {
     .then(response => {
       response.json().then(jsonObj => {
         let reports: StrategyReport[] = jsonObj
-        console.warn(reports)
         console.log(colors.green(`Fetch ${URL_GET_STRATEGY_REPORTS} done.`))
         resolve(reports)
       })
