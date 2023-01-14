@@ -26,6 +26,8 @@ type PropsType = {
 type StateType = {
 }
 
+const selectedRowColor = '#f5f5f5'
+
 
 class MenuStrategyList extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
@@ -48,6 +50,10 @@ class MenuStrategyList extends Component<PropsType, StateType> {
   addNewStrategy() {
     actions.setStrategyEditorActive(true)
     actions.setSelectedStrategy(null)
+  }
+
+  isStrategySelected(strategy: Strategy) {
+    return strategy?.name == this.props.selectedStrategy?.name
   }
   
 
@@ -110,22 +116,23 @@ class MenuStrategyList extends Component<PropsType, StateType> {
   
   getEditItemButtonStyle(strategyKey: string): any {
     return this.props?.selectedStrategy?.name === strategyKey ? this.sxStyle.selectedEditItemButtonStyle : this.sxStyle.editItemButtonStyle
-  }
+  }  
   
 
   render() {
 
     return (
-        <List 
+        <List
           sx={{ paddingBottom: '10px', bgcolor: 'background.paper', borderRadius: '6px'} }
           subheader={
             <Typography sx={{ padding: '10px' }}>Strategy list</Typography>
         }>
           <Divider variant='middle' sx={{ }} orientation="horizontal" flexItem />
-          <SpinnerComponent loading={this.props.strategiesFecthing} position="centered" />         
+          <SpinnerComponent loading={this.props.strategiesFecthing} position="centered" />
+
           {!this.props.strategiesFecthing &&
             this.props.strategies.map((strategy) => (
-            <Grid container alignItems='center'>
+            <Grid container alignItems='center' sx={{background: this.isStrategySelected(strategy) ? selectedRowColor : 'none'}}>
               {/* Strategy name */}
               <Grid item xs={9}>
                 <ListItemButton sx={{ height: 'auto', borderRadius: '8px', contain:'content'}} onClick={() => this.selectStrategy(strategy.name)}>
@@ -134,7 +141,7 @@ class MenuStrategyList extends Component<PropsType, StateType> {
               </Grid>
               {/* Strategy edit */}
               <Grid item xs={3}>
-                <ListItemButton sx={{ paddingRight: 0, paddingLeft: 0, height: 'auto', borderRadius: '8px'}} onClick={() => this.editStrategy(strategy.name)}>
+                <ListItemButton sx={{ paddingRight: 0, paddingLeft: 0, height: 'auto', borderRadius: '8px'}} onClick={() => this.editStrategy(strategy.name) }>
                   {
                   <ListItemIcon sx={{ paddingRight: 0, height: 'auto', minWidth: 'auto', margin: 'auto' }} >
                       <EditIcon fontSize='large' />
@@ -145,6 +152,7 @@ class MenuStrategyList extends Component<PropsType, StateType> {
             </Grid>     
             ))
           }
+
           <Divider variant='middle' sx={{ paddingTop: '10px', marginBottom: '10px' }} orientation="horizontal" flexItem />
           <Box sx={{display: "flex", flexDirection: "column", paddingLeft: '8px', paddingRight: '8px'}}>
             <Button sx={{width: "auto", paddingLeft: '8px', paddingRight: '8px' }} variant="contained" endIcon={<AddCircleOutlineIcon/>} onClick={() => this.addNewStrategy()}>

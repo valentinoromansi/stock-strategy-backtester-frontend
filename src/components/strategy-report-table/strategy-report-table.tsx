@@ -6,7 +6,6 @@ import { Strategy } from "../../models/strategy";
 import { SpinnerComponent } from 'react-element-spinner';
 import { BacktestResult, TradeDateAndValues } from "../../models/backtest-result";
 import * as actions from "../../state/actions";
-import styles from 'styles/global.module.sass'
 
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -17,14 +16,12 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Box, IconButton, Typography } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownSharpIcon from '@mui/icons-material/KeyboardArrowDownSharp';
 import KeyboardArrowUpSharpIcon from '@mui/icons-material/KeyboardArrowUpSharp';
 import { deepCopy } from "utils/utils";
 
 type PropsType = {
   selectedStrategy: Strategy | null,
-  strategiesFecthing: boolean,
   strategyReports: StrategyReport[],
   strategyReportsFecthing: boolean
 }
@@ -56,37 +53,20 @@ const columnKeySortingFunMap: { [key in ColumnKey]: (a, b) => number } = {
   "profitToLossLas30Trades": (a, b) => { return (a < b ? 1 : -1) }
 }
 
-let getLastXTrades = (record: BacktestResult, numOfTrades: number): {profitTrades: TradeDateAndValues[], lossTrades: TradeDateAndValues[]} => {
-  const profitLossTrades = record.tradeDateAndValues.filter(t => t.profitHitDate || t.stopLossHitDate)
-  const lastXprofitLossTrades = profitLossTrades.slice(-Math.min(profitLossTrades.length, numOfTrades))
-  return {
-    profitTrades: lastXprofitLossTrades.filter(t => t.profitHitDate != null),
-    lossTrades: lastXprofitLossTrades.filter(t => t.stopLossHitDate != null)
-  }
-} 
-
-interface RowKey {
-  stockName: string,
-  interval: string,
-  rewardToRisk: string
-}
-
 interface Column {
   key: ColumnKey
   label: string
   minWidth?: number
-  align?: "right" | "left" | "inherit" | "center" | "justify"
   format?: (value: any) => any
 }
 
 const columns: readonly Column[] = [
-  { key: 'stockName', label: 'Stock name', minWidth: 50, align: 'left', },
-  { key: 'interval', label: 'Interval', minWidth: 50, align: 'left', },
+  { key: 'stockName', label: 'Stock name', minWidth: 50 },
+  { key: 'interval', label: 'Interval', minWidth: 50 },
   {
     key: 'plFactor',
     label: 'P/L factor',
     minWidth: 50,
-    align: 'left',
     format: (backtest: BacktestResult) => {
       const color = getColorFromPlFactor(backtest.plFactor)
       return <Typography sx={{ color: color }}>{ backtest.plFactor.toFixed(3) }</Typography>
@@ -96,7 +76,7 @@ const columns: readonly Column[] = [
     key: 'plRatio',
     label: 'P/L ratio',
     minWidth: 50,
-    align: 'left',
+    
     format: (backtest: BacktestResult) => {
       const color = getColorFromPlRatio(backtest.plRatio)
       const plRatioText = backtest.timesLost == 0 ? '-' : backtest.plRatio.toFixed(2) 
@@ -106,8 +86,7 @@ const columns: readonly Column[] = [
   {
     key: 'avgTradeProfit',
     label: 'Avg. profit per trade',
-    minWidth: 50,
-    align: 'left',
+    minWidth: 50,    
     format: (backtest: BacktestResult) => {
       const color = getColorFromAvgProfit(backtest.plRatio - 1)
       const plRatioText = backtest.timesLost == 0 ? '-' : (backtest.plRatio - 1).toFixed(2) 
@@ -118,7 +97,6 @@ const columns: readonly Column[] = [
     key: 'sampleWinLossIndecisiveRatio',
     label: 'Sample(win-loss-indecisive)',
     minWidth: 50,
-    align: 'left',
     format: (backtest: BacktestResult) => {
       const sample = backtest.timesProfited + backtest.timesLost + backtest.timesIndecisive
       return <Box sx={{display: "flex", flexDirection: "row"}}>
@@ -136,7 +114,6 @@ const columns: readonly Column[] = [
     key: 'rewardToRisk',
     label: 'Reward : risk',
     minWidth: 50,
-    align: 'left',
     format: (backtest: BacktestResult) => {
       return <Typography>{backtest.rewardToRisk}:1</Typography>
     },
@@ -145,9 +122,13 @@ const columns: readonly Column[] = [
     key: 'profitToLossLas30Trades',
     label: 'Profit:loss for last 30 trades',
     minWidth: 50,
-    align: 'left',
     format: (backtest: BacktestResult) => {
-      const trades = getLastXTrades(backtest, 30)
+      const profitLossTrades = backtest.tradeDateAndValues.filter(t => t.profitHitDate || t.stopLossHitDate)
+      const lastXprofitLossTrades = profitLossTrades.slice(-Math.min(profitLossTrades.length, 30))
+      const trades = {
+        profitTrades: lastXprofitLossTrades.filter(t => t.profitHitDate != null),
+        lossTrades: lastXprofitLossTrades.filter(t => t.stopLossHitDate != null)
+      }
       const tradesSum = trades.profitTrades.length + trades.lossTrades.length
       return <Box sx={{display: "flex", flexDirection: "row"}}>
         <Typography style={{ color: color.green }}>{(trades.profitTrades.length / tradesSum * 100 || 0).toFixed(2) + '%'}</Typography>
@@ -157,6 +138,14 @@ const columns: readonly Column[] = [
     },
   }
 ];
+
+
+interface RowKey {
+  stockName: string,
+  interval: string,
+  rewardToRisk: string
+}
+
 
 const color = {
   green: 'limegreen',
@@ -225,8 +214,6 @@ class StrategyReportTable extends Component<PropsType, StateType> {
   }
 
   componentDidUpdate(prevProps: Readonly<PropsType>, prevState: Readonly<StateType>, snapshot?: any): void {
-    console.log(this.state.orderDirection + ' ' + this.state.orderBy)
-    console.log(this.state.selectedStrategyReport?.backtestResults?.map(item => item.interval))
   }
   
 
@@ -235,12 +222,8 @@ class StrategyReportTable extends Component<PropsType, StateType> {
   }
 
   onRowClick(row: BacktestResult) {
-    return {
-      onClick: (event: any) => {
-        actions.getStock(row.interval, row.stockName);
-        actions.setSelectedBacktestResult(row)
-      }
-    }
+    actions.getStock(row.interval, row.stockName);
+    actions.setSelectedBacktestResult(row)
   }
 
   ColumnSort(props: { column: Column }): any {
@@ -276,14 +259,12 @@ class StrategyReportTable extends Component<PropsType, StateType> {
   
 
   render() {
-    let strategyReport = this.state?.selectedStrategyReport
     const page = this.state.page
     const rowsPerPage = this.state.rowsPerPage
 
     const backtests = this.state.selectedStrategyReport?.backtestResults
     const rowNumber = this.state.selectedStrategyReport?.backtestResults?.length ?? 0
 
-    console.log(rowNumber)
     
     return (
       <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)" }}>     
@@ -295,8 +276,7 @@ class StrategyReportTable extends Component<PropsType, StateType> {
               {columns.map((column) => (
                 <TableCell
                   key={column.key}
-                  align={'center'}
-                >                                   
+                >
                   <this.ColumnSort column={column}></this.ColumnSort>
                 </TableCell>
               ))}
@@ -307,10 +287,10 @@ class StrategyReportTable extends Component<PropsType, StateType> {
               backtests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((backtest, i) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={i}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={i} onClick={() => this.onRowClick(backtest)}>
                     {columns.map((column) => {
                       return (
-                        <TableCell key={column.key} align={column.align}>
+                        <TableCell key={column.key} align='left'>
                           {column.format
                             ? column.format(backtest)
                             : backtest[column.key]}
@@ -342,7 +322,6 @@ class StrategyReportTable extends Component<PropsType, StateType> {
 const mapStateToProps = (state: reducer.StateType) => {
   return {
     selectedStrategy: state.selectedStrategy,
-    strategiesFecthing: state.strategiesFecthing,
     strategyReports: state.strategyReports,
     strategyReportsFecthing: state.strategyReportsFecthing,
   };
