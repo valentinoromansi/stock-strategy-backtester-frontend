@@ -1,6 +1,6 @@
-import { Component } from "react";
+import React, { Component, CSSProperties, useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
-import * as reducer from '../state/reducers';
+import * as reducer from '../../state/reducers';
 import "apercu-font";
 
 import { format } from "d3-format";
@@ -11,18 +11,18 @@ import { CrossHairCursor} from "react-stockcharts/lib/coordinates";
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
 import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
 import { Annotate, LabelAnnotation } from "react-stockcharts/lib/annotation";
-import { VerticalSlice } from "../models/vertical-slice";
-import { Strategy } from "../models/strategy";
-import { BacktestResult, TradeDateAndValues } from "../models/backtest-result";
-import { LineType } from "../types/line-type";
+import { VerticalSlice } from "../../models/vertical-slice";
+import { Strategy } from "../../models/strategy";
+import { BacktestResult, TradeDateAndValues } from "../../models/backtest-result";
+import { LineType } from "../../types/line-type";
 
-import styles from '../styles/global.module.sass'
+import styles from '../../styles/global.module.sass'
 import { SpinnerComponent } from "react-element-spinner";
 import StrategyTradesBars from "./strategy-trades-bars";
-
+import { Paper } from "@mui/material";
 
 type PropsType = {
-  selectedStrategy: Strategy,
+	selectedStrategy: Strategy,
 	selectedBacktestResult: BacktestResult,
   type: string,
   width: number,
@@ -42,7 +42,7 @@ type StateType = {
 	selectedTrade: TradeDateAndValues
 }
 
-class Graph extends Component<PropsType, StateType> {
+class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 	readonly enterTradeColor: string  = 'white'
 	readonly profitColor: string = '#00ff00'
 	readonly lossColor: string = '#ff0000'
@@ -64,7 +64,6 @@ class Graph extends Component<PropsType, StateType> {
 		if(prevProps.selectedTrade !== this.props.selectedTrade) {
 			this.setState({selectedTrade: this.props.selectedTrade});
 		}
-		//console.log(this.props.selectedTrade)
 	}
 
 	
@@ -97,6 +96,9 @@ class Graph extends Component<PropsType, StateType> {
 		const { tradeDateAndValues, stockName, interval, rewardToRisk } = this.props?.selectedBacktestResult || { tradeDateAndValues: [] }
 		const { type, width, ratio, mouseMoveEnabled, panEnabled, zoomEnabled, clamp, height } = this.props;
 
+		if(!width || !height || width < 50 || height < 50)
+			return (<React.Fragment></React.Fragment>)
+
 		// ChartCanvas component breaks when data consits of less then 
 		const dataForRender = 
 			this.props.data?.length >= 2 ? 
@@ -124,7 +126,6 @@ class Graph extends Component<PropsType, StateType> {
 		const profitEntryDates: Date[] = tradeDateAndValues?.filter(trade => trade.profitHitDate).map(trade => new Date(trade.enterDate))
 		const lossEntryDates: Date[] = tradeDateAndValues?.filter(trade => trade.stopLossHitDate).map(trade => new Date(trade.enterDate))
 		const indecisiveEntryDates: Date[] = tradeDateAndValues?.filter(trade => (!trade.profitHitDate && !trade.stopLossHitDate)).map(trade => new Date(trade.enterDate))
-		console.log(tradeDateAndValues)
 
 		// 0-200 trades will be scaled and displayed as 10%-100% width - Values over 200 are clamped at 100%
 		const [maxTradeNumBeforeClamp, minWidth, maxWidth] = [200, 10, 100]
@@ -137,7 +138,7 @@ class Graph extends Component<PropsType, StateType> {
 		const wrapperPadding = contentVisible ? '1.6rem' : 0
 
     return (
-			<div className={styles.graphStyle} style={{padding: wrapperPadding, maxHeight: wrapperMaxHeight}}>        
+			<Paper sx={{ overflow: 'hidden', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)", padding: '8px', textAlign: 'left' }}>   
 				<SpinnerComponent loading={this.props.stockVerticalSlicesFecthing} position="centered" />
 				<div className={styles.graphSelectedReportText}>
 					<h1>
@@ -265,7 +266,7 @@ class Graph extends Component<PropsType, StateType> {
 					</ChartCanvas>
 				}
 				</div>
-			</div>
+			</Paper>
 		);
   }
 
@@ -288,4 +289,4 @@ const mapStateToProps = (state: reducer.StateType) => {
   };
 };
 
-export default connect(mapStateToProps)(Graph);
+export default connect(mapStateToProps)(GraphWithTradeMarkings);

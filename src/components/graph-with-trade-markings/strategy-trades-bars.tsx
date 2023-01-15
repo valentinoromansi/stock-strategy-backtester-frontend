@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import * as reducer from '../state/reducers';
+import * as reducer from '../../state/reducers';
 import "apercu-font";
 import { Strategy } from "models/strategy";
 import { TradeResult } from "types/trade-result";
 import { BacktestResult, TradeDateAndValues } from "models/backtest-result";
-import * as actions from "../state/actions";
+import * as actions from "../../state/actions";
 
 
 
@@ -40,6 +40,11 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 			linearGradientBase: '',
 			linearGradientHiglight: 'linear-gradient(90deg, transparent 0%, transparent 100%)'
 		}
+  }
+
+  componentDidMount(): void {
+	  this.setState({selectedBacktestResult: this.props.selectedBacktestResult});
+	  this.setState({linearGradientBase: this.getLinearGradientBase(this.props.selectedBacktestResult.tradeDateAndValues)});
   }
 
 	componentDidUpdate(prevProps: PropsType) {
@@ -83,12 +88,11 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 	}
 
 	getBarHighlightColor(trade: TradeDateAndValues) {
-		if(trade.tradeResult === TradeResult.PROFIT)
+    if(trade.tradeResult === TradeResult.PROFIT)
 			return this.profitHighlightColor
 		else if(trade.tradeResult === TradeResult.LOSS)
 			return this.lossHighlightColor
 		return this.indecisiveHighlightColor
-
 	}
 	
 	getBarChartFillColor(tradeDateAndValues: TradeDateAndValues): string {
@@ -141,7 +145,6 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 
   render() {		
 		const linearGradientProperty = this.state.linearGradientHiglight + ', ' + this.state.linearGradientBase
-		console.log(linearGradientProperty)
 
     return (
 			<div>

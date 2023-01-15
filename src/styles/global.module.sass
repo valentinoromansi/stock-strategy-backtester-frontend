@@ -7,9 +7,16 @@ $dividerColor: #374154
 
 :global html
   font-size: 62.5%
+  -ms-overflow-style: none
+  scrollbar-width: none
+  ::-webkit-scrollbar
+    display: none
 
 :global body
-  background-color: #1a2027
+  background-color: #e4e4e4
+
+
+
 
 :global .ant-spin-nested-loading
   .ant-spin-container
@@ -18,19 +25,11 @@ $dividerColor: #374154
       margin: 0
       padding: 1.2rem
 
-/***************/
-/* Apex charts */
-/***************/
-:global .apexcharts-xaxis,
-:global .apexcharts-yaxis,
-:global .apexcharts-menu-icon,
-:global .apexcharts-grid,
-:global .apexcharts-data-labels > text
-  display: none
 
 /*********/
 /* graph */
 /*********/
+  
 .graphSelectedReportText
   padding-top: 0
   h1
@@ -38,18 +37,8 @@ $dividerColor: #374154
     color: $textColorLight
     margin: 0px
 
-.graphBacktestListWrapperStyle
-  width: 90vw
-  background-color: $backgroundBlueLight
-
-.graphStyle
-  background: $backgroundBlueDark
-  text-align: start
-  overflow: hidden
-  transition: max-height 1s
-
 :global .react-stockchart > .react-stockchart > g
-  transform: translate(40px, 20px)
+  transform: translate(30px, 20px)
 
 $graph_line_opacity: 0.3
 
@@ -60,7 +49,7 @@ $graph_line_opacity: 0.3
 :global .react-stockcharts-x-axis > g > g > text,
 :global .react-stockcharts-y-axis > g > g > text
   font-size: 1rem
-  fill: white
+  fill: gray
   opacity: $graph_line_opacity
 
 :global .tick > line
@@ -72,49 +61,26 @@ $graph_line_opacity: 0.3
   opacity: $graph_line_opacity
 
 // Date, O, H, L, C, Vol. text
-:global .react-stockcharts-tooltip > tspan
-  font-size: 1rem
-  fill: white
-  opacity: $graph_line_opacity
-
-:global .react-stockcharts-tooltip > .react-stockcharts-tooltip-label
-  fill: $textColorLight
+:global .react-stockcharts-tooltip 
+  tspan
+    font-size: 1rem
+    fill: white
+    opacity: $graph_line_opacity
+  .react-stockcharts-tooltip-label
+    fill: $textColorLight
 
 :global .react-stockcharts-crosshair > line
   stroke: $textColorLight
 
-/****************************/
-/* under navigation wrapper */
-/****************************/
-.underNavStyle
-  display: flex
-  width: 100vw
-
-/**************/
-/* navigation */
-/**************/
-.navWrapper
-  width: 100vw
-  background: $backgroundBlueLight
-  display: flex
-  justify-content: left
-  flex-direction: row
-  gap: 0.8rem
-
-.navItemTextStyle
-  font-size: 1.4rem
-  font-family: $font
-  color: $textColorDark
 
 /*****************/
 /* strategy-list */
 /*****************/
 
 .strategyListWrapper
-  border-top: 1px solid $dividerColor
-  width: 10vw
   background-color: $backgroundBlueLight
-  padding: 1rem
+  padding: 8px
+  border-radius: 6px
 
 .strategyList
   display: flex
@@ -212,3 +178,109 @@ $graph_line_opacity: 0.3
 :global td.ant-table-column-sort,
 :global .ant-spin-nested-loading .ant-spin-container .ant-pagination
   background: $backgroundBlueLight
+
+/*************************/
+/* strategy designer */
+/*************************/
+
+.strategyDesignerWrapper
+  width: 100%
+  height: 0 //hack for child percent height when parent has min-height
+  min-height: 70vh
+  background: $backgroundBlueLight
+  overflow: hidden
+  box-shadow: $backgroundBlueDark 0px 0px 0.25em, $backgroundBlueDark 0px 0.25em 1em
+
+.strategyDesignerSidebar
+  width: 30%
+  height: 100%
+  background: $backgroundBlueDark
+  transition: all 0.5s ease-in-out
+  &Visible
+    @extend .strategyDesignerSidebar
+    margin-left: 0
+  &Hidden
+    @extend .strategyDesignerSidebar
+    margin-left: -30%
+  &topButtons
+    width: 100%
+    display: flex
+    justify-content: space-between
+    box-shadow: -1px 0px 8px 0px rgba(0,0,0,0.5)
+  &jsonButton
+    color: $textColorDark !important
+
+$strategyDesignerSidebarListItemHorPadding: 4px
+$strategyDesignerSidebarFontSize: 1rem
+
+.strategyDesignerSidebarListItem
+  display: flex
+  color: $textColorDark
+  overflow: hidden
+  justify-content: space-between
+  padding-top: 6px
+  padding-bottom: 6px
+  gap: 4px
+  &EnterStoplossAttributes
+    @extend .strategyDesignerSidebarListItem
+    justify-content: center
+    gap: 5%
+    border: hidden
+    flex-direction: row
+    > div
+      > span
+        width: 100% !important
+      > div
+        width: 100% !important
+
+  &RuleValue
+    display: flex
+    flex-direction: column
+    align-self: center
+    //padding-inline: $strategyDesignerSidebarListItemHorPadding
+    width: 100%
+    margin: 0 auto
+    justify-content: center
+    gap: 4px
+    > div > svg
+      //color: white
+    &Relative
+      @extend .strategyDesignerSidebarListItemRuleValue
+      width: 50%
+      gap: 4px
+      > div > svg
+        //color: white
+    &Wrapper
+      width: 33.33% !important
+      display: flex
+      justify-content: space-between
+      gap: 4px
+    &Percent
+      width: -webkit-fill-available !important
+      align-self: center !important
+      //color: white !important
+      //background: $backgroundBlueLight !important
+      overflow: hidden
+      padding-right: 4px !important
+      font-size: $strategyDesignerSidebarFontSize !important
+      &Wrapper
+        align-self: center
+      &Symbol > p
+        //color: white !important
+        font-size: $strategyDesignerSidebarFontSize !important
+
+.strategyDesignerSidebarSelect
+  font-size: $strategyDesignerSidebarFontSize !important
+  overflow: hidden !important
+  &Attribute
+    @extend .strategyDesignerSidebarSelect
+    > div
+      text-overflow: clip !important
+  &Position
+    @extend .strategyDesignerSidebarSelect
+    width: 33.33%
+    display: flex !important
+    align-self: center !important
+    justify-content: center !important
+    > div
+      text-overflow: clip !important

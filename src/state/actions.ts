@@ -5,6 +5,7 @@ import { StrategyReport } from '../models/strategy-report';
 import { Strategy } from '../models/strategy';
 import { BacktestResult, TradeDateAndValues } from '../models/backtest-result';
 import { TradeResult } from 'types/trade-result';
+import { deepCopy } from 'utils/utils';
 
 
 export function getStock(interval: string, symbol: string) {
@@ -49,6 +50,15 @@ export function setSelectedStrategy(strategy: Strategy) {
   store.dispatch({type: types.SET_SELECTED_STRATEGY, payload: strategy})
 }
 
+export function setStrategyDesignerStrategy(strategy: Strategy) {
+  const strategyDeepCopy = deepCopy(strategy)
+  store.dispatch({type: types.SET_STRATEGY_DESIGNER_STRATEGY, payload: strategyDeepCopy})
+}
+
 export function setSelectedTrade(trade: TradeDateAndValues) {
   store.dispatch({type: types.SET_SELECTED_TRADE, payload: trade})
+}
+
+export function setStrategyEditorActive(state: boolean) {
+  store.dispatch({type: types.SET_STRATEGY_EDITOR_ACTIVE, payload: state})
 }

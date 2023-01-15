@@ -11,6 +11,7 @@ import * as actions from "../state/actions";
 import UpdateIcon from '@mui/icons-material/Update';
 import "apercu-font";
 import styles from '../styles/global.module.sass'
+import { Divider, Grid, List, ListItemButton, ListSubheader, Typography } from "@mui/material";
 
 
 type PropsType = {
@@ -22,7 +23,7 @@ type StateType = {
 }
 
 
-class Navigation extends Component<PropsType, StateType> {
+class MenuMainActions extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
     getStrategyReports().then(data => {
@@ -38,7 +39,7 @@ class Navigation extends Component<PropsType, StateType> {
     }
   }
 
-  updateStrategyReports() {
+  generateStrategyReports() {
     actions.updateStrategyReports()
   }
 
@@ -56,38 +57,24 @@ class Navigation extends Component<PropsType, StateType> {
 
   render() {
     return (
-      <div className={styles.navWrapper}>
-        <div>
-          <Button variant="text" onClick={() => { this.updateStrategyReports()}}>
-              <div>
-                <UpdateIcon sx={this.sxIconStyle} /*className={styles.navIcon}*//>
-                <div>
-                  <b className={styles.navItemTextStyle}>Regenerate reports</b>
-                </div>
-              </div>
-          </Button>
-        </div>
-        <div>
-          <Button variant="text" onClick={() => { this.refetchStrategyReports();}}>
-              <div>
-                <RefreshIcon sx={this.sxIconStyle} /*className={styles.navIcon}*//>
-                <div>
-                <b className={styles.navItemTextStyle}>Refetch reports</b>
-                </div>
-              </div>
-          </Button>
-        </div>
-        <div>
-          <Button variant="text" onClick={() => { this.refetchStrategies();}}>
-              <div>
-                <RefreshIcon sx={this.sxIconStyle} /*className={styles.navIcon}*//>
-                <div>
-                <b className={styles.navItemTextStyle}>Refetch strategies</b>
-                </div>
-              </div>
-          </Button>
-        </div>
-      </div>
+      <List sx={{ paddingBottom: '10px', bgcolor: 'background.paper', borderRadius: '6px'} }>
+        <Grid container alignItems='center'>
+          {/* Strategy name */}
+          <Grid item xs={12} sx={{display: "flex", flexDirection: "column", gap: "8px", paddingLeft: '8px', paddingRight: '8px'}}>
+            <Button sx={{ width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.refetchStrategies}>
+              Refetch strategies
+            </Button>
+            <Divider variant='middle' sx={{ paddingTop: '2px', marginBottom: '2px' }} orientation="horizontal" flexItem />
+            <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.refetchStrategyReports}>
+              Refetch reports
+            </Button>
+            <Divider variant='middle' sx={{ paddingTop: '2px', marginBottom: '2px' }} orientation="horizontal" flexItem />            
+            <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.generateStrategyReports}>
+              Regenerate reports
+            </Button>
+          </Grid>
+        </Grid>
+      </List>
     );
   }
 
@@ -100,4 +87,4 @@ const mapStateToProps = (state: any) => {
   };
 };
 
-export default connect(mapStateToProps)(Navigation);
+export default connect(mapStateToProps)(MenuMainActions);

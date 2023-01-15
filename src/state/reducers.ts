@@ -12,8 +12,10 @@ export type StateType = {
   strategyReportsFecthing: boolean,
   strategies: Strategy[],
   selectedStrategy: Strategy | null,
+  strategyDesignerStrategy: Strategy | null,
   strategiesFecthing: boolean,
   selectedTrade: TradeDateAndValues | null,
+  strategyEditorActive: boolean,
 }
 
 // Initial (starting) state
@@ -25,8 +27,10 @@ export const initialState: StateType = {
   strategyReportsFecthing: true,
   strategies: [],
   strategiesFecthing: true,
-  selectedStrategy: null,
-  selectedTrade: null
+  selectedStrategy: null, // used to hold value of selected strategy with all children properties
+  strategyDesignerStrategy: null, // strategy that should be used for strategy edit, can always revert to 'selectedStrategy' which is its initial state
+  selectedTrade: null,
+  strategyEditorActive: false
 };
 
 // Our root reducer starts with the initial state
@@ -43,6 +47,8 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
       return { ...state, strategiesFecthing: action.payload };
     case types.SET_SELECTED_STRATEGY:
       return { ...state, selectedStrategy: action.payload };
+    case types.SET_STRATEGY_DESIGNER_STRATEGY:
+        return { ...state, strategyDesignerStrategy: action.payload };
     case types.SET_SELECTED_STOCK:
       return { ...state, selectedStockVerticalSlices: action.payload };
     case types.FETCHING_STOCK:
@@ -51,6 +57,8 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
       return { ...state, selectedBacktestResult: action.payload };
     case types.SET_SELECTED_TRADE:
       return { ...state, selectedTrade: action.payload };
+    case types.SET_STRATEGY_EDITOR_ACTIVE:
+      return { ...state, strategyEditorActive: action.payload };
     default:
       return state;
   }

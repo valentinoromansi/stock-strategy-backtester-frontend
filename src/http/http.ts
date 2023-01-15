@@ -5,6 +5,8 @@ import { Strategy } from "../models/strategy"
 const URL_GET_STOCK: string = 'http://localhost:4000/get-stock'
 const URL_GET_STRATEGY_REPORTS: string = 'http://localhost:4000/get-strategy-reports'
 const URL_GET_STRATEGIES: string = 'http://localhost:4000/get-strategies'
+const URL_SAVE_STRATEGY: string = 'http://localhost:4000/save-strategy'
+const URL_DELETE_STRATEGY: string = 'http://localhost:4000/delete-strategy'
 const URL_UPDATE_STRATEGY_REPORTS: string = 'http://localhost:4000/update-strategy-reports'
 const HEADERS: HeadersInit = {'Content-Type': 'application/json'}
 
@@ -56,7 +58,7 @@ export let getStrategies = () : Promise<Strategy[]> => {
       method: 'GET',
       headers: HEADERS
     })
-    .then(response => {
+    .then(response => {      
       response.json().then(jsonObj => {
         let strategies: Strategy[] = jsonObj
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
@@ -69,6 +71,56 @@ export let getStrategies = () : Promise<Strategy[]> => {
     })
   })
 }
+
+// HANDLE RESPONSE PROPERLY
+// HANDLE RESPONSE PROPERLY
+// HANDLE RESPONSE PROPERLY
+export let saveStrategy = (strategy: Strategy) : Promise<boolean> => {
+  return new Promise(async (resolve) => {
+    return fetch(URL_SAVE_STRATEGY, {
+      method: 'POST',
+      headers: HEADERS,
+      body: JSON.stringify(strategy)
+    })
+    .then(response => {
+      console.log(response)
+      if(response) {
+        console.log(colors.green(`Saving strategy over ${URL_SAVE_STRATEGY} done.`))
+        resolve(true)
+      }
+      resolve(false)
+    })
+    .catch((err) => {
+      console.log(colors.red(`Saving strategy over ${URL_SAVE_STRATEGY} thrown error: ` + err))
+      resolve(false)
+    })
+  })
+}
+
+
+export let deleteStrategy = (name: string) : Promise<boolean> => {
+  return new Promise(async (resolve) => {
+    return fetch(URL_DELETE_STRATEGY, {
+      method: 'POST',
+      headers: HEADERS,
+      body: JSON.stringify({name: name})
+    })
+    .then(response => {
+      console.log(response)
+      if(response) {
+        console.log(colors.green(`Deleting strategy ${name} over ${URL_DELETE_STRATEGY} done.`))
+        resolve(true)
+      }
+      resolve(false)
+    })
+    .catch((err) => {
+      console.log(colors.red(`Deleting strategy ${name} over ${URL_DELETE_STRATEGY} thrown error: ` + err))
+      resolve(false)
+    })
+  })
+}
+
+
 
 export let updateStrategyReports = () : Promise<StrategyReport[]> => {
   return new Promise(async (resolve) => {
