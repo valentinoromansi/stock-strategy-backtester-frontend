@@ -25,6 +25,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Strategy } from "models/strategy";
 import { BacktestResult } from "models/backtest-result";
 
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import NotificationsStack from "./notifications-stack";
 
 type PropsType = {
   strategyEditorActive: boolean,
@@ -38,6 +41,12 @@ type StateType = {
   graphSize: { width: number, height: number }
 }
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref,
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 class Main extends Component<PropsType, StateType> {
 
@@ -80,6 +89,9 @@ class Main extends Component<PropsType, StateType> {
 
     return (
         <Box sx={{ width: '100%', padding: '24px' }}>
+          <NotificationsStack/>
+          {/* <Alert severity="success">This is a success message!</Alert> */}
+          {/* <MuiAlert elevation={6} variant="filled" /> */}          
           <Box sx={{ display:'flex', flexDirection: 'row', gap: '16px'}}>          
             {/* Action and strategy list */}
             <Box sx={{ width: '200px', display:'flex', flexDirection: 'column', gap: '16px'}}>
