@@ -76,20 +76,7 @@ class StrategyDesignerSidebar extends Component<PropsType, StateType> {
 		const jsonButton = <Button className={styles.strategyDesignerSidebarjsonButton} variant="text"> <b>JSON</b> </Button>
 
     return (
-			<div className={sidebarClass}>
-					{/* top buttons - json and show/hide sidebar */}
-					<div className={styles.strategyDesignerSidebartopButtons}>
-						<Popup trigger={jsonButton} position="right center" modal>
-    					<pre style={{maxHeight: "95vh"}}>
-								{
-									JSON.stringify(this.props.strategyDesignerStrategy, null, "\t")
-								}
-							</pre>
-  					</Popup>						
-						<IconButton className={sidebarToggleButtonClass} onClick={() => { this.toogleSidebar()}} color="primary">
-        			{ toogleIcon }
-      			</IconButton>
-					</div>					
+			<div>				
 					{/* strategy rules */}
 					<StrategyDesignerSidebarRuleList></StrategyDesignerSidebarRuleList>
 				</div>

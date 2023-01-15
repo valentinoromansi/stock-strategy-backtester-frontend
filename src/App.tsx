@@ -12,6 +12,13 @@ const theme = createTheme({
     "fontWeightMedium": 600
    },
    components: {
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          color: '#56657f' 
+        }
+      }
+    },
     MuiList: {
       styleOverrides: {
         root: {

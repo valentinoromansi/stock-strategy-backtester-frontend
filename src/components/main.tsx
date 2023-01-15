@@ -11,7 +11,7 @@ import styles from '../styles/global.module.sass'
 import StrategyDesigner from "./strategy-designer/strategy-designer";
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import { Collapse, Grid, List, ListSubheader, Typography } from "@mui/material";
+import { Collapse, Grid, List, ListSubheader, MenuItem, Select, Typography } from "@mui/material";
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -80,23 +80,17 @@ class Main extends Component<PropsType, StateType> {
 
     return (
         <Box sx={{ width: '100%', padding: '24px' }}>
-          <Box sx={{ width: 'auto', display:'flex', flexDirection: 'row', gap: '16px'}}>
+          <Box sx={{ display:'flex', flexDirection: 'row', gap: '16px'}}>          
             {/* Action and strategy list */}
-            <Box sx={{ width: 'fit-content', display:'flex', flexDirection: 'column', gap: '16px'}}>
-              <Box sx={{ width: '180px' }}>
-                <MenuMainActions></MenuMainActions>             
-              </Box>
-              <Box sx={{ width: '180px'}}>
-                <MenuStrategyList/>   
-              </Box>
+            <Box sx={{ width: '200px', display:'flex', flexDirection: 'column', gap: '16px'}}>
+              <MenuMainActions/>      
+              <MenuStrategyList/>
             </Box>
             {/* Strategy designer, graph view, report table  */}
             <Box sx={{ width: '100%', minWidth: '500px', display:'flex', flexDirection: 'column', gap: '16px'}} ref={this.graphWrapperRef}>
               {/* Strategy designer*/}
                 {this.props.strategyEditorActive ?                  
-                  <Box sx={{ bgcolor: 'gray', width: '100%', display:'flex', flexDirection: 'column'}}>
-                    <StrategyDesigner/>
-                  </Box>                  
+                  <StrategyDesigner/>                
                 :
                 <React.Fragment>
                     {/* Graph and Report table */}

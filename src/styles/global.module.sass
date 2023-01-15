@@ -25,10 +25,6 @@ $dividerColor: #374154
       margin: 0
       padding: 1.2rem
 
-/***************/
-/* Apex charts */
-/***************/
-
 
 /*********/
 /* graph */
@@ -213,40 +209,24 @@ $graph_line_opacity: 0.3
     box-shadow: -1px 0px 8px 0px rgba(0,0,0,0.5)
   &jsonButton
     color: $textColorDark !important
-    border-right: 1px solid $backgroundBlueLight !important
-    border-radius: 0px !important
-
-.strategyDesignerSidebarToogleButton
-  //margin-left: 100% !important
-  color: $textColorDark !important
-  background: $backgroundBlueDark !important
-  border-radius: 0 !important
-  transition: all 0.5s ease-in-out !important
-  align-self: flex-end !important
-  color: $textColorDark !important
-  &Visible
-    @extend .strategyDesignerSidebarToogleButton
-  &Hidden
-    @extend .strategyDesignerSidebarToogleButton
-    transform: translateX(100%) !important
 
 $strategyDesignerSidebarListItemHorPadding: 4px
-$strategyDesignerSidebarFontSize: 0.7vw
+$strategyDesignerSidebarFontSize: 1rem
 
 .strategyDesignerSidebarListItem
   display: flex
   color: $textColorDark
   overflow: hidden
-  border-bottom: 1px solid $dividerColor
   justify-content: space-between
-  padding: 6px
-  > div > svg
-    color: white
+  padding-top: 6px
+  padding-bottom: 6px
+  gap: 4px
   &EnterStoplossAttributes
     @extend .strategyDesignerSidebarListItem
+    justify-content: center
+    gap: 5%
     border: hidden
     flex-direction: row
-    justify-content: space-evenly
     > div
       > span
         width: 100% !important
@@ -257,49 +237,40 @@ $strategyDesignerSidebarFontSize: 0.7vw
     display: flex
     flex-direction: column
     align-self: center
-    padding-inline: $strategyDesignerSidebarListItemHorPadding
+    //padding-inline: $strategyDesignerSidebarListItemHorPadding
     width: 100%
     margin: 0 auto
     justify-content: center
     gap: 4px
     > div > svg
-      color: white
+      //color: white
     &Relative
       @extend .strategyDesignerSidebarListItemRuleValue
       width: 50%
+      gap: 4px
       > div > svg
-        color: white
+        //color: white
     &Wrapper
       width: 33.33% !important
       display: flex
       justify-content: space-between
-    &Divider
-      height: 80%
-      align-self: center
-      border-right: 1px solid $dividerColor
+      gap: 4px
     &Percent
       width: -webkit-fill-available !important
       align-self: center !important
-      padding-inline: $strategyDesignerSidebarListItemHorPadding
-      border: solid 1px $dividerColor !important
-      color: white !important
-      background: $backgroundBlueLight !important
+      //color: white !important
+      //background: $backgroundBlueLight !important
       overflow: hidden
       padding-right: 4px !important
       font-size: $strategyDesignerSidebarFontSize !important
       &Wrapper
         align-self: center
-        padding-inline: $strategyDesignerSidebarListItemHorPadding
       &Symbol > p
-        color: white !important
+        //color: white !important
         font-size: $strategyDesignerSidebarFontSize !important
 
 .strategyDesignerSidebarSelect
   font-size: $strategyDesignerSidebarFontSize !important
-  background: $backgroundBlueLight !important
-  border: solid 1px $dividerColor !important
-  color: white !important
-  height: 50% !important
   overflow: hidden !important
   &Attribute
     @extend .strategyDesignerSidebarSelect
@@ -310,22 +281,6 @@ $strategyDesignerSidebarFontSize: 0.7vw
     width: 33.33%
     display: flex !important
     align-self: center !important
-    padding-inline: $strategyDesignerSidebarListItemHorPadding !important
     justify-content: center !important
     > div
       text-overflow: clip !important
-
-.strategyDesignerActionButtonsWrapper
-  float: right
-  display: flex
-  gap: 1px
-
-.strategyDesignerActionButton
-  box-shadow: -1px 1px 4px rgba(0,0,0,0.7)
-  color: $textColorDark !important
-  background: $backgroundBlueDark !important
-  border-radius: 0 !important
-  align-self: flex-end !important
-  color: $textColorDark !important
-  > svg
-    font-size: 2rem !important

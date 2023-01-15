@@ -5,7 +5,7 @@ import "apercu-font";
 
 import { Strategy } from "../../models/strategy";
 import styles from '../../styles/global.module.sass'
-import { IconButton, Input, ListItemButton, Menu, TextField } from "@mui/material";
+import { Box, Divider, IconButton, Input, ListItemButton, Menu, TextField, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Button from '@mui/material/Button';
@@ -30,7 +30,8 @@ import * as actions from "../../state/actions";
 
 import { deepCopy } from "../../utils/utils";
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
-
+import AddCircleOutlineTwoToneIcon from '@mui/icons-material/AddCircleOutlineTwoTone';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 
 type PropsType = {
@@ -104,7 +105,9 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 			>
 				{
 					Object.values(enumType).map((value) => (
-						<MenuItem value={value}>{prefix + '' + value}</MenuItem>
+						<MenuItem value={value}>
+							<Typography>{prefix + '' + value}</Typography>
+						</MenuItem>
 					))
 				}
 			</Select>
@@ -166,12 +169,13 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 		}		
 		return (
 			<div className={styles.strategyDesignerSidebarListItemRuleValuePercentWrapper}>
-				<OutlinedInput className={styles.strategyDesignerSidebarListItemRuleValuePercent}
+				<OutlinedInput 
+					className={styles.strategyDesignerSidebarListItemRuleValuePercent}
 					onChange={(e) => { onChange(e.target.value) }}
 					value={percent == 0 ? '' : percent}
 					endAdornment={
 						<InputAdornment className={styles.strategyDesignerSidebarListItemRuleValuePercentSymbol} position="end">
-							%
+							<Typography>%</Typography>
 						</InputAdornment>}
 				/>
 					
@@ -217,12 +221,13 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 							{ (rule()?.attribute1) && this.attributeSelectElement(getAttributeIdentifier(AttributeId.ATTRIBUTE1), rule()?.attribute1) }
 							{ (rule()?.attribute2) && this.attributeSelectElement(getAttributeIdentifier(AttributeId.ATTRIBUTE2), rule()?.attribute2) }
 						</div>
-						{ /* Vertical divider */}
-						<div className={styles.strategyDesignerSidebarListItemRuleValueDivider}></div>
+						{ /* Vertical divider */}						
+						<Divider variant='middle' sx={{ paddingTop: '2px', marginBottom: '2px' }} orientation="vertical" flexItem />  
 						{ /* Percentage */}
 						{ this.percentageElement(percent, { ruleIndex: attributeIdentifier.ruleIndex, mainAttributeIndex: attributeIdentifier.mainAttributeIndex, subAttributeIndex: null, isEnterTradeRule: attributeIdentifier.isEnterTradeRule, isStoplossRule: attributeIdentifier.isStoplossRule}) }
+					
 					</React.Fragment>
-				}				
+				}		
 			</div>
 		)
 	}
@@ -341,17 +346,7 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 
 
 
-	readonly sxStyle = {
-		addNewRuleStyle: {
-			padding: '0.8rem',
-			display: 'flex', 
-			justifyContent:'center', 
-			color: 'white', 
-			backgroundColor: '#212936', 
-			borderRadius: '4px', 
-			"&:hover": {backgroundColor: '#212936'} 
-		}
-	}
+
 
 	addNewRuleButton() {
 		const onClick = () => {
@@ -374,11 +369,15 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 		}
 
 		return(
-			<div style={{padding: "1rem", width: '100%'}}>
-				<ListItemButton onClick={() => onClick()} sx={this.sxStyle.addNewRuleStyle}>
-          <LibraryAddIcon sx={{fontSize: '2rem'}} />
-        </ListItemButton>
-			</div>
+				<Button 
+					sx={{width: "auto", padding: "10px 20px" }} 
+					variant="contained" 
+					endIcon={<AddCircleOutlineIcon fontSize="large"/>} 
+					onClick={() => onClick()}
+				>
+					add strategy
+				</Button>
+
 		)
 	}
 
@@ -395,13 +394,7 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
   render() {
 
     return (
-			<div>
-				{/* Strategy name field */}
-				<TextField 
-					style={{width: '100%', padding: '10px'}} label="Strategy name" variant="filled" 
-					value={this.props.strategyDesignerStrategy?.name}
-					onChange={(e) => { this.onNameChange(e) }}
-					/>
+			<Box>
 				{/* Rules list */}
 				{
 					this.props.strategyDesignerStrategy?.strategyConRules?.map((rule: ConditionalRule, i) => (
@@ -416,22 +409,26 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
         	))
         }
 				{/* Add new rule */}
-				{this.addNewRuleButton()}
+				<Box sx={{display: 'flex', justifyContent: 'start', paddingTop: '4px', paddingBottom: '4px'}}>
+					{this.addNewRuleButton()}
+				</Box>
+				<Divider variant='middle' sx={{ marginTop: '12px', marginBottom: '12px'}} orientation="horizontal" />  		
 
-				{/* Attribute select for entering strade or stoploss */}
-				<div className={styles.strategyDesignerSidebarListItemEnterStoplossAttributes}>
-					<div style={{display: "flex", flexDirection: 'column'}}>
-						<span>Enter trade rule</span>
+				{/* Attribute select for entering trade or stoploss */}
+				<Box className={styles.strategyDesignerSidebarListItemEnterStoplossAttributes}>
+					<Box style={{display: "flex", flexDirection: 'column', width: '25%'}}>
+						<Typography>Enter trade rule</Typography>
 						{this.attributeElement({ ruleIndex: null, mainAttributeIndex: null, subAttributeIndex: null, isEnterTradeRule: true, isStoplossRule: null})}
-					</div>
-					<div style={{display: "flex", flexDirection: 'column'}}>
-						<div>Stop-loss rule</div>
+					</Box>
+					<Divider variant='middle' orientation="vertical" sx={{height: 'auto', margin: 0, marginTop: "4px"}} />  		
+					<Box style={{display: "flex", flexDirection: 'column', width: '25%'}}>
+						<Typography>Stop-loss rule</Typography>
 						{this.attributeElement({ ruleIndex: null, mainAttributeIndex: null, subAttributeIndex: null, isEnterTradeRule: false, isStoplossRule: true})}
-					</div>
-				</div>
+					</Box>
+				</Box>
 				{/* Sidebar rule right click menu */}
 				{ this.props.strategyDesignerStrategy && this.state.rcAttributeIdentifier && this.rightClickMenuElement() }
-			</div>
+			</Box>
 		);
   }
 
