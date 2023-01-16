@@ -13,6 +13,7 @@ const lightTheme = createTheme({
     mode: 'light',
   },
   typography: {
+    fontFamily: 'Montserrat, sans-serif',
     "fontSize": 16,
     "fontWeightLight": 300,
     "fontWeightRegular": 500,
@@ -22,7 +23,8 @@ const lightTheme = createTheme({
     MuiTypography: {
       styleOverrides: {
         root: {
-          color: '#56657f' 
+          color: '#56657f',
+          fontWeight: '600'
         }
       }
     },
@@ -124,16 +126,18 @@ const darkTheme = createTheme({
     }
   },
   typography: {
+    fontFamily: 'Montserrat, sans-serif',
     "fontSize": 16,
     "fontWeightLight": 400,
     "fontWeightRegular": 500,
     "fontWeightMedium": 600
-   },
+  },
    components: {
     MuiTypography: {
       styleOverrides: {
         root: {
-          color: '#acb5c4' 
+          color: '#acb5c4',
+          fontWeight: '500'
         }
       }
     },
