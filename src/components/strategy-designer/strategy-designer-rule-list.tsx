@@ -5,14 +5,11 @@ import "apercu-font";
 
 import { Strategy } from "../../models/strategy";
 import styles from '../../styles/global.module.sass'
-import { Box, Divider, IconButton, Input, ListItemButton, Menu, TextField, Typography } from "@mui/material";
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { Box, Divider, Menu, TextField, Typography } from "@mui/material";
 import Button from '@mui/material/Button';
 import { AttributeType } from "types/attribute-type";
 import { Position } from "types/position";
 
-import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';						
 import { ConditionalRule } from "models/conditional-rule";
 import { ValueExtractionRule } from "models/value-extraction-rule";
@@ -29,8 +26,6 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import * as actions from "../../state/actions";
 
 import { deepCopy } from "../../utils/utils";
-import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
-import AddCircleOutlineTwoToneIcon from '@mui/icons-material/AddCircleOutlineTwoTone';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 
@@ -68,7 +63,7 @@ type AttributeIdentifier = {
 	isStoplossRule: boolean | null
 }
  
-class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
+class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 
   	constructor(props: PropsType) {
     	super(props);
@@ -168,9 +163,8 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 			actions.setStrategyDesignerStrategy(newStrategy)
 		}		
 		return (
-			<div className={styles.strategyDesignerSidebarListItemRuleValuePercentWrapper}>
-				<OutlinedInput 
-					className={styles.strategyDesignerSidebarListItemRuleValuePercent}
+			<Box sx={{alignSelf: "center"}}>
+				<OutlinedInput					
 					onChange={(e) => { onChange(e.target.value) }}
 					value={percent == 0 ? '' : percent}
 					endAdornment={
@@ -179,7 +173,7 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 						</InputAdornment>}
 				/>
 					
-			</div>
+			</Box>
 		)
 	}
 	
@@ -375,7 +369,7 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
 					endIcon={<AddCircleOutlineIcon fontSize="large"/>} 
 					onClick={() => onClick()}
 				>
-					add strategy
+					add rule
 				</Button>
 
 		)
@@ -394,7 +388,7 @@ class StrategyDesignerSidebarRuleList extends Component<PropsType, StateType> {
   render() {
 
     return (
-			<Box>
+			<Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px'}}>
 				{/* Rules list */}
 				{
 					this.props.strategyDesignerStrategy?.strategyConRules?.map((rule: ConditionalRule, i) => (
@@ -441,4 +435,4 @@ const mapStateToProps = (state: reducer.StateType) => {
   };
 };
 
-export default connect(mapStateToProps)(StrategyDesignerSidebarRuleList);
+export default connect(mapStateToProps)(StrategyDesignerRuleList);

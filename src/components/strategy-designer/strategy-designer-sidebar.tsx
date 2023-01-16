@@ -26,7 +26,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-import StrategyDesignerSidebarRuleList from './strategy-designer-sidebar-rule-list';
+import StrategyDesignerRuleList from './strategy-designer-rule-list';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 
@@ -70,16 +70,11 @@ class StrategyDesignerSidebar extends Component<PropsType, StateType> {
 
 
   render() {
-		const sidebarClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarVisible : styles.strategyDesignerSidebarHidden
-		const sidebarToggleButtonClass = this.state.sidebarVisible ? styles.strategyDesignerSidebarToogleButtonVisible : styles.strategyDesignerSidebarToogleButtonHidden
-		const toogleIcon = this.state.sidebarVisible ? <ArrowBackIosNewIcon/> : <ArrowForwardIosIcon/>
-		const jsonButton = <Button className={styles.strategyDesignerSidebarjsonButton} variant="text"> <b>JSON</b> </Button>
 
     return (
-			<div>				
-					{/* strategy rules */}
-					<StrategyDesignerSidebarRuleList></StrategyDesignerSidebarRuleList>
-				</div>
+			<div>
+				<StrategyDesignerRuleList></StrategyDesignerRuleList>
+			</div>
 		);
   }
 

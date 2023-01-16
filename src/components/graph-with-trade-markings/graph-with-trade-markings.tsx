@@ -19,7 +19,7 @@ import { LineType } from "../../types/line-type";
 import styles from '../../styles/global.module.sass'
 import { SpinnerComponent } from "react-element-spinner";
 import StrategyTradesBars from "./strategy-trades-bars";
-import { Paper } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 
 type PropsType = {
 	selectedStrategy: Strategy,
@@ -138,20 +138,18 @@ class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 		const wrapperPadding = contentVisible ? '1.6rem' : 0
 
     return (
-			<Paper sx={{ overflow: 'hidden', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)", padding: '8px', textAlign: 'left' }}>   
+			<Paper sx={{ boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)", p: '12px', textAlign: 'left', display: 'flex', flexDirection:'column', gap: '12px' }}>   
 				<SpinnerComponent loading={this.props.stockVerticalSlicesFecthing} position="centered" />
-				<div className={styles.graphSelectedReportText}>
-					<h1>
-					{	
-						this.props.selectedBacktestResult &&
-						stockName + ' - ' + interval + ' - ' + rewardToRisk  + ':1' 
-					}
-					</h1>
-				</div>
+				<Typography fontSize='large'>
+				{	
+					this.props.selectedBacktestResult &&
+					stockName + ' - ' + interval + ' - ' + rewardToRisk  + ':1' 
+				}
+				</Typography>
 				{/* Strategy trades bar */}
 				<StrategyTradesBars/>
 				{/* Stock graph */}
-				<div onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>				
+				<Box onMouseOver={() => this.setPageScroll(false)} onMouseOut={() => this.setPageScroll(true)}>				
 				{
 					contentVisible &&				
 					<ChartCanvas
@@ -265,7 +263,7 @@ class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 						<CrossHairCursor />
 					</ChartCanvas>
 				}
-				</div>
+				</Box>
 			</Paper>
 		);
   }

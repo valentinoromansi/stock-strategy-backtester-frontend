@@ -88,17 +88,17 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 	}
 
 	getBarHighlightColor(trade: TradeDateAndValues) {
-    if(trade.tradeResult === TradeResult.PROFIT)
+    if(trade?.tradeResult === TradeResult.PROFIT)
 			return this.profitHighlightColor
-		else if(trade.tradeResult === TradeResult.LOSS)
+		else if(trade?.tradeResult === TradeResult.LOSS)
 			return this.lossHighlightColor
 		return this.indecisiveHighlightColor
 	}
 	
 	getBarChartFillColor(tradeDateAndValues: TradeDateAndValues): string {
-		if(tradeDateAndValues.tradeResult === TradeResult.PROFIT)
+		if(tradeDateAndValues?.tradeResult === TradeResult.PROFIT)
 			return this.profitColor
-		else if(tradeDateAndValues.tradeResult === TradeResult.LOSS)
+		else if(tradeDateAndValues?.tradeResult === TradeResult.LOSS)
 			return this.lossColor
 		return this.indecisiveColor
 	}

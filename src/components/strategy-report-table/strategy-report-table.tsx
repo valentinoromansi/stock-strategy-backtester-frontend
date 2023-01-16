@@ -140,12 +140,6 @@ const columns: readonly Column[] = [
 ];
 
 
-interface RowKey {
-  stockName: string,
-  interval: string,
-  rewardToRisk: string
-}
-
 
 const color = {
   green: 'limegreen',
@@ -245,7 +239,7 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     return (
       <Box sx={{display: 'flex', flexDirection: 'row'}}>
         <Box sx={{marginBlock: 'auto'}}>{key}</Box>
-        <IconButton aria-label="delete" size="large" onClick={() => onChange(key)}>
+        <IconButton sx={{background: "none"}} aria-label="delete" size="large" onClick={() => onChange(key)}>
           {
             this.state.orderDirection === 'asc' ?
             <KeyboardArrowDownSharpIcon fontSize="inherit" /> :
