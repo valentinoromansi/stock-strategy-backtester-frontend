@@ -6,6 +6,7 @@ import { Strategy } from '../models/strategy';
 import { BacktestResult, TradeDateAndValues } from '../models/backtest-result';
 import { TradeResult } from 'types/trade-result';
 import { deepCopy } from 'utils/utils';
+import { Notification } from 'components/notifications-stack';
 
 
 export function getStock(interval: string, symbol: string) {
@@ -30,7 +31,7 @@ export function setSelectedBacktestResult(backtestResult: BacktestResult) {
 
 export function updateStrategyReports() {
   store.dispatch({type: types.FETCHING_STRATEGY_REPORTS, payload: true})
-    http.updateStrategyReports().then((data: StrategyReport[]) => {
+    http.regenerateStrategyReports().then((data: StrategyReport[]) => {
       store.dispatch({type: types.UPDATE_STRATEGY_REPORTS, payload: data})
       store.dispatch({type: types.FETCHING_STRATEGY_REPORTS, payload: false})
   })
@@ -61,4 +62,12 @@ export function setSelectedTrade(trade: TradeDateAndValues) {
 
 export function setStrategyEditorActive(state: boolean) {
   store.dispatch({type: types.SET_STRATEGY_EDITOR_ACTIVE, payload: state})
+}
+
+export function addNotification(notification: Notification) {
+  store.dispatch({type: types.ADD_NOTIFICATION, payload: notification})
+}
+
+export function removeNotification(id: number) {
+  store.dispatch({type: types.REMOVE_NOTIFICATION, payload: id})
 }

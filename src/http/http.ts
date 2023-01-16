@@ -1,6 +1,8 @@
 import { StrategyReport } from "../models/strategy-report"
 import colors from "colors"
 import { Strategy } from "../models/strategy"
+import * as actions from "../state/actions";
+import { Notification } from "components/notifications-stack";
 
 const URL_GET_STOCK: string = 'http://localhost:4000/get-stock'
 const URL_GET_STRATEGY_REPORTS: string = 'http://localhost:4000/get-strategy-reports'
@@ -9,6 +11,7 @@ const URL_SAVE_STRATEGY: string = 'http://localhost:4000/save-strategy'
 const URL_DELETE_STRATEGY: string = 'http://localhost:4000/delete-strategy'
 const URL_UPDATE_STRATEGY_REPORTS: string = 'http://localhost:4000/update-strategy-reports'
 const HEADERS: HeadersInit = {'Content-Type': 'application/json'}
+
 
 export let getStock = (interval: string, symbol: string) : Promise<[]> => {
   return new Promise(async (resolve) => {
@@ -42,11 +45,13 @@ export let getStrategyReports = () : Promise<StrategyReport[]> => {
       response.json().then(jsonObj => {
         let reports: StrategyReport[] = jsonObj
         console.log(colors.green(`Fetch ${URL_GET_STRATEGY_REPORTS} done.`))
+        actions.addNotification(new Notification('success', 'Strategy reports fetched.'))
         resolve(reports)
       })
     })
     .catch((err) => {
       console.log(colors.red(`Fetch ${URL_GET_STRATEGY_REPORTS} thrown error: ` + err))
+      actions.addNotification(new Notification('error', 'Strategy reports could not be fetched!'))
       resolve([])
     })
   })
@@ -62,11 +67,13 @@ export let getStrategies = () : Promise<Strategy[]> => {
       response.json().then(jsonObj => {
         let strategies: Strategy[] = jsonObj
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
+        actions.addNotification(new Notification('success', 'Strategies fetched.'))
         resolve(strategies)
       })
     })
     .catch((err) => {
       console.log(colors.red(`Fetch ${URL_GET_STRATEGIES} thrown error: ` + err))
+      actions.addNotification(new Notification('error', 'Strategies could not be fetched!'))
       resolve([])
     })
   })
@@ -86,12 +93,14 @@ export let saveStrategy = (strategy: Strategy) : Promise<boolean> => {
       console.log(response)
       if(response) {
         console.log(colors.green(`Saving strategy over ${URL_SAVE_STRATEGY} done.`))
+        actions.addNotification(new Notification('success', `Strategy "${strategy.name}" saved.`))
         resolve(true)
       }
       resolve(false)
     })
     .catch((err) => {
       console.log(colors.red(`Saving strategy over ${URL_SAVE_STRATEGY} thrown error: ` + err))
+      actions.addNotification(new Notification('error', `Strategy "${strategy.name}" could not be saved.`))
       resolve(false)
     })
   })
@@ -109,12 +118,14 @@ export let deleteStrategy = (name: string) : Promise<boolean> => {
       console.log(response)
       if(response) {
         console.log(colors.green(`Deleting strategy ${name} over ${URL_DELETE_STRATEGY} done.`))
+        actions.addNotification(new Notification('success', `Strategy "${name}" deleted.`))
         resolve(true)
       }
       resolve(false)
     })
     .catch((err) => {
       console.log(colors.red(`Deleting strategy ${name} over ${URL_DELETE_STRATEGY} thrown error: ` + err))
+      actions.addNotification(new Notification('error', `Strategy "${name}" could not be deleted!`))
       resolve(false)
     })
   })
@@ -122,7 +133,7 @@ export let deleteStrategy = (name: string) : Promise<boolean> => {
 
 
 
-export let updateStrategyReports = () : Promise<StrategyReport[]> => {
+export let regenerateStrategyReports = () : Promise<StrategyReport[]> => {
   return new Promise(async (resolve) => {
     return fetch(URL_UPDATE_STRATEGY_REPORTS, {
       method: 'POST',
@@ -132,11 +143,13 @@ export let updateStrategyReports = () : Promise<StrategyReport[]> => {
       response.json().then(jsonObj => {
         let reports: StrategyReport[] = jsonObj
         console.log(colors.green(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} done.`))
+        actions.addNotification(new Notification('success', 'Regenerating strategy reports finished.'))
         resolve(reports)
       })
     })
     .catch((err) => {
       console.log(colors.red(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} thrown error: ` + err))
+      actions.addNotification(new Notification('error', 'Strategy reports could not be regenerated!'))
       resolve([])
     })
   })

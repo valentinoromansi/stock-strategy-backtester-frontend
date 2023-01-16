@@ -1,3 +1,4 @@
+import { Notification } from 'components/notifications-stack';
 import { BacktestResult, TradeDateAndValues } from '../models/backtest-result';
 import { Strategy } from '../models/strategy';
 import { StrategyReport } from '../models/strategy-report';
@@ -16,6 +17,7 @@ export type StateType = {
   strategiesFecthing: boolean,
   selectedTrade: TradeDateAndValues | null,
   strategyEditorActive: boolean,
+  notifications: Notification[]
 }
 
 // Initial (starting) state
@@ -30,7 +32,8 @@ export const initialState: StateType = {
   selectedStrategy: null, // used to hold value of selected strategy with all children properties
   strategyDesignerStrategy: null, // strategy that should be used for strategy edit, can always revert to 'selectedStrategy' which is its initial state
   selectedTrade: null,
-  strategyEditorActive: false
+  strategyEditorActive: false,
+  notifications: []
 };
 
 // Our root reducer starts with the initial state
@@ -59,6 +62,17 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
       return { ...state, selectedTrade: action.payload };
     case types.SET_STRATEGY_EDITOR_ACTIVE:
       return { ...state, strategyEditorActive: action.payload };
+    case types.ADD_NOTIFICATION: {
+      const notification: Notification = action.payload
+      notification.id = (state.notifications?.[state.notifications.length - 1]?.id ?? 0) + 1
+      console.log(notification)
+      state.notifications.push(notification)
+      return { ...state, notifications: [...state.notifications]};
+    }
+    case types.REMOVE_NOTIFICATION:
+      const idToRemove = action.payload
+      const notifications = state.notifications.filter(n => n.id !== idToRemove)
+      return { ...state, notifications: notifications };
     default:
       return state;
   }
