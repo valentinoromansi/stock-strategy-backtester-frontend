@@ -31,7 +31,7 @@ export function setSelectedBacktestResult(backtestResult: BacktestResult) {
 
 export function updateStrategyReports() {
   store.dispatch({type: types.FETCHING_STRATEGY_REPORTS, payload: true})
-    http.updateStrategyReports().then((data: StrategyReport[]) => {
+    http.regenerateStrategyReports().then((data: StrategyReport[]) => {
       store.dispatch({type: types.UPDATE_STRATEGY_REPORTS, payload: data})
       store.dispatch({type: types.FETCHING_STRATEGY_REPORTS, payload: false})
   })

@@ -88,7 +88,6 @@ class NotificationsStack extends Component<PropsType, StateType> {
                   )
                 })
               }
-            <Button onClick={() => {actions.addNotification(new Notification('success',"stara mojawwww"))}}>ADDDDD</Button>
             </Box>
           </Snackbar>
     );

@@ -36,6 +36,7 @@ import StrategyDesignerSidebar from './strategy-designer-sidebar';
 import * as actions from "../../state/actions";
 import { deleteStrategy, saveStrategy } from "http/http";
 import StrategyDesignerSidebarRuleList from "./strategy-designer-sidebar-rule-list";
+import { Notification } from "components/notifications-stack";
 
 
 type PropsType = {
@@ -85,14 +86,25 @@ class StrategyDesigner extends Component<PropsType, StateType> {
     	this.setState({selectedStrategy: nextProps.selectedStrategy})
   	}
 
+  
+    
 
+  isStrategyFormValid(): { valid: boolean, errorMsg: string }{
+    return { valid: false, errorMsg: null }
+  }
 	  
 	onRefreshStrategy() {
+		actions.addNotification(new Notification('success', `Strategy "${this.state.selectedStrategy.name}" refreshed.`))
 		this.setState({selectedStrategy: this.props.selectedStrategy})
 		actions.setStrategyDesignerStrategy(this.props.selectedStrategy)
 	}
 	
 	onSaveStrategy() {
+    const validity: { valid: boolean, errorMsg: string } = this.isStrategyFormValid()
+    if(!validity.valid) {
+	  	actions.addNotification(new Notification('error', `Strategy "${this.state.selectedStrategy.name}" form is not valid. Message="${validity.errorMsg}"`))
+      return;
+    }
 		saveStrategy(this.props.strategyDesignerStrategy)
 	}
 
