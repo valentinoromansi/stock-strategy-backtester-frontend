@@ -33,24 +33,24 @@ type StateType = {
   orderBy: ColumnKey
 }
 
-type ColumnKey = 'stockName' | 'interval' | 'plFactor' | 'plRatio' | 'avgTradeProfit'  | 'sampleWinLossIndecisiveRatio' | 'rewardToRisk' | 'profitToLossLas30Trades'
-
-const columnKeySortingFunMap: { [key in ColumnKey]: (a, b) => number } = {
-  "stockName": (a, b) => { return (a > b ? 1 : -1) },
-  "interval": (a, b) => {
+type ColumnKey = 'stockName' | 'interval' | 'plFactor' | 'plRatio' | 'avgTradeProfit'  | 'sampleWinLossIndecisiveRatio' | 'rewardToRisk' | 'profitToLossLast30Trades'
+type SortValue = 1 | -1
+const columnKeySortingFunMap: { [key in ColumnKey]: (a, b) => SortValue } = {
+  "stockName": (a: BacktestResult, b: BacktestResult) => { return (a.stockName > b.stockName ? 1 : -1) },
+  "interval": (a: BacktestResult, b: BacktestResult) => {
     const intervalSortOrderMap = {
       '15min': 0,
       '1h': 1,
       '1day': 2
     }
-    return (intervalSortOrderMap[a] > intervalSortOrderMap[b] ? 1 : -1) 
+    return (intervalSortOrderMap[a.interval] > intervalSortOrderMap[a.interval] ? 1 : -1) 
   },
-  "plFactor": (a, b) => { return (a > b ? 1 : -1) },
-  "plRatio": (a, b) => { return (a > b ? 1 : -1) },
-  "avgTradeProfit": (a, b) => { return (a < b ? 1 : -1) },
-  "sampleWinLossIndecisiveRatio": (a, b) => { return (a < b ? 1 : -1) },
-  "rewardToRisk": (a, b) => { return (a < b ? 1 : -1) },
-  "profitToLossLas30Trades": (a, b) => { return (a < b ? 1 : -1) }
+  "plFactor": (a: BacktestResult, b: BacktestResult) => { return (a.plFactor > b.plFactor ? 1 : -1) },
+  "plRatio": (a: BacktestResult, b: BacktestResult) => { return (a.plRatio > b.plRatio ? 1 : -1) },
+  "avgTradeProfit": (a: BacktestResult, b: BacktestResult) => { return (a.plRatio - 1 < b.plRatio - 1 ? 1 : -1) },
+  "sampleWinLossIndecisiveRatio": (a: BacktestResult, b: BacktestResult) => { return (getSample(a) < getSample(b) ? 1 : -1)},
+  "rewardToRisk": (a: BacktestResult, b: BacktestResult) => { return (a.rewardToRisk < b.rewardToRisk ? 1 : -1) },
+  "profitToLossLast30Trades": (a: BacktestResult, b: BacktestResult) => { return ( getProfitLossPercentForLast30(a).profitPercent < getProfitLossPercentForLast30(b).profitPercent ? 1 : -1) }
 }
 
 interface Column {
@@ -79,7 +79,7 @@ const columns: readonly Column[] = [
     
     format: (backtest: BacktestResult) => {
       const color = getColorFromPlRatio(backtest.plRatio)
-      const plRatioText = backtest.timesLost == 0 ? '-' : backtest.plRatio.toFixed(2) 
+      const plRatioText = /*backtest.timesLost == 0 ? '-' :*/ backtest.plRatio.toFixed(2) 
       return <Typography sx={{ color: color }}>{ plRatioText }</Typography>
     },
   },
@@ -89,7 +89,7 @@ const columns: readonly Column[] = [
     minWidth: 50,    
     format: (backtest: BacktestResult) => {
       const color = getColorFromAvgProfit(backtest.plRatio - 1)
-      const plRatioText = backtest.timesLost == 0 ? '-' : (backtest.plRatio - 1).toFixed(2) 
+      const plRatioText = /*backtest.timesLost === 0 ? '-' :*/ (backtest.plRatio - 1).toFixed(2) 
       return <Typography sx={{ color: color }}>{ plRatioText }</Typography>
     },
   },
@@ -98,7 +98,7 @@ const columns: readonly Column[] = [
     label: 'Sample(win-loss-indecisive)',
     minWidth: 50,
     format: (backtest: BacktestResult) => {
-      const sample = backtest.timesProfited + backtest.timesLost + backtest.timesIndecisive
+      const sample = getSample(backtest)
       return <Box sx={{display: "flex", flexDirection: "row"}}>
         <Typography>{sample} (</Typography>
         <Typography style={{ color: color.green }}>{( backtest.timesProfited / sample * 100 || 0).toFixed(2)}%</Typography>
@@ -119,32 +119,20 @@ const columns: readonly Column[] = [
     },
   },
   {
-    key: 'profitToLossLas30Trades',
+    key: 'profitToLossLast30Trades',
     label: 'Profit:loss for last 30 trades',
     minWidth: 50,
     format: (backtest: BacktestResult) => {
-      const profitLossTrades = backtest.tradeDateAndValues.filter(t => t.profitHitDate || t.stopLossHitDate)
-      const lastXprofitLossTrades = profitLossTrades.slice(-Math.min(profitLossTrades.length, 30))
-      const trades = {
-        profitTrades: lastXprofitLossTrades.filter(t => t.profitHitDate != null),
-        lossTrades: lastXprofitLossTrades.filter(t => t.stopLossHitDate != null)
-      }
-      const tradesSum = trades.profitTrades.length + trades.lossTrades.length
+     const { profitPercent,  lossPercent } = getProfitLossPercentForLast30(backtest)
       return <Box sx={{display: "flex", flexDirection: "row"}}>
-        <Typography style={{ color: color.green }}>{(trades.profitTrades.length / tradesSum * 100 || 0).toFixed(2) + '%'}</Typography>
+        <Typography style={{ color: color.green }}>{(profitPercent).toFixed(2) + '%'}</Typography>
         <Typography> - </Typography>
-        <Typography style={{ color: color.red }}>{(trades.lossTrades.length / tradesSum * 100 || 0).toFixed(2) + '%'}</Typography>
+        <Typography style={{ color: color.red }}>{(lossPercent).toFixed(2) + '%'}</Typography>
       </Box>
     },
   }
 ];
 
-
-interface RowKey {
-  stockName: string,
-  interval: string,
-  rewardToRisk: string
-}
 
 
 const color = {
@@ -173,6 +161,21 @@ let getColorFromAvgProfit = (avgProfit: any) : string => {
   else if (avgProfit === 0)
     return color.neutral
   return color.green
+}
+
+let getSample = (backtest: BacktestResult): number => {
+  return backtest.timesProfited + backtest.timesLost + backtest.timesIndecisive
+}
+
+let getProfitLossPercentForLast30 = (backtest: BacktestResult): { profitPercent: number, lossPercent: number } => {
+  const profitLossTrades = backtest.tradeDateAndValues.filter(t => t.profitHitDate || t.stopLossHitDate)
+  const lastXprofitLossTrades = profitLossTrades.slice(-Math.min(profitLossTrades.length, 30))
+  const trades = {
+    profitTrades: lastXprofitLossTrades.filter(t => t.profitHitDate != null),
+    lossTrades: lastXprofitLossTrades.filter(t => t.stopLossHitDate != null)
+  }
+  const tradesSum = trades.profitTrades.length + trades.lossTrades.length
+  return { profitPercent: trades.profitTrades.length / tradesSum * 100 || 0, lossPercent: trades.lossTrades.length / tradesSum * 100 || 0 }
 }
   
 
@@ -227,25 +230,27 @@ class StrategyReportTable extends Component<PropsType, StateType> {
   }
 
   ColumnSort(props: { column: Column }): any {
-    const { key } = props.column
     const onChange = (key: ColumnKey) => {
       const newSortOrder = this.state.orderDirection == 'asc' ? 'desc' : 'asc'
       const sortedStrategyReport = this.state.selectedStrategyReport
       sortedStrategyReport.backtestResults = sortedStrategyReport?.backtestResults?.sort((a, b) => {
         if(newSortOrder == 'asc')
-          return columnKeySortingFunMap[key](a[key], b[key])
-        return columnKeySortingFunMap[key](b[key], b[key])
+          return columnKeySortingFunMap[key](a, b)
+        return columnKeySortingFunMap[key](b, a)
       })
+      //console.clear()
+      //console.log(sortedStrategyReport.backtestResults.map(e => 2))
       this.setState({
         selectedStrategyReport: sortedStrategyReport,
         orderDirection: newSortOrder,
         orderBy: key
       })
     }
+    const { key } = props.column
     return (
       <Box sx={{display: 'flex', flexDirection: 'row'}}>
         <Box sx={{marginBlock: 'auto'}}>{key}</Box>
-        <IconButton aria-label="delete" size="large" onClick={() => onChange(key)}>
+        <IconButton sx={{background: "none"}} aria-label="delete" size="large" onClick={() => onChange(key)}>
           {
             this.state.orderDirection === 'asc' ?
             <KeyboardArrowDownSharpIcon fontSize="inherit" /> :
@@ -274,9 +279,7 @@ class StrategyReportTable extends Component<PropsType, StateType> {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell
-                  key={column.key}
-                >
+                <TableCell key={column.key}>
                   <this.ColumnSort column={column}></this.ColumnSort>
                 </TableCell>
               ))}

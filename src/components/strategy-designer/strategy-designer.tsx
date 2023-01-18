@@ -5,7 +5,7 @@ import "apercu-font";
 
 import { Strategy } from "../../models/strategy";
 import styles from '../../styles/global.module.sass'
-import { Box, IconButton, Input, Menu, Paper, TextField } from "@mui/material";
+import { Box, Divider, IconButton, Input, Menu, Paper, TextField } from "@mui/material";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Button from '@mui/material/Button';
@@ -35,7 +35,7 @@ import StrategyDesignerSidebar from './strategy-designer-sidebar';
 
 import * as actions from "../../state/actions";
 import { deleteStrategy, saveStrategy } from "http/http";
-import StrategyDesignerSidebarRuleList from "./strategy-designer-sidebar-rule-list";
+import StrategyDesignerRuleList from "./strategy-designer-rule-list";
 import { Notification } from "components/notifications-stack";
 
 
@@ -91,7 +91,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
   isStrategyFormValid(): { valid: boolean, errorMsg?: string }{
     const strategy = this.props.strategyDesignerStrategy
-    if(strategy.name.length === 0)
+    if(!strategy.name || strategy.name?.length === 0)
       return { valid: false, errorMsg: "Strategy must have a name to be saved!" }
     else if(strategy.name.length > 30)
       return { valid: false, errorMsg: "Strategy name can not be over 30 characters!" }
@@ -99,7 +99,6 @@ class StrategyDesigner extends Component<PropsType, StateType> {
       return { valid: false, errorMsg: "There must be at least 1 strategy rule!" }
     for (let i=0; i < strategy.strategyConRules.length; ++i ) {
       const rule: ConditionalRule = strategy.strategyConRules[i]
-      console.log(rule)
       if(rule.valueExtractionRule1?.isRelative && !(rule.valueExtractionRule1?.percent > 0 && rule.valueExtractionRule1?.percent < 99))
         return { valid: false, errorMsg: `Rule[${i}].valueExtractionRule1 is relative annd must have valid % value!` }
       if(rule.valueExtractionRule2?.isRelative && !(rule.valueExtractionRule2?.percent > 0 && rule.valueExtractionRule2?.percent < 99))
@@ -109,7 +108,9 @@ class StrategyDesigner extends Component<PropsType, StateType> {
   }
 	  
 	onRefreshStrategy() {
-		actions.addNotification(new Notification('success', `Strategy "${this.state.selectedStrategy.name}" refreshed.`))
+		if(!this.state.selectedStrategy)
+			return
+		actions.addNotification(new Notification('success', `Strategy "${this.state.selectedStrategy?.name}" refreshed.`))
 		this.setState({selectedStrategy: this.props.selectedStrategy})
 		actions.setStrategyDesignerStrategy(this.props.selectedStrategy)
 	}
@@ -117,7 +118,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	onSaveStrategy() {
     const validity: { valid: boolean, errorMsg?: string } = this.isStrategyFormValid()
     if(!validity.valid) {
-	  	actions.addNotification(new Notification('error', `Strategy "${this.state.selectedStrategy.name}" form is not valid. Message="${validity.errorMsg}"`))
+	  	actions.addNotification(new Notification('error', `Strategy "${this.state.selectedStrategy?.name}" form is not valid. Message="${validity.errorMsg}"`))
       return;
     }
 		saveStrategy(this.props.strategyDesignerStrategy)
@@ -135,9 +136,9 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
 
   TopStrategyActions() {
-    const jsonButton = <Button className={styles.strategyDesignerSidebarjsonButton} variant="text"> <b>JSON</b> </Button>
+    const jsonButton = <Button sx={{color: 'white', alignSelf: 'center', padding:'10px'}} className={styles.strategyDesignerSidebarjsonButton} variant="text"> <b>JSON</b> </Button>
     return (
-      <React.Fragment>
+      <Box sx={{display: 'flex', gap: '6px'}}>
         <Popup trigger={jsonButton} position="right center" modal>
     		  <pre style={{maxHeight: "95vh"}}>
 				  	{
@@ -145,16 +146,16 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 				  	}
 				  </pre>
   			</Popup>
-        <IconButton onClick={() => { this.onSaveStrategy()}} color="primary">
+        <IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onSaveStrategy()}} color="primary">
 					<SaveIcon fontSize="large"/>
       	</IconButton>
-				<IconButton onClick={() => { this.onRefreshStrategy()}} color="primary">
+				<IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onRefreshStrategy()}} color="primary">
 					<RestorePageIcon fontSize="large"/>
       	</IconButton>
-				<IconButton onClick={() => { this.onDeleteStrategy()}} color="primary">
+				<IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onDeleteStrategy()}} color="primary">
 				  <DeleteForeverIcon fontSize="large"/>
       	</IconButton>
-      </React.Fragment>
+      </Box>
     )
   }
 	
@@ -163,21 +164,25 @@ class StrategyDesigner extends Component<PropsType, StateType> {
   render() {
 
     return (
-		<Paper sx={{ minWidth: "400px", maxWidth: "770px", overflow: 'hidden', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)", padding: '8px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+		<Paper sx={{ minWidth: "400px", maxWidth: "770px", overflow: 'hidden', p: '12px', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)", textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {/* Strategy name and top action buttons(json, save, refresh, delete) */}
-      <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'right', paddingTop: '8px'}}>
-      <TextField 
-					style={{width: '100%'}} label="Strategy name" variant="outlined" 
-					value={this.props.strategyDesignerStrategy?.name}
-          placeholder='Strategy name'
-					onChange={(e) => { this.onNameChange(e) }}
-				/>
+      <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'right', paddingTop: '8px', gap: '60px'}}>
+        <TextField
+          inputProps={{
+            maxLength: 30
+          }}
+			  	style={{width: '100%'}} label="Strategy name" variant="outlined" 
+			  	value={this.props.strategyDesignerStrategy?.name}
+			  	onChange={(e) => { this.onNameChange(e) }}
+			  />
         <this.TopStrategyActions></this.TopStrategyActions>
       </Box>
 
-      {/* Rules list */}	
+      <Divider variant='middle' sx={{ marginTop: '12px', marginBottom: '12px'}} orientation="horizontal" />  		
+
+      {/* Rules list */}
       <Box>
-        <StrategyDesignerSidebarRuleList></StrategyDesignerSidebarRuleList>
+        <StrategyDesignerRuleList></StrategyDesignerRuleList>
       </Box>
 		</Paper>
 		);

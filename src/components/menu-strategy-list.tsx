@@ -13,8 +13,12 @@ import { SpinnerComponent } from 'react-element-spinner';
 import "apercu-font";
 import styles from '../styles/global.module.sass'
 import { deepCopy } from "utils/utils";
-import { Box, Button, Divider, Grid, ListItemIcon, ListSubheader, Typography } from "@mui/material";
+import { Box, Button, Divider, Grid, ListItem, ListItemIcon, ListSubheader, Typography } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { ConditionalRule } from "models/conditional-rule";
+import { ValueExtractionRule } from "models/value-extraction-rule";
+import { AttributeType } from "types/attribute-type";
+import { Position } from "types/position";
 
 
 type PropsType = {
@@ -25,8 +29,6 @@ type PropsType = {
 
 type StateType = {
 }
-
-const selectedRowColor = '#f5f5f5'
 
 
 class MenuStrategyList extends Component<PropsType, StateType> {
@@ -48,6 +50,34 @@ class MenuStrategyList extends Component<PropsType, StateType> {
   }
   
   addNewStrategy() {
+    const strategy: Strategy = new Strategy({
+      name: '',
+      strategyConRules: [
+        new ConditionalRule({
+  
+          valueExtractionRule1: new ValueExtractionRule({
+            attribute1: AttributeType.OPEN,
+            id: 0,
+            isRelative: false
+          }),
+          position: Position.ABOVE,
+          valueExtractionRule2: new ValueExtractionRule({
+            attribute1: AttributeType.OPEN,
+            id: 1,
+            isRelative: false
+          })
+        })
+      ],
+      enterValueExRule: new ValueExtractionRule({
+        id: 1,
+        attribute1: AttributeType.OPEN,
+      }),
+      stopLossValueExRule: new ValueExtractionRule({
+        id: 2,
+        attribute1: AttributeType.CLOSE,
+      })
+    })
+    actions.setStrategyDesignerStrategy(strategy)
     actions.setStrategyEditorActive(true)
     actions.setSelectedStrategy(null)
   }
@@ -57,109 +87,51 @@ class MenuStrategyList extends Component<PropsType, StateType> {
   }
   
 
- 
-  getItemTextClass(strategyKey: string): any {
-    return this.props?.selectedStrategy?.name === strategyKey ? styles.strategySelectedItemText : styles.strategyItemTextStyle
-  }
-
-  readonly sxStyle = {
-    itemButtonStyle: { 
-      py: 0, 
-      minHeight: 32, 
-      color: '#212936', 
-      "&:hover": {backgroundColor: '#212936'} 
-    },
-    selectedItemButtonStyle: { 
-      py: 0, 
-      minHeight: 32, 
-      backgroundColor: '#2b3648', 
-      borderBottomLeftRadius: '.4rem', 
-      borderTopLeftRadius: '.4rem', 
-      "&:hover": {backgroundColor: '#2b3648'}
-    },
-    editItemButtonStyle: {
-      display: 'flex', 
-      justifyContent: "center", 
-      padding: 0, 
-      backgroundColor: '#212936', 
-      borderBottomRightRadius: '.4rem', 
-      borderTopRightRadius: '.4rem'
-    },
-    selectedEditItemButtonStyle: { 
-      display: 'flex', 
-      justifyContent: "center", 
-      padding: 0, 
-      backgroundColor: '#2b3648', 
-      borderBottomRightRadius: '.4rem', 
-      borderTopRightRadius: '.4rem', 
-      "&:hover": {backgroundColor: '#2b3648'}
-    },
-    addNewStrategyStyle: { 
-      padding: '0.8rem', 
-      display: 'flex', 
-      justifyContent:'center', 
-      color: 'white', 
-      backgroundColor: '#1976d2', 
-      borderRadius: '4px', 
-      "&:hover": {backgroundColor: '#1976d2'} 
-    },
-    editIcon: { 
-      fontSize: '2.4rem', 
-      fontWeight: 'bold', 
-      color: '#56657f'
-    }
-  }
-  
-  getItemButtonStyle(strategyKey: string): any {
-    return this.props?.selectedStrategy?.name === strategyKey ? this.sxStyle.selectedItemButtonStyle : this.sxStyle.itemButtonStyle
-  }
-  
-  getEditItemButtonStyle(strategyKey: string): any {
-    return this.props?.selectedStrategy?.name === strategyKey ? this.sxStyle.selectedEditItemButtonStyle : this.sxStyle.editItemButtonStyle
-  }  
-  
-
   render() {
 
     return (
+      <Box>
+        <SpinnerComponent loading={this.props.strategiesFecthing} position="centered" />
         <List
-          sx={{ paddingBottom: '10px', bgcolor: 'background.paper', borderRadius: '6px'} }
+          sx={{ paddingBottom: '10px', borderRadius: '8px'} }
           subheader={
-            <Typography sx={{ padding: '10px' }}>Strategy list</Typography>
-        }>
-          <Divider variant='middle' sx={{ }} orientation="horizontal" flexItem />
-          <SpinnerComponent loading={this.props.strategiesFecthing} position="centered" />
+            <Typography variant='h6'>Strategies</Typography>
+          }>
+          <Divider sx={{margin: '8px'}} variant='middle' orientation="horizontal" flexItem />
 
           {!this.props.strategiesFecthing &&
             this.props.strategies.map((strategy) => (
-            <Grid container alignItems='center' sx={{background: this.isStrategySelected(strategy) ? selectedRowColor : 'none'}}>
-              {/* Strategy name */}
-              <Grid item xs={9}>
-                <ListItemButton sx={{ height: 'auto', borderRadius: '8px', contain:'content'}} onClick={() => this.selectStrategy(strategy.name)}>
-                  { <Typography>{strategy.name}</Typography>  }
-                </ListItemButton>
+            <ListItem selected={ this.isStrategySelected(strategy)} sx={{margin: 0, padding: 0, borderRadius: '8px'}}>
+              <Grid container alignItems='center'>
+                {/* Strategy name */}
+                <Grid item xs={9}>
+                  <ListItemButton sx={{ height: 'auto', borderRadius: '8px', contain:'content'}} onClick={() => this.selectStrategy(strategy.name)}>
+                    { <Typography>{strategy.name}</Typography>  }
+                  </ListItemButton>
+                </Grid>
+                {/* Strategy edit */}
+                <Grid item xs={3}>
+                  <ListItemButton sx={{ paddingRight: 0, paddingLeft: 0, height: 'auto', borderRadius: '8px'}} onClick={() => this.editStrategy(strategy.name) }>
+                    {
+                    <ListItemIcon sx={{ paddingRight: 0, height: 'auto', minWidth: 'auto', margin: 'auto' }} >
+                        <EditIcon fontSize='large' />
+                    </ListItemIcon>
+                    }           
+                  </ListItemButton>
+                </Grid>
               </Grid>
-              {/* Strategy edit */}
-              <Grid item xs={3}>
-                <ListItemButton sx={{ paddingRight: 0, paddingLeft: 0, height: 'auto', borderRadius: '8px'}} onClick={() => this.editStrategy(strategy.name) }>
-                  {
-                  <ListItemIcon sx={{ paddingRight: 0, height: 'auto', minWidth: 'auto', margin: 'auto' }} >
-                      <EditIcon fontSize='large' />
-                  </ListItemIcon>
-                  }           
-                </ListItemButton>
-              </Grid>
-            </Grid>     
+            </ListItem>
             ))
           }
 
-          <Divider variant='middle' sx={{ paddingTop: '10px', marginBottom: '10px' }} orientation="horizontal" flexItem />
-          <Box sx={{display: "flex", flexDirection: "column", paddingLeft: '8px', paddingRight: '8px'}}>
+          <Divider variant='middle' sx={{ marginTop: '4px', marginBottom: '12px' }} orientation="horizontal" flexItem />
+          <Box sx={{display: "flex", flexDirection: "column"}}>
             <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" endIcon={<AddCircleOutlineIcon/>} onClick={() => this.addNewStrategy()}>
               add strategy
             </Button>
           </Box>
       </List>
+      </Box>
     );
   }
 }

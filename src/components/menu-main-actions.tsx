@@ -57,18 +57,16 @@ class MenuMainActions extends Component<PropsType, StateType> {
 
   render() {
     return (
-      <List sx={{ paddingBottom: '10px', bgcolor: 'background.paper', borderRadius: '6px'} }>
+      <List sx={{ borderRadius: '8px'} }>
         <Grid container alignItems='center'>
           {/* Strategy name */}
-          <Grid item xs={12} sx={{display: "flex", flexDirection: "column", gap: "8px", paddingLeft: '8px', paddingRight: '8px'}}>
+          <Grid item xs={12} sx={{display: "flex", flexDirection: "column", gap: "8px"}}>
             <Button sx={{ width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.refetchStrategies}>
               Refetch strategies
             </Button>
-            <Divider variant='middle' sx={{ paddingTop: '2px', marginBottom: '2px' }} orientation="horizontal" flexItem />
             <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.refetchStrategyReports}>
               Refetch reports
             </Button>
-            <Divider variant='middle' sx={{ paddingTop: '2px', marginBottom: '2px' }} orientation="horizontal" flexItem />            
             <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.generateStrategyReports}>
               Regenerate reports
             </Button>

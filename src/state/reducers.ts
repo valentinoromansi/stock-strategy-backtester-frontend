@@ -65,7 +65,6 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
     case types.ADD_NOTIFICATION: {
       const notification: Notification = action.payload
       notification.id = (state.notifications?.[state.notifications.length - 1]?.id ?? 0) + 1
-      console.log(notification)
       state.notifications.push(notification)
       return { ...state, notifications: [...state.notifications]};
     }
