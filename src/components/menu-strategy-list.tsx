@@ -51,8 +51,10 @@ class MenuStrategyList extends Component<PropsType, StateType> {
   
   addNewStrategy() {
     const strategy: Strategy = new Strategy({
+      name: '',
       strategyConRules: [
         new ConditionalRule({
+  
           valueExtractionRule1: new ValueExtractionRule({
             attribute1: AttributeType.OPEN,
             id: 0,
