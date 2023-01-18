@@ -91,7 +91,6 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
   isStrategyFormValid(): { valid: boolean, errorMsg?: string }{
     const strategy = this.props.strategyDesignerStrategy
-	console.log(strategy)
     if(!strategy.name || strategy.name?.length === 0)
       return { valid: false, errorMsg: "Strategy must have a name to be saved!" }
     else if(strategy.name.length > 30)
@@ -100,7 +99,6 @@ class StrategyDesigner extends Component<PropsType, StateType> {
       return { valid: false, errorMsg: "There must be at least 1 strategy rule!" }
     for (let i=0; i < strategy.strategyConRules.length; ++i ) {
       const rule: ConditionalRule = strategy.strategyConRules[i]
-      console.log(rule)
       if(rule.valueExtractionRule1?.isRelative && !(rule.valueExtractionRule1?.percent > 0 && rule.valueExtractionRule1?.percent < 99))
         return { valid: false, errorMsg: `Rule[${i}].valueExtractionRule1 is relative annd must have valid % value!` }
       if(rule.valueExtractionRule2?.isRelative && !(rule.valueExtractionRule2?.percent > 0 && rule.valueExtractionRule2?.percent < 99))

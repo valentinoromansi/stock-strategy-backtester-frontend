@@ -95,7 +95,7 @@ class MenuStrategyList extends Component<PropsType, StateType> {
         <List
           sx={{ paddingBottom: '10px', borderRadius: '8px'} }
           subheader={
-            <Typography>Strategy list</Typography>
+            <Typography variant='h6'>Strategies</Typography>
           }>
           <Divider sx={{margin: '8px'}} variant='middle' orientation="horizontal" flexItem />
 

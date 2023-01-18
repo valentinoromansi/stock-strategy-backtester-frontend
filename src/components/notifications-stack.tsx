@@ -77,7 +77,6 @@ class NotificationsStack extends Component<PropsType, StateType> {
   }
   
   render() {
-    console.log(this.props.notifications)
     return (          
           <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={true} autoHideDuration={6000} sx={{padding: '8px', gap: '6px'}}>
             <Box sx={{gap: '6px', display: 'flex', flexDirection: 'column', alignItems: 'end'}}>

@@ -299,7 +299,6 @@ class App extends Component<any, StateType> {
       theme: 'dark'
     }
     this.switchThemeMode = this.switchThemeMode.bind(this)
-    console.log(darkTheme)
   }
 
 
