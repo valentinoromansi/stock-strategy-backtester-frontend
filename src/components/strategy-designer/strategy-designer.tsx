@@ -127,7 +127,6 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	}
 
 	onDeleteStrategy() {
-		console.log("?????????????????X")
 		deleteStrategy(this.props.selectedStrategy?.name)
 	}
 
@@ -176,7 +175,6 @@ class StrategyDesigner extends Component<PropsType, StateType> {
           }}
 			  	style={{width: '100%'}} label="Strategy name" variant="outlined" 
 			  	value={this.props.strategyDesignerStrategy?.name}
-          placeholder='Strategy name'
 			  	onChange={(e) => { this.onNameChange(e) }}
 			  />
         <this.TopStrategyActions></this.TopStrategyActions>
