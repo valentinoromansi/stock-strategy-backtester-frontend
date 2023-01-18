@@ -91,7 +91,8 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
   isStrategyFormValid(): { valid: boolean, errorMsg?: string }{
     const strategy = this.props.strategyDesignerStrategy
-    if(strategy.name.length === 0)
+	console.log(strategy)
+    if(!strategy.name || strategy.name?.length === 0)
       return { valid: false, errorMsg: "Strategy must have a name to be saved!" }
     else if(strategy.name.length > 30)
       return { valid: false, errorMsg: "Strategy name can not be over 30 characters!" }
@@ -109,6 +110,8 @@ class StrategyDesigner extends Component<PropsType, StateType> {
   }
 	  
 	onRefreshStrategy() {
+		if(!this.state.selectedStrategy)
+			return
 		actions.addNotification(new Notification('success', `Strategy "${this.state.selectedStrategy?.name}" refreshed.`))
 		this.setState({selectedStrategy: this.props.selectedStrategy})
 		actions.setStrategyDesignerStrategy(this.props.selectedStrategy)

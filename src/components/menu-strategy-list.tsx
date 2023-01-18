@@ -15,6 +15,10 @@ import styles from '../styles/global.module.sass'
 import { deepCopy } from "utils/utils";
 import { Box, Button, Divider, Grid, ListItem, ListItemIcon, ListSubheader, Typography } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { ConditionalRule } from "models/conditional-rule";
+import { ValueExtractionRule } from "models/value-extraction-rule";
+import { AttributeType } from "types/attribute-type";
+import { Position } from "types/position";
 
 
 type PropsType = {
@@ -46,6 +50,32 @@ class MenuStrategyList extends Component<PropsType, StateType> {
   }
   
   addNewStrategy() {
+    const strategy: Strategy = new Strategy({
+      strategyConRules: [
+        new ConditionalRule({
+          valueExtractionRule1: new ValueExtractionRule({
+            attribute1: AttributeType.OPEN,
+            id: 0,
+            isRelative: false
+          }),
+          position: Position.ABOVE,
+          valueExtractionRule2: new ValueExtractionRule({
+            attribute1: AttributeType.OPEN,
+            id: 1,
+            isRelative: false
+          })
+        })
+      ],
+      enterValueExRule: new ValueExtractionRule({
+        id: 1,
+        attribute1: AttributeType.OPEN,
+      }),
+      stopLossValueExRule: new ValueExtractionRule({
+        id: 2,
+        attribute1: AttributeType.CLOSE,
+      })
+    })
+    actions.setStrategyDesignerStrategy(strategy)
     actions.setStrategyEditorActive(true)
     actions.setSelectedStrategy(null)
   }
