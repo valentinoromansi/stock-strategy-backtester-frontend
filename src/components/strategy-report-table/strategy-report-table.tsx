@@ -43,7 +43,7 @@ const columnKeySortingFunMap: { [key in ColumnKey]: (a, b) => SortValue } = {
       '1h': 1,
       '1day': 2
     }
-    return (intervalSortOrderMap[a.interval] > intervalSortOrderMap[a.interval] ? 1 : -1) 
+    return (intervalSortOrderMap[a.interval] > intervalSortOrderMap[b.interval] ? 1 : -1) 
   },
   "plFactor": (a: BacktestResult, b: BacktestResult) => { return (a.plFactor > b.plFactor ? 1 : -1) },
   "plRatio": (a: BacktestResult, b: BacktestResult) => { return (a.plRatio > b.plRatio ? 1 : -1) },
