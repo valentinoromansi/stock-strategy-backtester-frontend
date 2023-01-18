@@ -127,6 +127,7 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	}
 
 	onDeleteStrategy() {
+		console.log("?????????????????X")
 		deleteStrategy(this.props.selectedStrategy?.name)
 	}
 

@@ -310,7 +310,6 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 				return
 			let newStrategy = deepCopy(this.props.strategyDesignerStrategy)
 			newStrategy.strategyConRules.splice(ruleIndex, 1)
-			newStrategy.strategyConRules.splice(ruleIndex, 1)
 			actions.setStrategyDesignerStrategy(newStrategy)
 			this.setState({rcMenuAnchorElement: null})
 		}
