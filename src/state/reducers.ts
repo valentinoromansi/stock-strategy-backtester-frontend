@@ -43,7 +43,6 @@ export const initialState: StateType = {
 export const rootReducer = (state = initialState, action: {type: any, payload: any}): StateType => {
   switch (action.type) {
     case types.SET_AUTHENTICATION_FLAG:
-      console.log(`PREV=${state.authenticated} NEW=${action.payload}`)
       return { ...state, authenticated: action.payload };
     case types.UPDATE_STRATEGY_REPORTS:
       return { ...state, strategyReports: action.payload };

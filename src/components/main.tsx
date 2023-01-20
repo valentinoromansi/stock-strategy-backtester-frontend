@@ -40,8 +40,6 @@ class Main extends Component<PropsType, StateType> {
 
   constructor(props: PropsType) {
     super(props);
-    actions.getStrategies();
-    actions.getStrategyReports();
     this.state = {
       actionMenuOpened: true,
       graphSize: { width: 0, height: 0}
@@ -69,17 +67,26 @@ class Main extends Component<PropsType, StateType> {
     this.setState({actionMenuOpened: !this.state.actionMenuOpened})
   }
 
+  componentDidUpdate(prevProps: Readonly<PropsType>, prevState: Readonly<StateType>, snapshot?: any): void {
+    if(prevProps.authenticated !== this.props.authenticated && this.props.authenticated) {
+      actions.getStrategies()
+      actions.getStrategyReports()
+    }
+    if(prevProps.selectedBacktestResult !== this.props.selectedBacktestResult)
+      this.updateGraphSize()
+  }
+
 
   render() {
-    console.log("XXXXXXXXXXXX:" + this.props)
+    console.log(this.props.authenticated)
 
     return (
         <Box sx={{ width: '100%', padding: '24px'}}>
+          <NotificationsStack/>
           {
             !this.props.authenticated ?
             <LoginForm/> :
             <React.Fragment>
-              <NotificationsStack/>
               {/* <Alert severity="success">This is a success message!</Alert> */}
               {/* <MuiAlert elevation={6} variant="filled" /> */}          
               <Box sx={{ display:'flex', flexDirection: 'row', gap: '16px'}}>          

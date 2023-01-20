@@ -36,17 +36,11 @@ class LoginForm extends Component<PropsType, StateType> {
   login() {
 		if(!this.state?.username || !this.state?.password)
 			return
-		const credentials: UserCredentials = { user: this.state.username, password: this.state.password }
-    // call http and check if jwt is returned
-		console.log("trying to login with: ")
-		console.log(credentials)
-    authentication(credentials).then(res => {
-    	if(res.accessToken == null)
-				console.log(res.message)    	
-    	else {
-    	    console.log("Successfuly authenticated!!!")
-    	    actions.setAuthenticationFlag(true)
-    	}
+    authentication({ user: this.state.username, password: this.state.password }).then(token => {
+    	if(token) {
+				sessionStorage.setItem('access_token', token)
+				actions.setAuthenticationFlag(true)
+			}
     })
     .catch(error => {
         console.log("AUTH ERROR: " + error)
@@ -63,7 +57,6 @@ class LoginForm extends Component<PropsType, StateType> {
 
   
   render() {
-		console.log("XX:" + this.props.authenticate)
 
     return (
 				<Grid
