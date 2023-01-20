@@ -1,7 +1,7 @@
 export type StorageType = 'local' | 'session'
 export type StorageKey = "access_token" | 'theme'
 
-export function getItem(storageType: StorageType, key: StorageKey): string {
+export function getItem(storageType: StorageType, key: StorageKey): any {
   if(storageType === "local")
     return localStorage.getItem(key)
   return sessionStorage.getItem(key)
