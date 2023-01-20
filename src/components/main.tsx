@@ -12,12 +12,14 @@ import Box from '@mui/material/Box';
 import { BacktestResult } from "models/backtest-result";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import NotificationsStack from "./notifications-stack";
+import LoginForm from "./login-form/login-form";
 
 type PropsType = {
   strategyEditorActive: boolean,
   strategyReports: StrategyReport[],
   selectedStrategyReport: StrategyReport,
-  selectedBacktestResult: BacktestResult
+  selectedBacktestResult: BacktestResult,
+  authenticated: boolean
 }
 type StateType = {
   strategyBacktestResults?: StrategyReport,
@@ -34,13 +36,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 
 class Main extends Component<PropsType, StateType> {
 
-
   graphWrapperRef: React.RefObject<HTMLElement> = React.createRef();
 
   constructor(props: PropsType) {
     super(props);
     actions.getStrategies();
-    actions.getStrategyReports();    
+    actions.getStrategyReports();
     this.state = {
       actionMenuOpened: true,
       graphSize: { width: 0, height: 0}
@@ -70,43 +71,50 @@ class Main extends Component<PropsType, StateType> {
 
 
   render() {
+    console.log("XXXXXXXXXXXX:" + this.props)
 
     return (
-        <Box sx={{ width: '100%', padding: '24px' }}>
-          <NotificationsStack/>
-          {/* <Alert severity="success">This is a success message!</Alert> */}
-          {/* <MuiAlert elevation={6} variant="filled" /> */}          
-          <Box sx={{ display:'flex', flexDirection: 'row', gap: '16px'}}>          
-            {/* Action and strategy list */}
-            <Box sx={{ minWidth: '190px', display:'flex', flexDirection: 'column', gap: '16px'}}>
-              <MenuMainActions/>      
-              <MenuStrategyList/>
-            </Box>
-            {/* Strategy designer, graph view, report table  */}
-            <Box sx={{ width: '100%', minWidth: '500px', display:'flex', flexDirection: 'column', gap: '16px'}} ref={this.graphWrapperRef}>
-              {/* Strategy designer*/}
-                {this.props.strategyEditorActive ?                  
-                  <StrategyDesigner/>                
-                :
-                <React.Fragment>
-                    {/* Graph and Report table */}
-                    {
-                      this.props.selectedStrategyReport?.backtestResults &&
-                      <React.Fragment>                         
-                        { this.props.selectedBacktestResult &&
-                          <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
-                            <GraphWithTradeMarkings width={this.state.graphSize.width} height={this.state.graphSize.height}/>
-                          </Box> 
-                        }
-                        <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
-                          <StrategyReportTable/>
-                        </Box>
+        <Box sx={{ width: '100%', padding: '24px'}}>
+          {
+            !this.props.authenticated ?
+            <LoginForm/> :
+            <React.Fragment>
+              <NotificationsStack/>
+              {/* <Alert severity="success">This is a success message!</Alert> */}
+              {/* <MuiAlert elevation={6} variant="filled" /> */}          
+              <Box sx={{ display:'flex', flexDirection: 'row', gap: '16px'}}>          
+                {/* Action and strategy list */}
+                <Box sx={{ minWidth: '190px', display:'flex', flexDirection: 'column', gap: '16px'}}>
+                  <MenuMainActions/>      
+                  <MenuStrategyList/>
+                </Box>
+                {/* Strategy designer, graph view, report table  */}
+                <Box sx={{ width: '100%', minWidth: '500px', display:'flex', flexDirection: 'column', gap: '16px'}} ref={this.graphWrapperRef}>
+                  {/* Strategy designer*/}
+                    {this.props.strategyEditorActive ?                  
+                      <StrategyDesigner/>                
+                    :
+                    <React.Fragment>
+                        {/* Graph and Report table */}
+                        {
+                          this.props.selectedStrategyReport?.backtestResults &&
+                          <React.Fragment>                         
+                            { this.props.selectedBacktestResult &&
+                              <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
+                                <GraphWithTradeMarkings width={this.state.graphSize.width} height={this.state.graphSize.height}/>
+                              </Box> 
+                            }
+                            <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
+                              <StrategyReportTable/>
+                            </Box>
+                          </React.Fragment>
+                        }                                
                       </React.Fragment>
-                    }                                
-                  </React.Fragment>
-                }
-            </Box>
-          </Box>
+                    }
+                </Box>
+              </Box>
+            </React.Fragment>
+          }
         </Box>
     );
   }
@@ -120,7 +128,8 @@ const mapStateToProps = (state: reducer.StateType) => {
 		strategyEditorActive: state.strategyEditorActive,
     strategyReports: state.strategyReports,
     selectedStrategyReport: state.strategyReports.find(item => item.strategyName === state.selectedStrategy?.name),
-    selectedBacktestResult: state.selectedBacktestResult
+    selectedBacktestResult: state.selectedBacktestResult,
+    authenticated: state.authenticated
   };
 };
 

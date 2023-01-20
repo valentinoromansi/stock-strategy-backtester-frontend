@@ -10,8 +10,20 @@ const URL_GET_STRATEGIES: string = 'http://localhost:4000/get-strategies'
 const URL_SAVE_STRATEGY: string = 'http://localhost:4000/save-strategy'
 const URL_DELETE_STRATEGY: string = 'http://localhost:4000/delete-strategy'
 const URL_UPDATE_STRATEGY_REPORTS: string = 'http://localhost:4000/update-strategy-reports'
-const HEADERS: HeadersInit = {'Content-Type': 'application/json'}
+const URL_AUTHENTICATE: string = 'http://localhost:4000/authenticate'
+const HEADERS: HeadersInit = {
+  'Content-Type': 'application/json',
+  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSXZpY2EiLCJpYXQiOjE2NzQwODc2MTZ9.GWmsd1NT1oBswd7qyAnWo4BeZPu3cFr2PHdHxVG7FEs'
+}
 
+/*
+** Use this interface for every http response and handle status=200 for valid response and others for invalid
+*/
+interface ServiceResponse{
+  status?: number
+  message?: string
+  data?: any
+}
 
 export let getStock = (interval: string, symbol: string) : Promise<[]> => {
   return new Promise(async (resolve) => {
@@ -151,6 +163,37 @@ export let regenerateStrategyReports = () : Promise<StrategyReport[]> => {
       console.log(colors.red(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} thrown error: ` + err))
       actions.addNotification(new Notification('error', 'Strategy reports could not be regenerated!'))
       resolve([])
+    })
+  })
+}
+
+
+export interface AuthenticationResponse {
+  message: string,
+  accessToken: string
+}
+
+export interface UserCredentials {
+  user: string,
+  password: string
+}
+
+export let authentication = (credentials: UserCredentials) : Promise<AuthenticationResponse> => {
+  return new Promise(async (resolve) => {
+    return fetch(URL_AUTHENTICATE, {
+      method: 'POST',
+      headers: HEADERS,
+      body: JSON.stringify(credentials)
+    })
+    .then(response => {
+      response.json().then((authRes: AuthenticationResponse) => {        
+        console.log(colors.bgBlue(authRes.accessToken))
+        resolve(authRes)
+      })
+    })
+    .catch((err) => {
+      console.log(colors.red(`User ${URL_UPDATE_STRATEGY_REPORTS} could not be authenticated.` + err))
+      resolve(null)
     })
   })
 }
