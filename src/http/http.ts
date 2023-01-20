@@ -3,6 +3,7 @@ import colors from "colors"
 import { Strategy } from "../models/strategy"
 import * as actions from "../state/actions";
 import { Notification } from "components/notifications-stack";
+import * as storage from "components/browser-storage/browser-storage";
 
 const URL_GET_STOCK: string = 'http://localhost:4000/get-stock'
 const URL_GET_STRATEGY_REPORTS: string = 'http://localhost:4000/get-strategy-reports'
@@ -15,7 +16,7 @@ const URL_AUTHENTICATE: string = 'http://localhost:4000/authenticate'
 const getHeaders = (): HeadersInit => {
   return {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${sessionStorage?.getItem('access_token')}`
+    'Authorization': `Bearer ${storage.getItem('session', 'access_token')}`
   }
 }
 
@@ -186,7 +187,7 @@ export interface UserCredentials {
 }
 
 // Authenticates user credentials and saves received jwt access token in local storage for future service calls
-export let authentication = (credentials: UserCredentials) : Promise<string> => {
+export let authenticateCredentials = (credentials: UserCredentials) : Promise<string> => {
   return new Promise(async (resolve) => {
     return fetch(URL_AUTHENTICATE, {
       method: 'POST',

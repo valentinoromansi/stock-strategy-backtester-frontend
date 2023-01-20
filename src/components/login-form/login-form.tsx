@@ -5,9 +5,9 @@ import * as actions from "../../state/actions";
 import "apercu-font";
 import { Divider, Grid, List, ListItemButton, ListSubheader, Typography, TextField, Button} from "@mui/material";
 import Box from "@mui/material/Box";
-import { authentication, UserCredentials } from "http/http";
+import { authenticateCredentials, UserCredentials } from "http/http";
 import * as reducer from '../../state/reducers';
-
+import * as storage from '../browser-storage/browser-storage'
 
 
 type PropsType = {
@@ -32,13 +32,13 @@ class LoginForm extends Component<PropsType, StateType> {
 		this.login = this.login.bind(this)
   }
 
-
+	// sends credentials for authentication and on successful authentication saves received access token in session storage 
   login() {
 		if(!this.state?.username || !this.state?.password)
 			return
-    authentication({ user: this.state.username, password: this.state.password }).then(token => {
+    authenticateCredentials({ user: this.state.username, password: this.state.password }).then(token => {
     	if(token) {
-				sessionStorage.setItem('access_token', token)
+				storage.setItem('session', 'access_token', token)
 				actions.setAuthenticationFlag(true)
 			}
     })
