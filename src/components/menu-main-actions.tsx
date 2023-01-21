@@ -12,6 +12,7 @@ import UpdateIcon from '@mui/icons-material/Update';
 import "apercu-font";
 import styles from '../styles/global.module.sass'
 import { Divider, Grid, List, ListItemButton, ListSubheader, Typography } from "@mui/material";
+import * as storage from "./browser-storage/browser-storage";
 
 
 type PropsType = {
@@ -51,9 +52,16 @@ class MenuMainActions extends Component<PropsType, StateType> {
     actions.getStrategies()
   }
 
+  logout() {
+    storage.removeItem('session', 'access_token')
+    actions.setAuthenticationFlag(false)
+  }
+
   readonly sxIconStyle = {
     fontSize: '3.2rem'
   }
+
+
 
   render() {
     return (
@@ -61,6 +69,9 @@ class MenuMainActions extends Component<PropsType, StateType> {
         <Grid container alignItems='center'>
           {/* Strategy name */}
           <Grid item xs={12} sx={{display: "flex", flexDirection: "column", gap: "8px"}}>
+            <Button sx={{ width: "auto", padding: "10px 20px" }} variant="outlined" onClick={this.logout}>
+              logout
+            </Button>
             <Button sx={{ width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.refetchStrategies}>
               Refetch strategies
             </Button>

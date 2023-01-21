@@ -60,6 +60,16 @@ const lightTheme = createTheme({
           '&:hover': {
             background: '#1361ad'
           }
+        },
+        outlined: {
+          color: "#e32020",
+          borderColor: '#e32020',
+          background: 'none',
+          '&:hover': {
+            color: "white",
+            borderColor: 'transparent',
+            background: '#e32020',
+          }
         }
       },
     },
@@ -173,6 +183,16 @@ const darkTheme = createTheme({
           background:'#3b31fb',
           '&:hover': {
             background: '#3027d9'
+          }
+        },
+        outlined: {
+          color: "#e32020",
+          borderColor: '#e32020',
+          background: 'none',
+          '&:hover': {
+            color: "white",
+            borderColor: 'transparent',
+            background: '#e32020',
           }
         }
       },

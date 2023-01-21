@@ -13,3 +13,10 @@ export function setItem(storageType: StorageType, key: StorageKey, value: string
   else
     sessionStorage.setItem(key, value)
 }
+
+export function removeItem(storageType: StorageType, key: StorageKey) {
+  if(storageType === "local")
+    localStorage.removeItem(key)
+  else
+    sessionStorage.removeItem(key)
+}
