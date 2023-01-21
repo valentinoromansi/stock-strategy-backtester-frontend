@@ -16,7 +16,7 @@ const lightTheme = createTheme({
   typography: {
     fontFamily: 'Montserrat, sans-serif',
     "fontSize": 16,
-    "fontWeightLight": 300,
+    "fontWeightLight": 400,
     "fontWeightRegular": 500,
     "fontWeightMedium": 600
    },
@@ -138,7 +138,7 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           color: '#acb5c4',
-          fontWeight: '500'
+          fontWeight: '600'
         }
       }
     },

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 
 import * as actions from "../../state/actions";
 import "apercu-font";
-import { Divider, Grid, List, ListItemButton, ListSubheader, Typography, TextField, Button} from "@mui/material";
+import { Divider, Grid, List, ListItemButton, ListSubheader, Typography, TextField, Button, Paper} from "@mui/material";
 import Box from "@mui/material/Box";
 import { authenticateCredentials, UserCredentials } from "http/http";
 import * as reducer from '../../state/reducers';
@@ -65,15 +65,15 @@ class LoginForm extends Component<PropsType, StateType> {
   				direction="column"
   				justifyContent="center"
 					alignItems="center"
-  				style={{ width: '100%', height: '100vh'}}>
-  				<Box style={{width: "min(300px, 100%)", padding: '16px', borderRadius: '10px', background: 'white', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)"}}>
+  				style={{ width: '100%', height: '80vh'}}>
+  				<Paper style={{width: "min(300px, 100%)", padding: '24px', paddingBottom:'24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)"}}>
 						<Typography fontSize='large' sx={{width: 'auto', padding: '16px'}}>LOGIN</Typography>
 						<TextField sx={{width: 'auto'}} label="Username" defaultValue="Ivica" onChange={this.changeUsername}/>
 						<TextField sx={{width: 'auto'}} label="Password" type="password" defaultValue="majmun" onChange={this.changePassword}/>
 						<Button sx={{width: 'auto', padding: '16px'}} onClick={this.login} >
 							<Typography sx={{color: 'white'}}>LOGIN</Typography>
 						</Button>
-  				</Box>   						 
+  				</Paper>   						 
 				</Grid> 
 
     );
