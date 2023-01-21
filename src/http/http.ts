@@ -202,7 +202,8 @@ export let authenticateCredentials = (credentials: UserCredentials) : Promise<st
       })
     })
     .catch((err) => {
-      console.log(colors.red(`User ${URL_UPDATE_STRATEGY_REPORTS} could not be authenticated.` + err))
+      console.log(colors.red(`Authenticating over ${URL_AUTHENTICATE} thrown error:` + err))
+      actions.addNotification(new Notification('error', `User could not be authenticated!`))
       resolve(null)
     })
   })
