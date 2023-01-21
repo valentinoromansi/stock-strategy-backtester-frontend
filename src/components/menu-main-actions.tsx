@@ -27,11 +27,6 @@ type StateType = {
 class MenuMainActions extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
-    getStrategyReports().then(data => {
-      this.setState({ strategyBacktestResults: data })
-      store.dispatch({type: types.UPDATE_STRATEGY_REPORTS, payload: data})
-    })
-
   }
 
   componentDidUpdate(prevProps: PropsType) {

@@ -68,7 +68,7 @@ class Main extends Component<PropsType, StateType> {
   }
 
   componentDidUpdate(prevProps: Readonly<PropsType>, prevState: Readonly<StateType>, snapshot?: any): void {
-    if(prevProps.authenticated !== this.props.authenticated && this.props.authenticated) {
+    if(prevProps.authenticated !== this.props.authenticated) {
       actions.getStrategies()
       actions.getStrategyReports()
     }
