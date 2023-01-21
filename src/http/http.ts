@@ -3,7 +3,7 @@ import colors from "colors"
 import { Strategy } from "../models/strategy"
 import * as actions from "../state/actions";
 import { Notification } from "components/notifications-stack";
-import * as storage from "components/browser-storage/browser-storage";
+import * as storage from "browser-storage/browser-storage";
 
 const URL_GET_STOCK: string = 'http://localhost:4000/get-stock'
 const URL_GET_STRATEGY_REPORTS: string = 'http://localhost:4000/get-strategy-reports'

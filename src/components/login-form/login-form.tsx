@@ -7,7 +7,7 @@ import { Divider, Grid, List, ListItemButton, ListSubheader, Typography, TextFie
 import Box from "@mui/material/Box";
 import { authenticateCredentials, UserCredentials } from "http/http";
 import * as reducer from '../../state/reducers';
-import * as storage from '../browser-storage/browser-storage'
+import * as storage from '../../browser-storage/browser-storage'
 
 
 type PropsType = {

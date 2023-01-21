@@ -78,8 +78,6 @@ class Main extends Component<PropsType, StateType> {
 
 
   render() {
-    console.log(this.props.authenticated)
-
     return (
         <Box sx={{ width: '100%', padding: '24px'}}>
           <NotificationsStack/>
