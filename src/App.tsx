@@ -3,7 +3,7 @@ import './App.css';
 import Main from './components/main';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
-import { Button, CssBaseline, FormControlLabel, GlobalStyles, styled, Switch } from "@mui/material";
+import { Button, CssBaseline, FormControlLabel, GlobalStyles, styled, Switch, withStyles } from "@mui/material";
 import { threadId } from 'worker_threads';
 import { runInThisContext } from 'vm';
 import * as storage from 'browser-storage/browser-storage';
