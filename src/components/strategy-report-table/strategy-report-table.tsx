@@ -238,8 +238,6 @@ class StrategyReportTable extends Component<PropsType, StateType> {
           return columnKeySortingFunMap[key](a, b)
         return columnKeySortingFunMap[key](b, a)
       })
-      //console.clear()
-      //console.log(sortedStrategyReport.backtestResults.map(e => 2))
       this.setState({
         selectedStrategyReport: sortedStrategyReport,
         orderDirection: newSortOrder,

@@ -3,6 +3,7 @@ import colors from "colors"
 import { Strategy } from "../models/strategy"
 import * as actions from "../state/actions";
 import { Notification } from "components/notifications-stack";
+import * as storage from "components/browser-storage/browser-storage";
 
 const URL_GET_STOCK: string = 'http://localhost:4000/get-stock'
 const URL_GET_STRATEGY_REPORTS: string = 'http://localhost:4000/get-strategy-reports'
@@ -10,22 +11,46 @@ const URL_GET_STRATEGIES: string = 'http://localhost:4000/get-strategies'
 const URL_SAVE_STRATEGY: string = 'http://localhost:4000/save-strategy'
 const URL_DELETE_STRATEGY: string = 'http://localhost:4000/delete-strategy'
 const URL_UPDATE_STRATEGY_REPORTS: string = 'http://localhost:4000/update-strategy-reports'
-const HEADERS: HeadersInit = {'Content-Type': 'application/json'}
+const URL_AUTHENTICATE: string = 'http://localhost:4000/authenticate'
+
+const getHeaders = (): HeadersInit => {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${storage.getItem('session', 'access_token')}`
+  }
+}
+
+/*
+** Use this interface for every http response and handle status=200 for valid response and others for invalid
+*/
+interface ServiceResponse{
+  status?: number
+  message?: string
+  data?: any
+}
+
+const showNotification = (status: number, successMsg: string, errorlMsg: string): any => {
+  if(status === 200)
+    return actions.addNotification(new Notification('success', successMsg))
+  return actions.addNotification(new Notification('error', errorlMsg))
+}
 
 
 export let getStock = (interval: string, symbol: string) : Promise<[]> => {
   return new Promise(async (resolve) => {
     return fetch(URL_GET_STOCK, {
       method: 'POST',
-      headers: HEADERS,
+      headers: getHeaders(),
       body: JSON.stringify({ "interval": interval, "symbol": symbol })
     })
     .then(response => {
-      response.json().then(jsonObj => {
+      response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STOCK} done.`))
-        for(const o of jsonObj)
+        const data = response.data ?? []
+        showNotification(response.status, 'Stock fetched', 'Stock could not be fetched')
+        for(const o of data)
           o.date = new Date(o.date)
-        resolve(jsonObj)
+        resolve(data)        
       })
     })
     .catch((err) => {
@@ -39,14 +64,14 @@ export let getStrategyReports = () : Promise<StrategyReport[]> => {
   return new Promise(async (resolve) => {
     return fetch(URL_GET_STRATEGY_REPORTS, {
       method: 'GET',
-      headers: HEADERS
+      headers: getHeaders()
     })
     .then(response => {
-      response.json().then(jsonObj => {
-        let reports: StrategyReport[] = jsonObj
+      response.json().then((response: ServiceResponse) => {        
         console.log(colors.green(`Fetch ${URL_GET_STRATEGY_REPORTS} done.`))
-        actions.addNotification(new Notification('success', 'Strategy reports fetched.'))
-        resolve(reports)
+        const data: StrategyReport[] = response.data ?? []
+        showNotification(response.status, 'Strategy reports fetched', 'Strategy reports could not be fetched')
+        resolve(data)
       })
     })
     .catch((err) => {
@@ -61,14 +86,14 @@ export let getStrategies = () : Promise<Strategy[]> => {
   return new Promise(async (resolve) => {
     return fetch(URL_GET_STRATEGIES, {
       method: 'GET',
-      headers: HEADERS
+      headers: getHeaders()
     })
-    .then(response => {      
-      response.json().then(jsonObj => {
-        let strategies: Strategy[] = jsonObj
+    .then(response => {    
+      response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
-        actions.addNotification(new Notification('success', 'Strategies fetched.'))
-        resolve(strategies)
+        const data: Strategy[]  = response.data ?? []
+        showNotification(response.status, 'Strategies fetched', 'Strategies could not be fetched')
+        resolve(data)
       })
     })
     .catch((err) => {
@@ -86,17 +111,16 @@ export let saveStrategy = (strategy: Strategy) : Promise<boolean> => {
   return new Promise(async (resolve) => {
     return fetch(URL_SAVE_STRATEGY, {
       method: 'POST',
-      headers: HEADERS,
+      headers: getHeaders(),
       body: JSON.stringify(strategy)
     })
     .then(response => {
-      console.log(response)
-      if(response) {
-        console.log(colors.green(`Saving strategy over ${URL_SAVE_STRATEGY} done.`))
-        actions.addNotification(new Notification('success', `Strategy "${strategy.name}" saved.`))
-        resolve(true)
-      }
-      resolve(false)
+      response.json().then((response: ServiceResponse) => {
+        console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
+        const data: boolean = response.data ?? false
+        showNotification(response.status, 'Strategy saved', 'Strategy could not be saved')
+        resolve(data)
+      })
     })
     .catch((err) => {
       console.log(colors.red(`Saving strategy over ${URL_SAVE_STRATEGY} thrown error: ` + err))
@@ -111,17 +135,16 @@ export let deleteStrategy = (name: string) : Promise<boolean> => {
   return new Promise(async (resolve) => {
     return fetch(URL_DELETE_STRATEGY, {
       method: 'POST',
-      headers: HEADERS,
+      headers: getHeaders(),
       body: JSON.stringify({name: name})
     })
     .then(response => {
-      console.log(response)
-      if(response) {
-        console.log(colors.green(`Deleting strategy ${name} over ${URL_DELETE_STRATEGY} done.`))
-        actions.addNotification(new Notification('success', `Strategy "${name}" deleted.`))
-        resolve(true)
-      }
-      resolve(false)
+      response.json().then((response: ServiceResponse) => {
+        console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
+        const data: boolean = response.data ?? false
+        showNotification(response.status, 'Strategy deleted', 'Strategy could not be deleted')
+        resolve(data)
+      })
     })
     .catch((err) => {
       console.log(colors.red(`Deleting strategy ${name} over ${URL_DELETE_STRATEGY} thrown error: ` + err))
@@ -137,20 +160,50 @@ export let regenerateStrategyReports = () : Promise<StrategyReport[]> => {
   return new Promise(async (resolve) => {
     return fetch(URL_UPDATE_STRATEGY_REPORTS, {
       method: 'POST',
-      headers: HEADERS
+      headers: getHeaders()
     })
     .then(response => {
-      response.json().then(jsonObj => {
-        let reports: StrategyReport[] = jsonObj
+      response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} done.`))
-        actions.addNotification(new Notification('success', 'Regenerating strategy reports finished.'))
-        resolve(reports)
+        const data: StrategyReport[] = response.data ?? []
+        showNotification(response.status, 'Strategy reports regenerated', 'Strategy reports could not be regenerated')
+        resolve(data)
       })
     })
     .catch((err) => {
       console.log(colors.red(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} thrown error: ` + err))
       actions.addNotification(new Notification('error', 'Strategy reports could not be regenerated!'))
       resolve([])
+    })
+  })
+}
+
+
+
+
+export interface UserCredentials {
+  user: string,
+  password: string
+}
+
+// Authenticates user credentials and saves received jwt access token in local storage for future service calls
+export let authenticateCredentials = (credentials: UserCredentials) : Promise<string> => {
+  return new Promise(async (resolve) => {
+    return fetch(URL_AUTHENTICATE, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(credentials)
+    })
+    .then(response => {
+      response.json().then((response: ServiceResponse)=> {
+        showNotification(response.status, `User ${credentials.user} authenticated.`, `User ${credentials.user} could not be authenticated.`)
+        const token: string = response.data
+        resolve(token)
+      })
+    })
+    .catch((err) => {
+      console.log(colors.red(`User ${URL_UPDATE_STRATEGY_REPORTS} could not be authenticated.` + err))
+      resolve(null)
     })
   })
 }

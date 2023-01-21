@@ -17,7 +17,8 @@ export type StateType = {
   strategiesFecthing: boolean,
   selectedTrade: TradeDateAndValues | null,
   strategyEditorActive: boolean,
-  notifications: Notification[]
+  notifications: Notification[],
+  authenticated: boolean
 }
 
 // Initial (starting) state
@@ -33,13 +34,16 @@ export const initialState: StateType = {
   strategyDesignerStrategy: null, // strategy that should be used for strategy edit, can always revert to 'selectedStrategy' which is its initial state
   selectedTrade: null,
   strategyEditorActive: false,
-  notifications: []
+  notifications: [],
+  authenticated: false
 };
 
 // Our root reducer starts with the initial state
 // and must return a representation of the next state
 export const rootReducer = (state = initialState, action: {type: any, payload: any}): StateType => {
   switch (action.type) {
+    case types.SET_AUTHENTICATION_FLAG:
+      return { ...state, authenticated: action.payload };
     case types.UPDATE_STRATEGY_REPORTS:
       return { ...state, strategyReports: action.payload };
     case types.FETCHING_STRATEGY_REPORTS:
@@ -51,7 +55,7 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
     case types.SET_SELECTED_STRATEGY:
       return { ...state, selectedStrategy: action.payload };
     case types.SET_STRATEGY_DESIGNER_STRATEGY:
-        return { ...state, strategyDesignerStrategy: action.payload };
+      return { ...state, strategyDesignerStrategy: action.payload };
     case types.SET_SELECTED_STOCK:
       return { ...state, selectedStockVerticalSlices: action.payload };
     case types.FETCHING_STOCK:
@@ -67,11 +71,12 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
       notification.id = (state.notifications?.[state.notifications.length - 1]?.id ?? 0) + 1
       state.notifications.push(notification)
       return { ...state, notifications: [...state.notifications]};
-    }
-    case types.REMOVE_NOTIFICATION:
+    };
+    case types.REMOVE_NOTIFICATION: {
       const idToRemove = action.payload
       const notifications = state.notifications.filter(n => n.id !== idToRemove)
       return { ...state, notifications: notifications };
+    };
     default:
       return state;
   }
