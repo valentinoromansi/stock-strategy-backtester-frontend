@@ -33,6 +33,7 @@ export function updateStrategyReports() {
       http.regenerateStrategyReports().then((data: StrategyReport[]) => {
         store.dispatch({type: types.UPDATE_STRATEGY_REPORTS, payload: data})
         store.dispatch({type: types.FETCHING_STRATEGY_REPORTS, payload: false})
+        store.dispatch({type: types.SET_SELECTED_BACKTEST_RESULT, payload: null})
     })  
 }
 
