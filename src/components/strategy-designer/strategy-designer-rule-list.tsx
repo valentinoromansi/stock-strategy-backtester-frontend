@@ -314,24 +314,24 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 			this.setState({rcMenuAnchorElement: null})
 		}
 		return(
-			<Menu id="menu" anchorEl={this.state.rcMenuAnchorElement} MenuListProps={{'aria-labelledby': 'basic-button'}}
+			<Menu id="menu" anchorEl={this.state.rcMenuAnchorElement} MenuListProps={{'aria-labelledby': 'basic-button'}} 
 				open={this.state.rcMenuAnchorElement != null && this.state.canOpenRcMenu}
 				onClose={() => {this.setState({rcMenuAnchorElement: null})}}>
+					<Box sx={{ padding: "4px", gap: "8px", flexDirection: "column", display: "flex"}}>
 				<TextField
-					style={{padding: "2px", width: "100%"}}
+					style={{ width: "100%"}}
 					value={isNaN(idToDisplay()) ? '' : idToDisplay()}
-					id="filled-basic"
 					label="Vertical slice id"
-					variant="filled"
 					onChange={(e) => { onChangeVsId(e.target.value) }}
-        />
-				<div style={{padding: "2px"}}>
+        		/>
+				<div>
 					{toogleAttributeTypeElement(ruleIndex, mainAttributeVarName)}
 				</div>
 				{
 					attributeInRow &&
-					<Button onClick={(e) => { onDelete(ruleIndex) }} variant="contained" color="error"> DELETE </Button>
+					<Button onClick={(e) => { onDelete(ruleIndex) }} variant="outlined" color="error"> DELETE </Button>
 				}
+				</Box>
 		   	</Menu>
 		)
 	}

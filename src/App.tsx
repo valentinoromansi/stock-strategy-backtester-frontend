@@ -77,16 +77,32 @@ const lightTheme = createTheme({
       styleOverrides: {
         root: {
           boxShadow: '-1px 0px 8px 0px rgba(0,0,0,0.2)',
-          padding: "12px"
+          padding: "12px",          
         }
       },
     },
     MuiListItem: {
       styleOverrides: {
         root: {
+           '&.Mui-selected': {
+              background: '#1976d2',
+              color:'none',
+              '.MuiTypography-root,.MuiSvgIcon-root': {
+                color:'white'
+              },
+              '&:hover': {
+                background: '#1976d2',
+                color:'none',
+                '.MuiTypography-root,.MuiSvgIcon-root': {
+                  color:'white'
+                }
+              }
+          },
           '&:hover': {
-            background: "aliceblue"
-         },
+            '.MuiTypography-root': {              
+              color:'black'
+            }            
+          }
         }
       },
     },
@@ -183,7 +199,7 @@ const darkTheme = createTheme({
           background:'#3b31fb',
           '&:hover': {
             background: '#3027d9'
-          }
+          },          
         },
         outlined: {
           color: "#e32020",
@@ -194,7 +210,7 @@ const darkTheme = createTheme({
             borderColor: 'transparent',
             background: '#e32020',
           }
-        }
+        },
       },
     },
     MuiList: {
@@ -202,15 +218,48 @@ const darkTheme = createTheme({
         root: {
           boxShadow: '-1px 0px 8px 0px rgba(0,0,0,0.2)',
           padding: "12px",
-          background: '#1b1b1b'
+          background: '#1b1b1b',
+          '.MuiButtonBase-root.MuiMenuItem-root': {
+            '&:hover': {
+              background: 'none',
+              '.MuiTypography-root': {
+                color: "white"
+              }
+            },
+            '&.Mui-selected': {
+              background: "#3b31fb",
+              borderRadius: '6px',
+              '&:hover': {
+                background: "#3b31fb",
+                borderRadius: '6px',
+              }
+            },
+          }
         }
       },
     },
     MuiListItem: {
       styleOverrides: {
         root: {
+          '&.Mui-selected': {
+            background: '#3b31fb',
+            color:'none',
+            '.MuiTypography-root': {
+              color:'white'
+            },
+            '&:hover': {
+              background: '#3b31fb',
+              color:'none',
+              '.MuiTypography-root': {
+                color:'white'
+              },
+            },            
+          },
           '&:hover': {
-            background: "#222222",
+            background: "none",
+            '.MuiTypography-root': {
+              color:'white'
+            }
           }
         }
       },
@@ -250,8 +299,44 @@ const darkTheme = createTheme({
           margin: 0
         }
       },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          color:'orange',
+          'label.Mui-focused': {
+            color: 'white',
+          },
+          'div.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'white',
+          },
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          '&.Mui-focused>fieldset.MuiOutlinedInput-notchedOutline': {
+            borderColor: 'white',
+          },
+        }
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          '&.Mui-selected': {
+            background:"#3b31fb",
+            color:"white",
+            '&:hover': {
+              background:"#3b31fb",
+              color:"white",
+           }    
+          }
+        }
+      }
     }
-   }
+  }
 });
 
 
