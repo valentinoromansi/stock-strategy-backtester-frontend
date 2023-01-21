@@ -34,14 +34,15 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import StrategyDesignerSidebar from './strategy-designer-sidebar';
 
 import * as actions from "../../state/actions";
-import { deleteStrategy, saveStrategy } from "http/http";
+import * as http from "http/http";
 import StrategyDesignerRuleList from "./strategy-designer-rule-list";
 import { Notification } from "components/notifications-stack";
 
 
 type PropsType = {
   selectedStrategy: Strategy,
-  strategyDesignerStrategy: Strategy
+  strategyDesignerStrategy: Strategy,
+  strategies: Strategy[]
 }
 
 type StateType = {
@@ -107,6 +108,21 @@ class StrategyDesigner extends Component<PropsType, StateType> {
     return { valid: true}
   }
 	  
+
+  	onSaveStrategy() {
+  	const validity: { valid: boolean, errorMsg?: string } = this.isStrategyFormValid()
+  	if(!validity.valid) {
+			actions.addNotification(new Notification('error', `Strategy "${this.state.selectedStrategy?.name}" form is not valid. Message="${validity.errorMsg}"`))
+		return;
+  	}
+	  http.saveStrategy(this.props.strategyDesignerStrategy).then(res => {
+		const strategies = this.props.strategies.filter(strategy => strategy.name !== this.props.strategyDesignerStrategy.name)
+		strategies.push(this.props.strategyDesignerStrategy)
+		actions.updateStrategies(strategies)
+		actions.setSelectedStrategy(this.props.strategyDesignerStrategy)
+	})
+  	}
+
 	onRefreshStrategy() {
 		if(!this.state.selectedStrategy)
 			return
@@ -115,17 +131,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 		actions.setStrategyDesignerStrategy(this.props.selectedStrategy)
 	}
 	
-	onSaveStrategy() {
-    const validity: { valid: boolean, errorMsg?: string } = this.isStrategyFormValid()
-    if(!validity.valid) {
-	  	actions.addNotification(new Notification('error', `Strategy "${this.state.selectedStrategy?.name}" form is not valid. Message="${validity.errorMsg}"`))
-      return;
-    }
-		saveStrategy(this.props.strategyDesignerStrategy)
-	}
-
 	onDeleteStrategy() {
-		deleteStrategy(this.props.selectedStrategy?.name)
+		http.deleteStrategy(this.props.selectedStrategy?.name).then(res => {
+			const strategies = this.props.strategies.filter(strategy => strategy.name !== this.props.selectedStrategy.name)
+			actions.updateStrategies(strategies)
+			actions.setStrategyEditorActive(false)
+		})
 	}
 
   onNameChange(e: any) {
@@ -140,20 +151,20 @@ class StrategyDesigner extends Component<PropsType, StateType> {
     return (
       <Box sx={{display: 'flex', gap: '6px'}}>
         <Popup trigger={jsonButton} position="right center" modal>
-    		  <pre style={{maxHeight: "95vh"}}>
-				  	{
-				  		JSON.stringify(this.props.strategyDesignerStrategy, null, "\t")
-				  	}
-				  </pre>
-  			</Popup>
+    		<pre style={{maxHeight: "95vh"}}>
+				{
+					JSON.stringify(this.props.strategyDesignerStrategy, null, "\t")
+				}
+			</pre>
+  		</Popup>
         <IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onSaveStrategy()}} color="primary">
-					<SaveIcon fontSize="large"/>
+			<SaveIcon fontSize="large"/>
       	</IconButton>
-				<IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onRefreshStrategy()}} color="primary">
-					<RestorePageIcon fontSize="large"/>
+		<IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onRefreshStrategy()}} color="primary">
+			<RestorePageIcon fontSize="large"/>
       	</IconButton>
-				<IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onDeleteStrategy()}} color="primary">
-				  <DeleteForeverIcon fontSize="large"/>
+		<IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onDeleteStrategy()}} color="primary">
+			<DeleteForeverIcon fontSize="large"/>
       	</IconButton>
       </Box>
     )
@@ -194,7 +205,8 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 const mapStateToProps = (state: reducer.StateType) => {
   return {
     selectedStrategy: state.selectedStrategy,
-	strategyDesignerStrategy: state.strategyDesignerStrategy
+	strategyDesignerStrategy: state.strategyDesignerStrategy,
+	strategies: state.strategies
   };
 };
 
