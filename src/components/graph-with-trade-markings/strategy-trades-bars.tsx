@@ -6,6 +6,7 @@ import { Strategy } from "models/strategy";
 import { TradeResult } from "types/trade-result";
 import { BacktestResult, TradeDateAndValues } from "models/backtest-result";
 import * as actions from "../../state/actions";
+import { isThisTypeNode } from "typescript";
 
 
 
@@ -35,6 +36,7 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 		this.divRef = React.createRef()
 		this.handleMouseClick = this.handleMouseClick.bind(this)
 		this.handleMouseMove = this.handleMouseMove.bind(this)
+		this.resetBarHighlight = this.resetBarHighlight.bind(this)
 		this.state = { 
 			selectedBacktestResult: props.selectedBacktestResult,
 			linearGradientBase: '',
@@ -51,6 +53,25 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 		if(prevProps.selectedBacktestResult !== this.props.selectedBacktestResult) {
 			this.setState({selectedBacktestResult: this.props.selectedBacktestResult});
 			this.setState({linearGradientBase: this.getLinearGradientBase(this.props.selectedBacktestResult.tradeDateAndValues)});
+			this.resetBarHighlight()
+		}
+	}
+
+	resetBarHighlight() {
+		this.setState({linearGradientHiglight: 'linear-gradient(90deg, transparent 0%, transparent 100%)'});
+	}
+
+
+	getBarHoverData(e: any): { localMouseX: number, mouseXPercentFrac: number, barWidthPercentFrac: number, hoveredBarIndex: number } {
+		const localMouseX = e.clientX - e.target.offsetLeft 
+		const mouseXPercentFrac = localMouseX / this.divRef.current.offsetWidth
+		const barWidthPercentFrac = 1 / this.state.selectedBacktestResult.tradeDateAndValues?.length
+		const hoveredBarIndex = Math.floor((mouseXPercentFrac / barWidthPercentFrac))
+		return {
+			localMouseX: localMouseX,
+			mouseXPercentFrac: mouseXPercentFrac,
+			barWidthPercentFrac: barWidthPercentFrac,
+			hoveredBarIndex: hoveredBarIndex
 		}
 	}
 
@@ -59,28 +80,22 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 	 * mouseXPercentFrac -  mouse x cordinate in %fraction between element starting x position and element ending x position
 	 */
 	handleMouseClick(e: any) {
-		const localMouseX = e.clientX - e.target.offsetLeft 
-		const mouseXPercentFrac = localMouseX / this.divRef.current.offsetWidth
-		const barWidthPercentFrac = 1 / this.state.selectedBacktestResult.tradeDateAndValues?.length
-		const selectedBarIndex = Math.floor((mouseXPercentFrac / barWidthPercentFrac))
-		actions.setSelectedTrade(this.state.selectedBacktestResult.tradeDateAndValues[selectedBarIndex])
+		const { hoveredBarIndex } = this.getBarHoverData(e)
+		actions.setSelectedTrade(this.state.selectedBacktestResult.tradeDateAndValues[hoveredBarIndex])
 	}
 
 	// linear-gradient(90deg, transparent 93.9086%, blue 93.9086%, blue 94.4162%, transparent  94.4162%),
 	handleMouseMove(e: any) {
-		const localMouseX = e.clientX - e.target.offsetLeft 
-		const mouseXPercentFrac = localMouseX / this.divRef.current.offsetWidth
-		const barWidthPercentFrac = 1 / this.state.selectedBacktestResult.tradeDateAndValues?.length
-		const selectedBarIndex = Math.floor((mouseXPercentFrac / barWidthPercentFrac))
+		const { barWidthPercentFrac, hoveredBarIndex } = this.getBarHoverData(e)
 
-		const startBarPosPercent = (barWidthPercentFrac * 100) * selectedBarIndex
-		const endBarPosPercent = (barWidthPercentFrac * 100) * (selectedBarIndex + 1) 
-		const highlightColor = this.getBarHighlightColor(this.state.selectedBacktestResult.tradeDateAndValues[selectedBarIndex])
+		const startBarPosPercent = (barWidthPercentFrac * 100) * hoveredBarIndex
+		const endBarPosPercent = (barWidthPercentFrac * 100) * (hoveredBarIndex + 1) 
+		const highlightColor = this.getBarHighlightColor(this.state.selectedBacktestResult.tradeDateAndValues[hoveredBarIndex])
 
 		const linearGradientHiglight = `linear-gradient(
 			90deg, 
 			transparent ${startBarPosPercent}%, 
-			${highlightColor} ${startBarPosPercent}%, 
+			${highlightColor} ${startBarPosPercent}%,
 			${highlightColor} ${endBarPosPercent}%, 
 			transparent  ${endBarPosPercent}%
 		)`
@@ -150,6 +165,7 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 			<div>
 				<div
 					ref={this.divRef}
+					onMouseLeave={this.resetBarHighlight}
 					onMouseMove={this.handleMouseMove}
 					onMouseDown={this.handleMouseClick}
 					style={{

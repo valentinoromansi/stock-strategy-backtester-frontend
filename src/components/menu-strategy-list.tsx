@@ -93,7 +93,7 @@ class MenuStrategyList extends Component<PropsType, StateType> {
       <Box>
         <SpinnerComponent loading={this.props.strategiesFecthing} position="centered" />
         <List
-          sx={{ paddingBottom: '10px', borderRadius: '8px'} }
+          sx={{ paddingBottom: '10px', borderRadius: '4px'} }
           subheader={
             <Typography variant='h6'>Strategies</Typography>
           }>
@@ -101,17 +101,17 @@ class MenuStrategyList extends Component<PropsType, StateType> {
 
           {!this.props.strategiesFecthing &&
             this.props.strategies.map((strategy) => (
-            <ListItem selected={ this.isStrategySelected(strategy)} sx={{margin: 0, padding: 0, borderRadius: '8px'}}>
+            <ListItem selected={ this.isStrategySelected(strategy)} sx={{margin: 0, padding: 0, borderRadius: '4px'}}>
               <Grid container alignItems='center'>
                 {/* Strategy name */}
                 <Grid item xs={9}>
-                  <ListItemButton sx={{ height: 'auto', borderRadius: '8px', contain:'content'}} onClick={() => this.selectStrategy(strategy.name)}>
+                  <ListItemButton sx={{ height: 'auto', borderRadius: '4px', contain:'content'}} onClick={() => this.selectStrategy(strategy.name)}>
                     { <Typography>{strategy.name}</Typography>  }
                   </ListItemButton>
                 </Grid>
                 {/* Strategy edit */}
                 <Grid item xs={3}>
-                  <ListItemButton sx={{ paddingRight: 0, paddingLeft: 0, height: 'auto', borderRadius: '8px'}} onClick={() => this.editStrategy(strategy.name) }>
+                  <ListItemButton sx={{ paddingRight: 0, paddingLeft: 0, height: 'auto', borderRadius: '4px'}} onClick={() => this.editStrategy(strategy.name) }>
                     {
                     <ListItemIcon sx={{ paddingRight: 0, height: 'auto', minWidth: 'auto', margin: 'auto' }} >
                         <EditIcon fontSize='large' />
@@ -124,7 +124,10 @@ class MenuStrategyList extends Component<PropsType, StateType> {
             ))
           }
 
-          <Divider variant='middle' sx={{ marginTop: '4px', marginBottom: '12px' }} orientation="horizontal" flexItem />
+          {
+            this.props.strategies?.length !== 0 && !this.props.strategiesFecthing &&
+            <Divider variant='middle' sx={{ marginTop: '4px', marginBottom: '12px' }} orientation="horizontal" flexItem />
+          }
           <Box sx={{display: "flex", flexDirection: "column"}}>
             <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" endIcon={<AddCircleOutlineIcon/>} onClick={() => this.addNewStrategy()}>
               add strategy
