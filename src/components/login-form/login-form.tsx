@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 import { authenticateCredentials, UserCredentials } from "http/http";
 import * as reducer from '../../state/reducers';
 import * as storage from '../../browser-storage/browser-storage'
+import 'dotenv/config'
 
 
 type PropsType = {
@@ -24,8 +25,8 @@ class LoginForm extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
 		this.state = {
-			username: 'Ivica',
-			password: 'majmun'
+			username: process?.env?.REACT_APP_DEFAULT_USER,
+			password: process?.env?.REACT_APP_DEFAULT_PASSWORD
 		}
 		this.changeUsername = this.changeUsername.bind(this)
 		this.changePassword = this.changePassword.bind(this)
@@ -68,8 +69,8 @@ class LoginForm extends Component<PropsType, StateType> {
   				style={{ width: '100%', height: '80vh'}}>
   				<Paper style={{width: "min(300px, 100%)", padding: '24px', paddingBottom:'24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)"}}>
 						<Typography fontSize='large' sx={{width: 'auto', padding: '16px'}}>LOGIN</Typography>
-						<TextField sx={{width: 'auto'}} label="Username" defaultValue="Ivica" onChange={this.changeUsername}/>
-						<TextField sx={{width: 'auto'}} label="Password" type="password" defaultValue="majmun" onChange={this.changePassword}/>
+						<TextField sx={{width: 'auto'}} label="Username" defaultValue={this.state.username} onChange={this.changeUsername}/>
+						<TextField sx={{width: 'auto'}} label="Password" type="password" defaultValue={this.state.password} onChange={this.changePassword}/>
 						<Button sx={{width: 'auto', padding: '16px'}} onClick={this.login} >
 							<Typography sx={{color: 'white'}}>LOGIN</Typography>
 						</Button>

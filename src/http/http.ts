@@ -5,13 +5,15 @@ import * as actions from "../state/actions";
 import { Notification } from "components/notifications-stack";
 import * as storage from "browser-storage/browser-storage";
 
-const URL_GET_STOCK: string = 'http://localhost:4000/get-stock'
-const URL_GET_STRATEGY_REPORTS: string = 'http://localhost:4000/get-strategy-reports'
-const URL_GET_STRATEGIES: string = 'http://localhost:4000/get-strategies'
-const URL_SAVE_STRATEGY: string = 'http://localhost:4000/save-strategy'
-const URL_DELETE_STRATEGY: string = 'http://localhost:4000/delete-strategy'
-const URL_UPDATE_STRATEGY_REPORTS: string = 'http://localhost:4000/update-strategy-reports'
-const URL_AUTHENTICATE: string = 'http://localhost:4000/authenticate'
+console.log(process?.env?.REACT_APP_SERVICE_BASE_URL)
+const BASE_URL: string = process?.env?.REACT_APP_SERVICE_BASE_URL
+const URL_GET_STOCK: string = BASE_URL + 'get-stock'
+const URL_GET_STRATEGY_REPORTS: string = BASE_URL + 'get-strategy-reports'
+const URL_GET_STRATEGIES: string = BASE_URL + 'get-strategies'
+const URL_SAVE_STRATEGY: string = BASE_URL + 'save-strategy'
+const URL_DELETE_STRATEGY: string = BASE_URL + 'delete-strategy'
+const URL_UPDATE_STRATEGY_REPORTS: string = BASE_URL + 'update-strategy-reports'
+const URL_AUTHENTICATE: string = BASE_URL + 'authenticate'
 
 const getHeaders = (): HeadersInit => {
   return {
