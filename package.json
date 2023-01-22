@@ -14,7 +14,6 @@
     "@types/node": "^12.20.7",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
-    "antd": "^4.6.2",
     "apercu-font": "^1.0.0",
     "apexcharts": "^3.36.0",
     "classnames": "^2.3.2",
