@@ -43,9 +43,11 @@ export class Notification {
   type: AlertColor
   message: string
   creationDate: Date
-  constructor(type: AlertColor, message: string) {
+  fetching: boolean
+  constructor(type: AlertColor, message: string, fetching: boolean = false) {
     this.type = type
     this.message = message
+    this.fetching = fetching
     this.creationDate = new Date()
   }
 }
@@ -67,8 +69,10 @@ class NotificationsStack extends Component<PropsType, StateType> {
   handleMessageRemoval() {
     const date = new Date()
     this.props.notifications.forEach(notification => {
-      if(this.didNotificationExpire(notification, date))
+      if(!notification.fetching && this.didNotificationExpire(notification, date)){
+        console.log("KK:" + notification.fetching)
         actions.removeNotification(notification.id)
+      }
     });
   }
 
@@ -83,7 +87,7 @@ class NotificationsStack extends Component<PropsType, StateType> {
               {
                 this.props.notifications?.map((notification) => {
                   return(
-                    <MuiAlert severity={notification.type} sx={{width: 'fit-content'}} variant="filled">{notification.message} </MuiAlert>
+                    <MuiAlert key={notification.id} severity={notification.type} sx={{width: 'fit-content'}} variant="filled">{notification.message} </MuiAlert>
                   )
                 })
               }

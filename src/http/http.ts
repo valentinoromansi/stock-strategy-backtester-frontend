@@ -31,10 +31,15 @@ interface ServiceResponse{
   data?: any
 }
 
-const showNotification = (status: number, successMsg: string, errorlMsg: string): any => {
+/**
+ * status = null means status was not received so it must be info notification created only when fetching 
+ */
+const showNotification = (status: number, message: {success?: string, error?: string, info?: string}): any => {
+  if(!status)
+    return actions.addNotification(new Notification('info', message.info))
   if(status === 200)
-    return actions.addNotification(new Notification('success', successMsg))
-  return actions.addNotification(new Notification('error', errorlMsg))
+    return actions.addNotification(new Notification('success', message.success))
+  return actions.addNotification(new Notification('error', message.error))
 }
 
 
@@ -49,7 +54,7 @@ export let getStock = (interval: string, symbol: string) : Promise<[]> => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STOCK} done.`))
         const data = response.data ?? []
-        showNotification(response.status, 'Stock fetched', 'Stock could not be fetched')
+        showNotification(response.status, {success: 'Stock fetched', error: 'Stock could not be fetched'})
         for(const o of data)
           o.date = new Date(o.date)
         resolve(data)        
@@ -72,7 +77,7 @@ export let getStrategyReports = () : Promise<StrategyReport[]> => {
       response.json().then((response: ServiceResponse) => {        
         console.log(colors.green(`Fetch ${URL_GET_STRATEGY_REPORTS} done.`))
         const data: StrategyReport[] = response.data ?? []
-        showNotification(response.status, 'Strategy reports fetched', 'Strategy reports could not be fetched')
+        showNotification(response.status, { success: 'Strategy reports fetched', error: 'Strategy reports could not be fetched' })
         resolve(data)
       })
     })
@@ -94,7 +99,7 @@ export let getStrategies = () : Promise<Strategy[]> => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
         const data: Strategy[]  = response.data ?? []
-        showNotification(response.status, 'Strategies fetched', 'Strategies could not be fetched')
+        showNotification(response.status, { success: 'Strategies fetched', error: 'Strategies could not be fetched' })
         resolve(data)
       })
     })
@@ -120,7 +125,7 @@ export let saveStrategy = (strategy: Strategy) : Promise<boolean> => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
         const data: boolean = response.data ?? false
-        showNotification(response.status, 'Strategy saved', 'Strategy could not be saved')
+        showNotification(response.status, { success: 'Strategy saved', error: 'Strategy could not be saved' })
         resolve(data)
       })
     })
@@ -144,7 +149,8 @@ export let deleteStrategy = (name: string) : Promise<boolean> => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
         const data: boolean = response.data ?? false
-        showNotification(response.status, 'Strategy deleted', 'Strategy could not be deleted')
+        showNotification(response.status, { success: 'Strategy deleted', error: 'Strategy could not be deleted' })
+
         resolve(data)
       })
     })
@@ -168,7 +174,7 @@ export let regenerateStrategyReports = () : Promise<StrategyReport[]> => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} done.`))
         const data: StrategyReport[] = response.data ?? []
-        showNotification(response.status, 'Strategy reports regenerated', 'Strategy reports could not be regenerated')
+        showNotification(response.status, { success: 'Strategy reports regenerated', error: 'Strategy reports could not be regenerated' })
         resolve(data)
       })
     })
@@ -190,6 +196,7 @@ export interface UserCredentials {
 
 // Authenticates user credentials and saves received jwt access token in local storage for future service calls
 export let authenticateCredentials = (credentials: UserCredentials) : Promise<string> => {
+  actions.addNotification(new Notification('info', "Authentication strated...", true))
   return new Promise(async (resolve) => {
     return fetch(URL_AUTHENTICATE, {
       method: 'POST',
@@ -198,7 +205,7 @@ export let authenticateCredentials = (credentials: UserCredentials) : Promise<st
     })
     .then(response => {
       response.json().then((response: ServiceResponse)=> {
-        showNotification(response.status, `User ${credentials.user} authenticated.`, `User ${credentials.user} could not be authenticated.`)
+        showNotification(response.status, { success: `User ${credentials.user} authenticated.`, error: `User ${credentials.user} could not be authenticated.` })
         const token: string = response.data
         resolve(token)
       })
