@@ -70,7 +70,9 @@ export function setStrategyEditorActive(state: boolean) {
 }
 
 export function addNotification(notification: Notification) {
+  console.log(store.getState().notifications?.length)
   store.dispatch({type: types.ADD_NOTIFICATION, payload: notification})
+  console.log(store.getState().notifications?.length)
 }
 
 export function removeNotification(id: number) {

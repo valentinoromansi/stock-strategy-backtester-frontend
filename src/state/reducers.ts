@@ -67,9 +67,7 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
     case types.SET_STRATEGY_EDITOR_ACTIVE:
       return { ...state, strategyEditorActive: action.payload };
     case types.ADD_NOTIFICATION: {
-      const notification: Notification = action.payload
-      notification.id = (state.notifications?.[state.notifications.length - 1]?.id ?? 0) + 1
-      state.notifications.push(notification)
+      state.notifications.push(action.payload)
       return { ...state, notifications: [...state.notifications]};
     };
     case types.REMOVE_NOTIFICATION: {
