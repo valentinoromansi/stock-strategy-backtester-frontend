@@ -6,11 +6,11 @@ export class Notification {
   type: AlertColor;
   message: string;
   creationDate: Date;
-  fetching: boolean;
-  constructor(type: AlertColor, message: string, fetching: boolean = false) {
+  manuallyClosed: boolean;
+  constructor(type: AlertColor, message: string, manuallyClosed: boolean = false) {
     this.type = type;
     this.message = message;
-    this.fetching = fetching;
+    this.manuallyClosed = manuallyClosed;
     this.creationDate = new Date();
   }
 }

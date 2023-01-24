@@ -74,8 +74,8 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
       state.notifications.push(action.payload)
       return { ...state, notifications: [...state.notifications]}
     case types.REMOVE_NOTIFICATION:
-      const idToRemove = action.payload
-      const notifications = state.notifications.filter(n => n.id !== idToRemove)
+      const notificationToRemove = action.payload
+      const notifications = state.notifications.filter(n => n.id !== notificationToRemove.id)
       return { ...state, notifications: notifications }
     default:
       return state;

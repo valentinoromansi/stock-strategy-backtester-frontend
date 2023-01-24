@@ -78,8 +78,8 @@ export function addNotification(notification: Notification) {
   return notification
 }
 
-export function removeNotification(id: number) {
-  store.dispatch({type: types.REMOVE_NOTIFICATION, payload: id})
+export function removeNotification(notification: Notification) {
+  store.dispatch({type: types.REMOVE_NOTIFICATION, payload: notification})
 }
 
 export function setAuthenticationFlag(authenticated: boolean) {
