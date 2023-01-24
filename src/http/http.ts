@@ -5,7 +5,6 @@ import * as actions from "../state/actions";
 import { Notification } from "components/notifications-stack";
 import * as storage from "browser-storage/browser-storage";
 
-console.log(process?.env?.REACT_APP_SERVICE_BASE_URL)
 const BASE_URL: string = process?.env?.REACT_APP_SERVICE_BASE_URL
 const URL_GET_STOCK: string = BASE_URL + 'get-stock'
 const URL_GET_STRATEGY_REPORTS: string = BASE_URL + 'get-strategy-reports'
@@ -161,10 +160,10 @@ export let deleteStrategy = (name: string) : Promise<boolean> => {
     .then(response => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
-        const data: boolean = response.data ?? false
+        const isDeleted: boolean = response.status === 200 ?? false
         actions.removeNotification(fetchingNotification.id)
         showNotification(response.status, { success: 'Strategy deleted', error: 'Strategy could not be deleted' })
-        resolve(data)
+        resolve(isDeleted)
       })
     })
     .catch((err) => {
@@ -213,7 +212,7 @@ export interface UserCredentials {
 
 // Authenticates user credentials and saves received jwt access token in local storage for future service calls
 export let authenticateCredentials = (credentials: UserCredentials) : Promise<string> => {
-  const fetchingNotification = actions.addNotification(new Notification('info', "Authentication strated...", true))
+  const fetchingNotification = actions.addNotification(new Notification('info', "Authentication started...", true))
   return new Promise(async (resolve) => {
     return fetch(URL_AUTHENTICATE, {
       method: 'POST',
