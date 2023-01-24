@@ -18,7 +18,8 @@ export type StateType = {
   selectedTrade: TradeDateAndValues | null,
   strategyEditorActive: boolean,
   notifications: Notification[],
-  authenticated: boolean
+  authenticated: boolean,
+  authenticationFetching: boolean
 }
 
 // Initial (starting) state
@@ -35,7 +36,8 @@ export const initialState: StateType = {
   selectedTrade: null,
   strategyEditorActive: false,
   notifications: [],
-  authenticated: false
+  authenticated: false,
+  authenticationFetching: false
 };
 
 // Our root reducer starts with the initial state
@@ -44,6 +46,8 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
   switch (action.type) {
     case types.SET_AUTHENTICATION_FLAG:
       return { ...state, authenticated: action.payload };
+    case types.FETCHING_AUTHENTICATION:
+      return { ...state, authenticationFetching: action.payload };
     case types.UPDATE_STRATEGY_REPORTS:
       return { ...state, strategyReports: action.payload };
     case types.FETCHING_STRATEGY_REPORTS:
@@ -67,9 +71,7 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
     case types.SET_STRATEGY_EDITOR_ACTIVE:
       return { ...state, strategyEditorActive: action.payload };
     case types.ADD_NOTIFICATION: {
-      const notification: Notification = action.payload
-      notification.id = (state.notifications?.[state.notifications.length - 1]?.id ?? 0) + 1
-      state.notifications.push(notification)
+      state.notifications.push(action.payload)
       return { ...state, notifications: [...state.notifications]};
     };
     case types.REMOVE_NOTIFICATION: {

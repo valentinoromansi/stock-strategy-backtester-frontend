@@ -132,14 +132,16 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 	}
 	
 	onDeleteStrategy() {
-		http.deleteStrategy(this.props.selectedStrategy?.name).then(res => {
+		http.deleteStrategy(this.props.selectedStrategy?.name).then(isDeleted => {
+			if(!isDeleted)
+				return
 			const strategies = this.props.strategies.filter(strategy => strategy.name !== this.props.selectedStrategy.name)
 			actions.updateStrategies(strategies)
 			actions.setStrategyEditorActive(false)
 		})
 	}
 
-  onNameChange(e: any) {
+  	onNameChange(e: any) {
 		const strategy = this.props.strategyDesignerStrategy
 		strategy.name = e.target.value
 		actions.setStrategyDesignerStrategy(strategy)

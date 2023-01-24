@@ -7,6 +7,10 @@ import { BacktestResult, TradeDateAndValues } from '../models/backtest-result';
 import { TradeResult } from 'types/trade-result';
 import { deepCopy } from 'utils/utils';
 import { Notification } from 'components/notifications-stack';
+import { UserCredentials } from 'types/user-credentials';
+import * as storage from '../browser-storage/browser-storage'
+import { resolve } from 'dns';
+
 
 export function getStock(interval: string, symbol: string) {
   store.dispatch({type: types.FETCHING_STOCK, payload: true})
@@ -70,7 +74,10 @@ export function setStrategyEditorActive(state: boolean) {
 }
 
 export function addNotification(notification: Notification) {
+  const notifications = store.getState().notifications
+  notification.id = (notifications?.[notifications.length - 1]?.id ?? 0) + 1
   store.dispatch({type: types.ADD_NOTIFICATION, payload: notification})
+  return notification
 }
 
 export function removeNotification(id: number) {
@@ -80,3 +87,15 @@ export function removeNotification(id: number) {
 export function setAuthenticationFlag(authenticated: boolean) {
   store.dispatch({type: types.SET_AUTHENTICATION_FLAG, payload: authenticated})
 }
+
+export function authenticateCredentials(credentials: UserCredentials) {
+  store.dispatch({type: types.FETCHING_AUTHENTICATION, payload: true})
+  http.authenticateCredentials(credentials).then((token: string) => {
+    store.dispatch({type: types.FETCHING_AUTHENTICATION, payload: false})
+    if(!token)
+      return
+    storage.setItem('session', 'access_token', token)
+    store.dispatch({type: types.SET_AUTHENTICATION_FLAG, payload: true})
+  })
+}
+

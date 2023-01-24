@@ -5,14 +5,15 @@ import * as actions from "../../state/actions";
 import "apercu-font";
 import { Divider, Grid, List, ListItemButton, ListSubheader, Typography, TextField, Button, Paper} from "@mui/material";
 import Box from "@mui/material/Box";
-import { authenticateCredentials, UserCredentials } from "http/http";
+import { authenticateCredentials } from "http/http";
 import * as reducer from '../../state/reducers';
 import * as storage from '../../browser-storage/browser-storage'
 import 'dotenv/config'
 
 
 type PropsType = {
-	authenticate?: boolean
+	authenticate?: boolean,
+	authenticationFetching: boolean
 }
 type StateType = {
 	username: string,
@@ -37,15 +38,7 @@ class LoginForm extends Component<PropsType, StateType> {
   login() {
 		if(!this.state?.username || !this.state?.password)
 			return
-    authenticateCredentials({ user: this.state.username, password: this.state.password }).then(token => {
-    	if(token) {
-				storage.setItem('session', 'access_token', token)
-				actions.setAuthenticationFlag(true)
-			}
-    })
-    .catch(error => {
-        console.log("AUTH ERROR: " + error)
-    })
+		actions.authenticateCredentials({ username: this.state.username, password: this.state.password})
   }
 
 	changeUsername(event) {
@@ -60,22 +53,22 @@ class LoginForm extends Component<PropsType, StateType> {
   render() {
 
     return (
-				<Grid
-  				container
-  				spacing={0}
-  				direction="column"
-  				justifyContent="center"
-					alignItems="center"
-  				style={{ width: '100%', height: '80vh'}}>
+			<Grid
+  			container
+  			spacing={0}
+  			direction="column"
+  			justifyContent="center"
+				alignItems="center"
+  			style={{ width: '100%', height: '80vh'}}>
   				<Paper style={{width: "min(300px, 100%)", padding: '24px', paddingBottom:'24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)"}}>
 						<Typography fontSize='large' sx={{width: 'auto', padding: '16px'}}>LOGIN</Typography>
 						<TextField sx={{width: 'auto'}} label="Username" defaultValue={this.state.username} onChange={this.changeUsername}/>
 						<TextField sx={{width: 'auto'}} label="Password" type="password" defaultValue={this.state.password} onChange={this.changePassword}/>
-						<Button sx={{width: 'auto', padding: '16px'}} onClick={this.login} >
+						<Button sx={{width: 'auto', padding: '16px'}} onClick={this.login} variant="contained" disabled={this.props.authenticationFetching}>
 							<Typography sx={{color: 'white'}}>LOGIN</Typography>
 						</Button>
-  				</Paper>   						 
-				</Grid> 
+  				</Paper>  						 
+			</Grid> 
 
     );
   }
@@ -85,7 +78,8 @@ class LoginForm extends Component<PropsType, StateType> {
 
 const mapStateToProps = (state: reducer.StateType) => {
   return {
-		authentication: state.authenticated
+		authentication: state.authenticated,
+		authenticationFetching: state.authenticationFetching
 	};
 };
 

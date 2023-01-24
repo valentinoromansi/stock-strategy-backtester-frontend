@@ -79,14 +79,12 @@ class Main extends Component<PropsType, StateType> {
 
   render() {
     return (
-        <Box sx={{ width: '100%', padding: '24px'}}>
+        <Box sx={{ padding: '24px'}}>
           <NotificationsStack/>
           {
             !this.props.authenticated ?
             <LoginForm/> :
-            <React.Fragment>
-              {/* <Alert severity="success">This is a success message!</Alert> */}
-              {/* <MuiAlert elevation={6} variant="filled" /> */}          
+            <React.Fragment>       
               <Box sx={{ display:'flex', flexDirection: 'row', gap: '16px'}}>          
                 {/* Action and strategy list */}
                 <Box sx={{ minWidth: '190px', display:'flex', flexDirection: 'column', gap: '16px'}}>
