@@ -2,11 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as reducer from '../../state/reducers';
 import "apercu-font";
-import { Strategy } from "models/strategy";
 import { TradeResult } from "types/trade-result";
 import { BacktestResult, TradeDateAndValues } from "models/backtest-result";
 import * as actions from "../../state/actions";
-import { isThisTypeNode } from "typescript";
 
 
 
@@ -140,7 +138,7 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 			return tradeResultTypes.reduce(
 				(prev, curr, currIndex) => {
 					const color = this.getBarChartFillColor(curr)
-					if(fromPercent != 0 || currIndex != 0){
+					if(fromPercent !== 0 || currIndex !== 0){
 						fromPercent = toPercent
 						toPercent += barWidthPercent
 					}

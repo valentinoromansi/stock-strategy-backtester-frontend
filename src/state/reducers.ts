@@ -70,15 +70,13 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
       return { ...state, selectedTrade: action.payload };
     case types.SET_STRATEGY_EDITOR_ACTIVE:
       return { ...state, strategyEditorActive: action.payload };
-    case types.ADD_NOTIFICATION: {
+    case types.ADD_NOTIFICATION:
       state.notifications.push(action.payload)
-      return { ...state, notifications: [...state.notifications]};
-    };
-    case types.REMOVE_NOTIFICATION: {
+      return { ...state, notifications: [...state.notifications]}
+    case types.REMOVE_NOTIFICATION:
       const idToRemove = action.payload
       const notifications = state.notifications.filter(n => n.id !== idToRemove)
-      return { ...state, notifications: notifications };
-    };
+      return { ...state, notifications: notifications }
     default:
       return state;
   }

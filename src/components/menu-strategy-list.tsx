@@ -1,19 +1,14 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 import * as reducer from '../state/reducers';
 import { Strategy } from "../models/strategy";
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
 import * as actions from "../state/actions";
-import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import EditIcon from '@mui/icons-material/Edit';
-import { CSSProperties } from "react";
 import { SpinnerComponent } from 'react-element-spinner';
 import "apercu-font";
-import styles from '../styles/global.module.sass'
-import { deepCopy } from "utils/utils";
-import { Box, Button, Divider, Grid, ListItem, ListItemIcon, ListSubheader, Typography } from "@mui/material";
+import { Box, Button, Divider, Grid, ListItem, ListItemIcon, Typography } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { ConditionalRule } from "models/conditional-rule";
 import { ValueExtractionRule } from "models/value-extraction-rule";
@@ -32,9 +27,6 @@ type StateType = {
 
 
 class MenuStrategyList extends Component<PropsType, StateType> {
-  constructor(props: PropsType) {
-    super(props);
-  }
 
   selectStrategy(strategyName: string) {
     actions.setStrategyEditorActive(false)
@@ -83,7 +75,7 @@ class MenuStrategyList extends Component<PropsType, StateType> {
   }
 
   isStrategySelected(strategy: Strategy) {
-    return strategy?.name == this.props.selectedStrategy?.name
+    return strategy?.name === this.props.selectedStrategy?.name
   }
   
 

@@ -1,25 +1,24 @@
-import React, { Component, CSSProperties, useEffect, useRef, useState } from "react";
+import "apercu-font";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as reducer from '../../state/reducers';
-import "apercu-font";
 
 import { format } from "d3-format";
-import { ChartCanvas, Chart } from "react-stockcharts";
-import { BarSeries,	CandlestickSeries, LineSeries } from "react-stockcharts/lib/series";
-import { XAxis, YAxis } from "react-stockcharts/lib/axes";
-import { CrossHairCursor} from "react-stockcharts/lib/coordinates";
-import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
-import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
+import { Chart, ChartCanvas } from "react-stockcharts";
 import { Annotate, LabelAnnotation } from "react-stockcharts/lib/annotation";
-import { VerticalSlice } from "../../models/vertical-slice";
-import { Strategy } from "../../models/strategy";
+import { XAxis, YAxis } from "react-stockcharts/lib/axes";
+import { CrossHairCursor } from "react-stockcharts/lib/coordinates";
+import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
+import { BarSeries, CandlestickSeries, LineSeries } from "react-stockcharts/lib/series";
+import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
 import { BacktestResult, TradeDateAndValues } from "../../models/backtest-result";
+import { Strategy } from "../../models/strategy";
+import { VerticalSlice } from "../../models/vertical-slice";
 import { LineType } from "../../types/line-type";
 
-import styles from '../../styles/global.module.sass'
+import { Box, Paper, Typography } from "@mui/material";
 import { SpinnerComponent } from "react-element-spinner";
 import StrategyTradesBars from "./strategy-trades-bars";
-import { Box, Paper, Typography } from "@mui/material";
 
 type PropsType = {
 	selectedStrategy: Strategy,
@@ -127,15 +126,7 @@ class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 		const lossEntryDates: Date[] = tradeDateAndValues?.filter(trade => trade.stopLossHitDate).map(trade => new Date(trade.enterDate))
 		const indecisiveEntryDates: Date[] = tradeDateAndValues?.filter(trade => (!trade.profitHitDate && !trade.stopLossHitDate)).map(trade => new Date(trade.enterDate))
 
-		// 0-200 trades will be scaled and displayed as 10%-100% width - Values over 200 are clamped at 100%
-		const [maxTradeNumBeforeClamp, minWidth, maxWidth] = [200, 10, 100]
-		const percentFraction = Math.min(tradeDateAndValues.length / maxTradeNumBeforeClamp, 1)
-		const tradeBarsWidth =  minWidth + ((maxWidth - minWidth) * percentFraction) + '%'
-
 		const contentVisible = this.props.data?.length > 1
-		// Set max-height to unreachable 101vh(hack for height transition effect for parent element of unknown height - depends on child elements)
-		const wrapperMaxHeight = contentVisible ? '101vh' : 0
-		const wrapperPadding = contentVisible ? '1.6rem' : 0
 
     return (
 			<Paper sx={{ boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)", p: '12px', textAlign: 'left', display: 'flex', flexDirection:'column', gap: '12px' }}>   

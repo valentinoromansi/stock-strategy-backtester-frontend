@@ -1,13 +1,10 @@
-import React, { Component, CSSProperties } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 
 import * as actions from "../../state/actions";
 import "apercu-font";
-import { Divider, Grid, List, ListItemButton, ListSubheader, Typography, TextField, Button, Paper} from "@mui/material";
-import Box from "@mui/material/Box";
-import { authenticateCredentials } from "http/http";
+import { Grid, Typography, TextField, Button, Paper} from "@mui/material";
 import * as reducer from '../../state/reducers';
-import * as storage from '../../browser-storage/browser-storage'
 import 'dotenv/config'
 
 

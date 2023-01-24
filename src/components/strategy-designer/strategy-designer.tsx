@@ -1,37 +1,20 @@
-import React, { ChangeEvent, Component } from "react";
+import {  Component } from "react";
 import { connect } from "react-redux";
 import * as reducer from '../../state/reducers';
 import "apercu-font";
 
 import { Strategy } from "../../models/strategy";
 import styles from '../../styles/global.module.sass'
-import { Box, Divider, IconButton, Input, Menu, Paper, TextField } from "@mui/material";
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { Box, Divider, IconButton, Paper, TextField } from "@mui/material";
 import Button from '@mui/material/Button';
-import { AttributeType } from "types/attribute-type";
-import { Position } from "types/position";
-import { setSelectedStrategy } from "state/actions";
 
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';						
 import { ConditionalRule } from "models/conditional-rule";
-import { ValueExtractionRule } from "models/value-extraction-rule";
-
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputAdornment from '@mui/material/InputAdornment';
-import { isEnumMember } from "typescript";
 
 import SaveIcon from '@mui/icons-material/Save';
 import RestorePageIcon from '@mui/icons-material/RestorePage';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { relative } from "path";
-
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import StrategyDesignerSidebar from './strategy-designer-sidebar';
 
 import * as actions from "../../state/actions";
 import * as http from "http/http";
@@ -49,18 +32,6 @@ type StateType = {
 	selectedStrategy: Strategy
 }
 
-enum AttributeId {
-	ATTRIBUTE1 = 1,
-	ATTRIBUTE2 = 2
-}
-
-type AttributeIdentifier = {
-	ruleIndex: number,
-	mainAttributeIndex: AttributeId,
-	subAttributeIndex: AttributeId | null,
-	isEnterTradeRule: boolean,
-	isStopLossRule: boolean
-}
  
 class StrategyDesigner extends Component<PropsType, StateType> {
 	readonly enterTradeColor: string  = 'white'

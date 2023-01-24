@@ -4,12 +4,10 @@ import * as http from "../http/http";
 import { StrategyReport } from '../models/strategy-report';
 import { Strategy } from '../models/strategy';
 import { BacktestResult, TradeDateAndValues } from '../models/backtest-result';
-import { TradeResult } from 'types/trade-result';
 import { deepCopy } from 'utils/utils';
 import { Notification } from 'components/notifications-stack';
 import { UserCredentials } from 'types/user-credentials';
 import * as storage from '../browser-storage/browser-storage'
-import { resolve } from 'dns';
 
 
 export function getStock(interval: string, symbol: string) {

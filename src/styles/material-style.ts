@@ -1,5 +1,5 @@
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { createStyles, styled, Switch } from "@mui/material";
+import { createTheme } from '@mui/material/styles';
+import { styled, Switch } from "@mui/material";
 
 
 export const lightTheme = createTheme({

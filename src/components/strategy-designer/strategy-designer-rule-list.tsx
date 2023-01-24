@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component } from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as reducer from '../../state/reducers';
 import "apercu-font";
@@ -18,7 +18,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
-
 
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -166,7 +165,7 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 			<Box sx={{alignSelf: "center"}}>
 				<OutlinedInput					
 					onChange={(e) => { onChange(e.target.value) }}
-					value={percent == 0 ? '' : percent}
+					value={percent === 0 ? '' : percent}
 					endAdornment={
 						<InputAdornment className={styles.strategyDesignerSidebarListItemRuleValuePercentSymbol} position="end">
 							<Typography>%</Typography>
@@ -246,11 +245,11 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 		// For changing attribute slice id
 		const onChangeVsId = (newAttributeSliceIdStr: string) => {
 			const newAttributeSliceId = Number(newAttributeSliceIdStr)
-			if(newAttributeSliceIdStr == '') {
+			if(newAttributeSliceIdStr === '') {
 				setId(0)
 				return
 			}
-			if(isNaN(newAttributeSliceId) || (newAttributeSliceId <= 0 && newAttributeSliceIdStr.length == 1) || newAttributeSliceId > 99)
+			if(isNaN(newAttributeSliceId) || (newAttributeSliceId <= 0 && newAttributeSliceIdStr.length === 1) || newAttributeSliceId > 99)
 				return
 			setId(newAttributeSliceId)
 		}		

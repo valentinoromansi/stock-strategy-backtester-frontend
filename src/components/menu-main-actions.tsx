@@ -1,17 +1,10 @@
-import React, { Component, CSSProperties } from "react";
+import { Component } from "react";
 import { StrategyReport } from "../models/strategy-report";
 import { connect } from "react-redux";
 import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import { getStrategyReports } from "../http/http";
-import { store } from "../state/store";
-import * as types from '../state/types';
 import * as actions from "../state/actions";
-import UpdateIcon from '@mui/icons-material/Update';
 import "apercu-font";
-import styles from '../styles/global.module.sass'
-import { Divider, Grid, List, ListItemButton, ListSubheader, Typography } from "@mui/material";
+import { Grid, List } from "@mui/material";
 import * as storage from "../browser-storage/browser-storage";
 
 
@@ -27,9 +20,6 @@ type StateType = {
 
 
 class MenuMainActions extends Component<PropsType, StateType> {
-  constructor(props: PropsType) {
-    super(props);
-  }
 
   componentDidUpdate(prevProps: PropsType) {
     if(prevProps.strategyBacktestResults !== this.props.strategyBacktestResults) {

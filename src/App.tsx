@@ -1,11 +1,8 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import './App.css';
 import Main from './components/main';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { red } from '@mui/material/colors';
-import { Button, CssBaseline, FormControlLabel, GlobalStyles, styled, Switch, withStyles } from "@mui/material";
-import { threadId } from 'worker_threads';
-import { runInThisContext } from 'vm';
+import { ThemeProvider } from '@mui/material/styles';
+import { GlobalStyles } from "@mui/material";
 import * as storage from 'browser-storage/browser-storage';
 import * as materialStyle from 'styles/material-style'
  

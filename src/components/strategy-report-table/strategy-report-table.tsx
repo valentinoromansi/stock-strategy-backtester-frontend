@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import * as reducer from '../../state/reducers';
 import { Strategy } from "../../models/strategy";
 import { SpinnerComponent } from 'react-element-spinner';
-import { BacktestResult, TradeDateAndValues } from "../../models/backtest-result";
+import { BacktestResult } from "../../models/backtest-result";
 import * as actions from "../../state/actions";
 
 import Paper from '@mui/material/Paper';
@@ -231,10 +231,10 @@ class StrategyReportTable extends Component<PropsType, StateType> {
 
   ColumnSort(props: { column: Column }): any {
     const onChange = (key: ColumnKey) => {
-      const newSortOrder = this.state.orderDirection == 'asc' ? 'desc' : 'asc'
+      const newSortOrder = this.state.orderDirection === 'asc' ? 'desc' : 'asc'
       const sortedStrategyReport = this.state.selectedStrategyReport
       sortedStrategyReport.backtestResults = sortedStrategyReport?.backtestResults?.sort((a, b) => {
-        if(newSortOrder == 'asc')
+        if(newSortOrder === 'asc')
           return columnKeySortingFunMap[key](a, b)
         return columnKeySortingFunMap[key](b, a)
       })

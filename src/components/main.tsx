@@ -1,4 +1,4 @@
-import React, { Component, CSSProperties, useEffect, useRef, useState } from "react";
+import React, { Component } from "react";
 import { StrategyReport } from "../models/strategy-report";
 import StrategyReportTable from "./strategy-report-table/strategy-report-table";
 import MenuMainActions from './menu-main-actions'
@@ -10,7 +10,6 @@ import GraphWithTradeMarkings from "./graph-with-trade-markings/graph-with-trade
 import StrategyDesigner from "./strategy-designer/strategy-designer";
 import Box from '@mui/material/Box';
 import { BacktestResult } from "models/backtest-result";
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import NotificationsStack from "./notifications-stack";
 import LoginForm from "./login-form/login-form";
 
@@ -26,13 +25,6 @@ type StateType = {
   actionMenuOpened: boolean,
   graphSize: { width: number, height: number }
 }
-
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref,
-) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
 class Main extends Component<PropsType, StateType> {
 
