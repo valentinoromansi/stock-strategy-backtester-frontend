@@ -93,7 +93,7 @@ class MenuStrategyList extends Component<PropsType, StateType> {
 
           {!this.props.strategiesFecthing &&
             this.props.strategies.map((strategy) => (
-            <ListItem selected={ this.isStrategySelected(strategy)} sx={{margin: 0, padding: 0, borderRadius: '4px'}}>
+            <ListItem selected={ this.isStrategySelected(strategy)} sx={{margin: 0, padding: 0, borderRadius: '4px'}} key={strategy.name}>
               <Grid container alignItems='center'>
                 {/* Strategy name */}
                 <Grid item xs={9}>
