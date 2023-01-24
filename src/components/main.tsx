@@ -12,6 +12,7 @@ import Box from '@mui/material/Box';
 import { BacktestResult } from "models/backtest-result";
 import NotificationsStack from "./notifications-stack";
 import LoginForm from "./login-form/login-form";
+import { Typography } from "@mui/material";
 
 type PropsType = {
   strategyEditorActive: boolean,
@@ -92,7 +93,7 @@ class Main extends Component<PropsType, StateType> {
                     <React.Fragment>
                         {/* Graph and Report table */}
                         {
-                          this.props.selectedStrategyReport?.backtestResults &&
+                          this.props.selectedStrategyReport?.backtestResults ?
                           <React.Fragment>                         
                             { this.props.selectedBacktestResult &&
                               <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
@@ -103,6 +104,8 @@ class Main extends Component<PropsType, StateType> {
                               <StrategyReportTable/>
                             </Box>
                           </React.Fragment>
+                          :
+                          <Typography fontSize={'large'} color="#343434">There are no reports generated for this strategy.</Typography>
                         }                                
                       </React.Fragment>
                     }
