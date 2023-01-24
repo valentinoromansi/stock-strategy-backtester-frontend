@@ -60,13 +60,13 @@ class LoginForm extends Component<PropsType, StateType> {
   render() {
 
     return (
-				<Grid
-  				container
-  				spacing={0}
-  				direction="column"
-  				justifyContent="center"
-					alignItems="center"
-  				style={{ width: '100%', height: '80vh'}}>
+			<Grid
+  			container
+  			spacing={0}
+  			direction="column"
+  			justifyContent="center"
+				alignItems="center"
+  			style={{ width: '100%', height: '80vh'}}>
   				<Paper style={{width: "min(300px, 100%)", padding: '24px', paddingBottom:'24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)"}}>
 						<Typography fontSize='large' sx={{width: 'auto', padding: '16px'}}>LOGIN</Typography>
 						<TextField sx={{width: 'auto'}} label="Username" defaultValue={this.state.username} onChange={this.changeUsername}/>
@@ -74,8 +74,8 @@ class LoginForm extends Component<PropsType, StateType> {
 						<Button sx={{width: 'auto', padding: '16px'}} onClick={this.login} >
 							<Typography sx={{color: 'white'}}>LOGIN</Typography>
 						</Button>
-  				</Paper>   						 
-				</Grid> 
+  				</Paper>  						 
+			</Grid> 
 
     );
   }

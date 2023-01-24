@@ -28,6 +28,7 @@ import { BacktestResult } from "models/backtest-result";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertColor } from '@mui/material/Alert';
 import { runInThisContext } from "vm";
+import LoadingIcons from 'react-loading-icons'
 
 type PropsType = {
   notifications?: Notification[]
@@ -63,14 +64,13 @@ class NotificationsStack extends Component<PropsType, StateType> {
   componentDidMount(): void {
     setInterval(() => {
       this.handleMessageRemoval()
-    }, 1000);
+    }, 200);
   }
 
   handleMessageRemoval() {
     const date = new Date()
     this.props.notifications.forEach(notification => {
       if(!notification.fetching && this.didNotificationExpire(notification, date)){
-        console.log("KK:" + notification.fetching)
         actions.removeNotification(notification.id)
       }
     });
@@ -87,7 +87,17 @@ class NotificationsStack extends Component<PropsType, StateType> {
               {
                 this.props.notifications?.map((notification) => {
                   return(
-                    <MuiAlert key={notification.id} severity={notification.type} sx={{width: 'fit-content'}} variant="filled">{notification.message} </MuiAlert>
+                    <MuiAlert key={notification.id} severity={notification.type} variant="filled">
+                      <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} >
+                      <Typography color={'white'}>{notification.message}</Typography>
+                      {
+                        notification.fetching &&
+                        <Box width='2rem' height='2rem' sx={{paddingLeft: '8px'}}>
+                          <LoadingIcons.SpinningCircles speed={1.5} width='2rem' height='2rem'/>
+                        </Box>
+                      }
+                      </Box>
+                    </MuiAlert>
                   )
                 })
               }

@@ -73,6 +73,7 @@ export function addNotification(notification: Notification) {
   const notifications = store.getState().notifications
   notification.id = (notifications?.[notifications.length - 1]?.id ?? 0) + 1
   store.dispatch({type: types.ADD_NOTIFICATION, payload: notification})
+  return notification
 }
 
 export function removeNotification(id: number) {
