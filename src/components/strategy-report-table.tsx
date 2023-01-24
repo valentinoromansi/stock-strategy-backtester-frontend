@@ -33,16 +33,14 @@ type StateType = {
   orderBy: ColumnKey
 }
 
+const rowsPerPageOptions: number[] = [10, 25, 100, 200]
+
 type ColumnKey = 'stockName' | 'interval' | 'plFactor' | 'plRatio' | 'avgTradeProfit'  | 'sampleWinLossIndecisiveRatio' | 'rewardToRisk' | 'profitToLossLast30Trades'
 type SortValue = 1 | -1
 const columnKeySortingFunMap: { [key in ColumnKey]: (a, b) => SortValue } = {
   "stockName": (a: BacktestResult, b: BacktestResult) => { return (a.stockName > b.stockName ? 1 : -1) },
   "interval": (a: BacktestResult, b: BacktestResult) => {
-    const intervalSortOrderMap = {
-      '15min': 0,
-      '1h': 1,
-      '1day': 2
-    }
+    const intervalSortOrderMap = { '15min': 0, '1h': 1, '1day': 2 }
     return (intervalSortOrderMap[a.interval] > intervalSortOrderMap[b.interval] ? 1 : -1) 
   },
   "plFactor": (a: BacktestResult, b: BacktestResult) => { return (a.plFactor > b.plFactor ? 1 : -1) },
@@ -63,72 +61,55 @@ interface Column {
 const columns: readonly Column[] = [
   { key: 'stockName', label: 'Stock name', minWidth: 50 },
   { key: 'interval', label: 'Interval', minWidth: 50 },
-  {
-    key: 'plFactor',
-    label: 'P/L factor',
-    minWidth: 50,
+  { key: 'plFactor', label: 'P/L factor', minWidth: 50,
     format: (backtest: BacktestResult) => {
       const color = getColorFromPlFactor(backtest.plFactor)
       return <Typography sx={{ color: color }}>{ backtest.plFactor.toFixed(3) }</Typography>
     },
   },
-  {
-    key: 'plRatio',
-    label: 'P/L ratio',
-    minWidth: 50,
-    
+  { key: 'plRatio', label: 'P/L ratio', minWidth: 50,
     format: (backtest: BacktestResult) => {
       const color = getColorFromPlRatio(backtest.plRatio)
       const plRatioText = /*backtest.timesLost == 0 ? '-' :*/ backtest.plRatio.toFixed(2) 
       return <Typography sx={{ color: color }}>{ plRatioText }</Typography>
     },
   },
-  {
-    key: 'avgTradeProfit',
-    label: 'Avg. profit per trade',
-    minWidth: 50,    
+  { key: 'avgTradeProfit', label: 'Avg. profit per trade', minWidth: 50,
     format: (backtest: BacktestResult) => {
       const color = getColorFromAvgProfit(backtest.plRatio - 1)
       const plRatioText = /*backtest.timesLost === 0 ? '-' :*/ (backtest.plRatio - 1).toFixed(2) 
       return <Typography sx={{ color: color }}>{ plRatioText }</Typography>
     },
   },
-  {
-    key: 'sampleWinLossIndecisiveRatio',
-    label: 'Sample(win-loss-indecisive)',
-    minWidth: 50,
+  { key: 'sampleWinLossIndecisiveRatio', label: 'Sample(win-loss-indecisive)', minWidth: 50,
     format: (backtest: BacktestResult) => {
       const sample = getSample(backtest)
-      return <Box sx={{display: "flex", flexDirection: "row"}}>
-        <Typography>{sample} (</Typography>
-        <Typography style={{ color: color.green }}>{( backtest.timesProfited / sample * 100 || 0).toFixed(2)}%</Typography>
-        <Typography> - </Typography>
-        <Typography style={{ color: color.red }}>{( backtest.timesLost / sample * 100 || 0).toFixed(2)}%</Typography>
-        <Typography> - </Typography>
-        <Typography style={{ color: color.neutral }}>{( backtest.timesIndecisive / sample * 100 || 0).toFixed(2)}%</Typography>
-        <Typography>)</Typography>
-      </Box>
+      return( 
+        <Box display='flex' flexDirection='row'>
+          <Typography>{sample} (</Typography>
+          <Typography color={color.green}>{( backtest.timesProfited / sample * 100 || 0).toFixed(2)}%</Typography>
+          <Typography> - </Typography>
+          <Typography color={color.red}>{( backtest.timesLost / sample * 100 || 0).toFixed(2)}%</Typography>
+          <Typography> - </Typography>
+          <Typography color={color.neutral}>{( backtest.timesIndecisive / sample * 100 || 0).toFixed(2)}%</Typography>
+          <Typography>)</Typography>
+        </Box>)
     }
   },
-  {
-    key: 'rewardToRisk',
-    label: 'Reward : risk',
-    minWidth: 50,
+  { key: 'rewardToRisk', label: 'Reward : risk', minWidth: 50,
     format: (backtest: BacktestResult) => {
       return <Typography>{backtest.rewardToRisk}:1</Typography>
     },
   },
-  {
-    key: 'profitToLossLast30Trades',
-    label: 'Profit:loss for last 30 trades',
-    minWidth: 50,
+  { key: 'profitToLossLast30Trades', label: 'Profit:loss for last 30 trades', minWidth: 50,
     format: (backtest: BacktestResult) => {
      const { profitPercent,  lossPercent } = getProfitLossPercentForLast30(backtest)
-      return <Box sx={{display: "flex", flexDirection: "row"}}>
-        <Typography style={{ color: color.green }}>{(profitPercent).toFixed(2) + '%'}</Typography>
-        <Typography> - </Typography>
-        <Typography style={{ color: color.red }}>{(lossPercent).toFixed(2) + '%'}</Typography>
-      </Box>
+      return (
+        <Box display='flex' flexDirection='row'>
+          <Typography color={color.green}>{(profitPercent).toFixed(2) + '%'}</Typography>
+          <Typography> - </Typography>
+          <Typography color={color.red}>{(lossPercent).toFixed(2) + '%'}</Typography>
+        </Box>)
     },
   }
 ];
@@ -175,16 +156,22 @@ let getProfitLossPercentForLast30 = (backtest: BacktestResult): { profitPercent:
     lossTrades: lastXprofitLossTrades.filter(t => t.stopLossHitDate != null)
   }
   const tradesSum = trades.profitTrades.length + trades.lossTrades.length
+  if(tradesSum === 0)
+    return { profitPercent: 0, lossPercent: 0 }
   return { profitPercent: trades.profitTrades.length / tradesSum * 100 || 0, lossPercent: trades.lossTrades.length / tradesSum * 100 || 0 }
 }
   
 
+
+
+
 class StrategyReportTable extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
-    this.ColumnSort = this.ColumnSort.bind(this)
+    this.HeaderColumn = this.HeaderColumn.bind(this)
     this.handleChangePage = this.handleChangePage.bind(this)
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this)
+    this.sortTable = this.sortTable.bind(this)
     this.state = {
       selectedStrategyReport: null,
       page: 0,
@@ -205,20 +192,20 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     })
   };
 
-  setSelectedStrategyReport(props: PropsType) {
-    const selectedStrategyReport = props.strategyReports.find(item => item.strategyName === props.selectedStrategy?.name)
+  setSelectedStrategyReport() {
+    const selectedStrategyReport = this.props.strategyReports.find(item => item.strategyName === this.props.selectedStrategy?.name)
     if(selectedStrategyReport)
       this.setState({ selectedStrategyReport: deepCopy(selectedStrategyReport)})
   }
 
   
   componentDidMount() {
-    this.setSelectedStrategyReport(this.props)
+    this.setSelectedStrategyReport()
   }
 
   componentDidUpdate(prevProps: Readonly<PropsType>): void {
-    if(prevProps !== this.props)
-      this.setSelectedStrategyReport(this.props)
+    if(prevProps?.selectedStrategy !== this.props?.selectedStrategy)
+      this.setSelectedStrategyReport()
   }
 
   onRowClick(row: BacktestResult) {
@@ -226,8 +213,9 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     actions.setSelectedBacktestResult(row)
   }
 
-  ColumnSort(props: { column: Column }): any {
-    const onChange = (key: ColumnKey) => {
+
+
+  sortTable(key: ColumnKey) {
       const newSortOrder = this.state.orderDirection === 'asc' ? 'desc' : 'asc'
       const sortedStrategyReport = this.state.selectedStrategyReport
       sortedStrategyReport.backtestResults = sortedStrategyReport?.backtestResults?.sort((a, b) => {
@@ -240,12 +228,14 @@ class StrategyReportTable extends Component<PropsType, StateType> {
         orderDirection: newSortOrder,
         orderBy: key
       })
-    }
-    const { key } = props.column
+  }
+
+  HeaderColumn(props: { column: Column }): any {
+    const { key, label } = props.column
     return (
-      <Box sx={{display: 'flex', flexDirection: 'row'}}>
-        <Box sx={{marginBlock: 'auto'}}>{key}</Box>
-        <IconButton sx={{background: "none"}} aria-label="delete" size="large" onClick={() => onChange(key)}>
+      <Box display='flex' flexDirection='row'>
+        <Box sx={{marginBlock: 'auto'}}>{label}</Box>
+        <IconButton sx={{background: "none"}} aria-label="delete" size="large" onClick={() => this.sortTable(key)}>
           {
             this.state.orderDirection === 'asc' ?
             <KeyboardArrowDownSharpIcon fontSize="inherit" /> :
@@ -259,15 +249,12 @@ class StrategyReportTable extends Component<PropsType, StateType> {
   
 
   render() {
-    const page = this.state.page
-    const rowsPerPage = this.state.rowsPerPage
-
+    const { page, rowsPerPage } = this.state
     const backtests = this.state.selectedStrategyReport?.backtestResults
-    const rowNumber = this.state.selectedStrategyReport?.backtestResults?.length ?? 0
-
+    const rowNumber = backtests?.length ?? 0
     
     return (
-      <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)" }}>     
+      <Paper sx={{overflow: 'hidden', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)" }}>     
         <SpinnerComponent loading={this.props.strategyReportsFecthing} position="centered" />
         <TableContainer sx={{ overflow: 'hidden' }}>
         <Table stickyHeader aria-label="sticky table">
@@ -275,7 +262,7 @@ class StrategyReportTable extends Component<PropsType, StateType> {
             <TableRow>
               {columns.map((column) => (
                 <TableCell key={column.key}>
-                  <this.ColumnSort column={column}></this.ColumnSort>
+                  <this.HeaderColumn column={column}></this.HeaderColumn>
                 </TableCell>
               ))}
             </TableRow>
@@ -302,7 +289,7 @@ class StrategyReportTable extends Component<PropsType, StateType> {
         </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={rowsPerPageOptions}
           component="div"
           count={rowNumber}
           rowsPerPage={rowsPerPage}
