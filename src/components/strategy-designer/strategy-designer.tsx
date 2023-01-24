@@ -19,7 +19,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import * as actions from "../../state/actions";
 import * as http from "http/http";
 import StrategyDesignerRuleList from "./strategy-designer-rule-list";
-import { Notification } from "components/notifications-stack";
+import { Notification } from "models/notification";
 
 
 type PropsType = {
@@ -29,9 +29,7 @@ type PropsType = {
 }
 
 type StateType = {
-	selectedStrategy: Strategy
 }
-
  
 class StrategyDesigner extends Component<PropsType, StateType> {
 	readonly enterTradeColor: string  = 'white'
@@ -42,25 +40,14 @@ class StrategyDesigner extends Component<PropsType, StateType> {
   	constructor(props: PropsType) {
     	super(props);
 		this.state = {
-			selectedStrategy: props.selectedStrategy, // copy this by value so props.selectedStrategy stays unchanged
 		}
 		this.onRefreshStrategy = this.onRefreshStrategy.bind(this)
 		this.onSaveStrategy = this.onSaveStrategy.bind(this)
 		this.onDeleteStrategy = this.onDeleteStrategy.bind(this)
+    this.onNameChange = this.onNameChange.bind(this)
     this.TopStrategyActions = this.TopStrategyActions.bind(this)
-	}
+	}    
 
-	componentDidMount() {
-    	this.setState({selectedStrategy: this.props.selectedStrategy})
-  	} 
-	
-	componentDidUpdate(prevProps: Readonly<PropsType>): void {
-		if(prevProps.selectedStrategy !== this.props.selectedStrategy)
-			this.setState({selectedStrategy: this.props.selectedStrategy})
-	}
-
-  
-    
 
   isStrategyFormValid(): { valid: boolean, errorMsg?: string }{
     const strategy = this.props.strategyDesignerStrategy
@@ -73,33 +60,33 @@ class StrategyDesigner extends Component<PropsType, StateType> {
     for (let i=0; i < strategy.strategyConRules.length; ++i ) {
       const rule: ConditionalRule = strategy.strategyConRules[i]
       if(rule.valueExtractionRule1?.isRelative && !(rule.valueExtractionRule1?.percent > 0 && rule.valueExtractionRule1?.percent < 99))
-        return { valid: false, errorMsg: `Rule[${i}].valueExtractionRule1 is relative annd must have valid % value!` }
+        return { valid: false, errorMsg: `Rule[${i}].valueExtractionRule1 is relative and must have valid % value!` }
       if(rule.valueExtractionRule2?.isRelative && !(rule.valueExtractionRule2?.percent > 0 && rule.valueExtractionRule2?.percent < 99))
-        return { valid: false, errorMsg: `Rule[${i}].valueExtractionRule2 is relative annd must have valid % value!` }
+        return { valid: false, errorMsg: `Rule[${i}].valueExtractionRule2 is relative and must have valid % value!` }
     }
     return { valid: true}
   }
 	  
 
-  	onSaveStrategy() {
-  	const validity: { valid: boolean, errorMsg?: string } = this.isStrategyFormValid()
-  	if(!validity.valid) {
-			actions.addNotification(new Notification('error', `Strategy "${this.state.selectedStrategy?.name}" form is not valid. Message="${validity.errorMsg}"`))
-		return;
-  	}
-	  http.saveStrategy(this.props.strategyDesignerStrategy).then(res => {
-		const strategies = this.props.strategies.filter(strategy => strategy.name !== this.props.strategyDesignerStrategy.name)
-		strategies.push(this.props.strategyDesignerStrategy)
-		actions.updateStrategies(strategies)
-		actions.setSelectedStrategy(this.props.strategyDesignerStrategy)
-	})
-  	}
+  onSaveStrategy() {
+    const validity = this.isStrategyFormValid()
+    if(!validity.valid) {			
+	    return actions.addNotification(new Notification('error', `Strategy "${this.props.selectedStrategy?.name}" form is not valid. Message="${validity.errorMsg}"`))
+    }
+	  http.saveStrategy(this.props.strategyDesignerStrategy).then(success => {
+      if(!success)
+        return
+	    const strategies = this.props.strategies.filter(strategy => strategy.name !== this.props.strategyDesignerStrategy.name)
+	    strategies.push(this.props.strategyDesignerStrategy)
+	    actions.updateStrategies(strategies)
+	    actions.setSelectedStrategy(this.props.strategyDesignerStrategy)
+	  })
+  }
 
 	onRefreshStrategy() {
-		if(!this.state.selectedStrategy)
+		if(!this.props.selectedStrategy)
 			return
-		actions.addNotification(new Notification('success', `Strategy "${this.state.selectedStrategy?.name}" refreshed.`))
-		this.setState({selectedStrategy: this.props.selectedStrategy})
+		actions.addNotification(new Notification('success', `Strategy "${this.props.selectedStrategy?.name}" refreshed.`))
 		actions.setStrategyDesignerStrategy(this.props.selectedStrategy)
 	}
 	
@@ -113,33 +100,35 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 		})
 	}
 
-  	onNameChange(e: any) {
-		const strategy = this.props.strategyDesignerStrategy
-		strategy.name = e.target.value
-		actions.setStrategyDesignerStrategy(strategy)
+  onNameChange(e: any) {
+    console.log(e.target.value)
+	  const strategy = this.props.strategyDesignerStrategy
+	  strategy.name = e.target.value
+	  actions.setStrategyDesignerStrategy(strategy)
 	};
 
 
+
+  
   TopStrategyActions() {
     const jsonButton = <Button sx={{color: 'white', alignSelf: 'center', padding:'10px'}} className={styles.strategyDesignerSidebarjsonButton} variant="text"> <b>JSON</b> </Button>
+    const topIconsStyle = { borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px' }
     return (
       <Box sx={{display: 'flex', gap: '6px'}}>
         <Popup trigger={jsonButton} position="right center" modal>
-    		<pre style={{maxHeight: "95vh"}}>
-				{
-					JSON.stringify(this.props.strategyDesignerStrategy, null, "\t")
-				}
-			</pre>
-  		</Popup>
-        <IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onSaveStrategy()}} color="primary">
-			<SaveIcon fontSize="large"/>
-      	</IconButton>
-		<IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onRefreshStrategy()}} color="primary">
-			<RestorePageIcon fontSize="large"/>
-      	</IconButton>
-		<IconButton sx={{borderRadius: '4px', color: 'white', alignSelf: 'center', padding:'6px'}} onClick={() => { this.onDeleteStrategy()}} color="primary">
-			<DeleteForeverIcon fontSize="large"/>
-      	</IconButton>
+    		<pre style={{maxHeight: "95vh"}}> 
+          { JSON.stringify(this.props.strategyDesignerStrategy, null, "\t") }
+        </pre>
+  		  </Popup>
+          <IconButton sx={ topIconsStyle } onClick={ this.onSaveStrategy } color="primary">
+			      <SaveIcon fontSize="large"/>
+        	</IconButton>
+		      <IconButton sx={ topIconsStyle } onClick={ this.onRefreshStrategy } color="primary">
+			      <RestorePageIcon fontSize="large"/>
+          </IconButton>
+		      <IconButton sx={ topIconsStyle } onClick={ this.onDeleteStrategy } color="primary">
+			      <DeleteForeverIcon fontSize="large"/>
+          </IconButton>
       </Box>
     )
   }
@@ -151,15 +140,8 @@ class StrategyDesigner extends Component<PropsType, StateType> {
     return (
 		<Paper sx={{ minWidth: "400px", maxWidth: "770px", overflow: 'hidden', p: '12px', boxShadow: "-1px 0px 8px 0px rgba(0,0,0,0.2)", textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {/* Strategy name and top action buttons(json, save, refresh, delete) */}
-      <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'right', paddingTop: '8px', gap: '60px'}}>
-        <TextField
-          inputProps={{
-            maxLength: 30
-          }}
-			  	style={{width: '100%'}} label="Strategy name" variant="outlined" 
-			  	value={this.props.strategyDesignerStrategy?.name}
-			  	onChange={(e) => { this.onNameChange(e) }}
-			  />
+      <Box display='flex' flexDirection='row' justifyContent='right' paddingTop='8px' gap='60px'>
+        <TextField inputProps={{ maxLength: 30 }}	sx={{ width: '100%' }} label="Strategy name" variant="outlined" value={this.props.strategyDesignerStrategy?.name}	onChange={this.onNameChange}/>
         <this.TopStrategyActions></this.TopStrategyActions>
       </Box>
 
@@ -179,8 +161,8 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 const mapStateToProps = (state: reducer.StateType) => {
   return {
     selectedStrategy: state.selectedStrategy,
-	strategyDesignerStrategy: state.strategyDesignerStrategy,
-	strategies: state.strategies
+	  strategyDesignerStrategy: state.strategyDesignerStrategy,
+	  strategies: state.strategies
   };
 };
 

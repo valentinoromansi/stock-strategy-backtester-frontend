@@ -5,7 +5,7 @@ import { StrategyReport } from '../models/strategy-report';
 import { Strategy } from '../models/strategy';
 import { BacktestResult, TradeDateAndValues } from '../models/backtest-result';
 import { deepCopy } from 'utils/utils';
-import { Notification } from 'components/notifications-stack';
+import { Notification } from "models/notification";
 import { UserCredentials } from 'types/user-credentials';
 import * as storage from '../browser-storage/browser-storage'
 
@@ -78,8 +78,8 @@ export function addNotification(notification: Notification) {
   return notification
 }
 
-export function removeNotification(id: number) {
-  store.dispatch({type: types.REMOVE_NOTIFICATION, payload: id})
+export function removeNotification(notification: Notification) {
+  store.dispatch({type: types.REMOVE_NOTIFICATION, payload: notification})
 }
 
 export function setAuthenticationFlag(authenticated: boolean) {

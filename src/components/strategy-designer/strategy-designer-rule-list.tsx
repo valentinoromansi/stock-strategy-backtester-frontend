@@ -55,11 +55,11 @@ const subAttributeVarNameMap = {
 }
 
 type AttributeIdentifier = {
-	ruleIndex: number | null,
-	mainAttributeIndex: AttributeId | null,
-	subAttributeIndex: AttributeId | null,
-	isEnterTradeRule: boolean | null,
-	isStoplossRule: boolean | null
+	ruleIndex?: number | null,
+	mainAttributeIndex?: AttributeId,
+	subAttributeIndex?: AttributeId,
+	isEnterTradeRule?: boolean,
+	isStoplossRule?: boolean
 }
  
 class StrategyDesignerRuleList extends Component<PropsType, StateType> {
@@ -72,13 +72,25 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 				rcAttributeIdentifier: null,
 				canOpenRcMenu: true
 			}
-			// Disabling default right click and setting flags for opening menu component
+			this.AttributeElement = this.AttributeElement.bind(this)
+			this.PositionSelectElement = this.PositionSelectElement.bind(this)
+			this.AttributeSelectElement = this.AttributeSelectElement.bind(this)
+			this.PercentageElement = this.PercentageElement.bind(this)
+			this.RightClickMenu = this.RightClickMenu.bind(this)
+			this.ToogleAttributeTypeElement = this.ToogleAttributeTypeElement.bind(this)
+			this.addNewRule = this.addNewRule.bind(this)
+			this.configureRightClick()
+		}
+		
+
+		// Disable default right click and set flags for right click when mouse is hovering attribute element
+		configureRightClick() {
 			document.addEventListener("contextmenu", (event: MouseEvent) => {
 				event.preventDefault();
 				if(this.state.hoveredAttributeIdentifier) 
 					this.setState({rcAttributeIdentifier: this.state.hoveredAttributeIdentifier, rcMenuAnchorElement: event.target})
 			});
-	}
+		}
 
 	selectElement(attributeIdentifier: AttributeIdentifier | null, currentValue: AttributeType | Position, prefix: string, enumType: typeof AttributeType | typeof Position, onChange: (value: string) => void) {
 		let selectClass = '' 
@@ -108,7 +120,8 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 		)
 	}
 
-	attributeSelectElement(attributeIdentifier: AttributeIdentifier, currentValue: AttributeType): any {
+	AttributeSelectElement(props: {attributeIdentifier: AttributeIdentifier, currentValue: AttributeType}): any {
+		const { attributeIdentifier, currentValue } = props
 		const attributeInRow = !attributeIdentifier.isEnterTradeRule && !attributeIdentifier.isStoplossRule
 		let newStrategy = this.props.strategyDesignerStrategy
 		const mainAttributeVarName = attributeInRow ? mainAttributeVarNameMap[attributeIdentifier.mainAttributeIndex] : null
@@ -134,7 +147,8 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 		)
 	}
 	
-	positionSelectElement(currentValue: Position, ruleIndex: number): any {
+	PositionSelectElement(props: { currentValue: Position, ruleIndex: number }): any {
+		const { currentValue, ruleIndex } = props
 		const onChange = (value) => {
 			let newStrategy = this.props.strategyDesignerStrategy
 			newStrategy.strategyConRules[ruleIndex].position = value
@@ -145,7 +159,8 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 		)
 	}
 
-	percentageElement(percent: number, attributeIdentifier: AttributeIdentifier) {
+	PercentageElement(props: {percent: number, attributeIdentifier: AttributeIdentifier}): JSX.Element {
+		const { percent, attributeIdentifier } = props
 		const onChange = (valueStr: string) => {
 			const isNum = !isNaN(Number(valueStr))
 			if(valueStr.length > 2 || !isNum)
@@ -176,7 +191,8 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 		)
 	}
 	
-	attributeElement(attributeIdentifier: AttributeIdentifier): any {
+	AttributeElement(props: { attributeIdentifier: AttributeIdentifier }): any {
+		const { attributeIdentifier } = props
 		const mainAttributeVarName = mainAttributeVarNameMap[attributeIdentifier.mainAttributeIndex]
 		const attributeInRow = !attributeIdentifier.isEnterTradeRule && !attributeIdentifier.isStoplossRule
 		const rule = () : ValueExtractionRule => {
@@ -197,12 +213,14 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 				isStoplossRule: attributeIdentifier.isStoplossRule
 			}}
 		return (
-			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>				
+			<div className={styles.strategyDesignerSidebarListItemRuleValueWrapper}>
 				{ /* Simple attribute */}
 				{
 					!rule()?.isRelative &&
 					<div className={styles.strategyDesignerSidebarListItemRuleValue}>
-						{ (rule()?.attribute1) && this.attributeSelectElement(getAttributeIdentifier(AttributeId.ATTRIBUTE1), rule()?.attribute1) }
+						{ (rule()?.attribute1) && 
+							<this.AttributeSelectElement attributeIdentifier={getAttributeIdentifier(AttributeId.ATTRIBUTE1)} currentValue={rule()?.attribute1}/> 
+						}
 					</div>
 				}
 				{ /* Relative attribute */ }
@@ -211,14 +229,20 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 					<React.Fragment>
 						{ /* Attributes */}
 						<div className={styles.strategyDesignerSidebarListItemRuleValueRelative}>
-							{ (rule()?.attribute1) && this.attributeSelectElement(getAttributeIdentifier(AttributeId.ATTRIBUTE1), rule()?.attribute1) }
-							{ (rule()?.attribute2) && this.attributeSelectElement(getAttributeIdentifier(AttributeId.ATTRIBUTE2), rule()?.attribute2) }
+							{ (rule()?.attribute1) && 
+								<this.AttributeSelectElement attributeIdentifier={getAttributeIdentifier(AttributeId.ATTRIBUTE1)} currentValue={rule()?.attribute1}/> 
+							}
+							{ (rule()?.attribute2) && 
+								<this.AttributeSelectElement attributeIdentifier={getAttributeIdentifier(AttributeId.ATTRIBUTE2)} currentValue={rule()?.attribute2}/> 
+							}
 						</div>
 						{ /* Vertical divider */}						
 						<Divider variant='middle' sx={{ paddingTop: '2px', marginBottom: '2px' }} orientation="vertical" flexItem />  
 						{ /* Percentage */}
-						{ this.percentageElement(percent, { ruleIndex: attributeIdentifier.ruleIndex, mainAttributeIndex: attributeIdentifier.mainAttributeIndex, subAttributeIndex: null, isEnterTradeRule: attributeIdentifier.isEnterTradeRule, isStoplossRule: attributeIdentifier.isStoplossRule}) }
-					
+						<this.PercentageElement
+							percent={percent}
+							attributeIdentifier={attributeIdentifier}
+						/>					
 					</React.Fragment>
 				}		
 			</div>
@@ -227,18 +251,62 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 
 
 
-	rightClickMenuElement() {
-		const attributeInRow = !this.state.rcAttributeIdentifier.isEnterTradeRule && !this.state.rcAttributeIdentifier.isStoplossRule 
-		const ruleIndex = attributeInRow ? this.state.rcAttributeIdentifier?.ruleIndex : null
-		const mainAttributeVarName = attributeInRow ? mainAttributeVarNameMap[this.state.rcAttributeIdentifier?.mainAttributeIndex] : null
+
+
+
+	ToogleAttributeTypeElement(props: {ruleIndex: number, mainAttributeVarName: string, attributeInRow: boolean, strategyDesignerStrategy: Strategy, rcAttributeIdentifier: AttributeIdentifier }) : JSX.Element {
+		const { ruleIndex, mainAttributeVarName, attributeInRow, strategyDesignerStrategy, rcAttributeIdentifier } = props
+		const isRelative = () => {
+			if(attributeInRow)
+				return strategyDesignerStrategy.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.isRelative
+			else if(rcAttributeIdentifier.isEnterTradeRule)
+				return strategyDesignerStrategy.enterValueExRule.isRelative
+			else if(rcAttributeIdentifier.isStoplossRule)
+				return strategyDesignerStrategy.stopLossValueExRule.isRelative
+		}
+		let onToogleClick = (isRelative: boolean) => {
+			if(attributeInRow) {
+				strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].isRelative = isRelative
+				strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].attribute2 = isRelative ? AttributeType.OPEN : null
+				strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].percent = isRelative ? 0 : null
+			}
+			else if(rcAttributeIdentifier.isEnterTradeRule) {
+				strategyDesignerStrategy.enterValueExRule.isRelative = isRelative
+				strategyDesignerStrategy.enterValueExRule.attribute2 = isRelative ? AttributeType.OPEN : null
+				strategyDesignerStrategy.enterValueExRule.percent = isRelative ? 0 : null
+			}
+			else if(rcAttributeIdentifier.isStoplossRule) {
+				strategyDesignerStrategy.stopLossValueExRule.isRelative = isRelative
+				strategyDesignerStrategy.stopLossValueExRule.attribute2 = isRelative ? AttributeType.OPEN : null
+				strategyDesignerStrategy.stopLossValueExRule.percent = isRelative ? 0 : null
+			}
+			this.setState({rcMenuAnchorElement: null})
+			actions.setStrategyDesignerStrategy(strategyDesignerStrategy)
+		}		
+		return(
+			<ToggleButtonGroup color="primary" value={isRelative()}	exclusive	aria-label="Platform">
+				<ToggleButton onClick={(e) => { onToogleClick(false)}} value={false}>Simple</ToggleButton>
+				<ToggleButton onClick={(e) => { onToogleClick(true)}} value={true}>Relative</ToggleButton>
+			</ToggleButtonGroup>
+		)	
+	}
+
+
+	RightClickMenu() : JSX.Element  {
+		const strategyDesignerStrategy = this.props.strategyDesignerStrategy
+		const rcAttributeIdentifier = this.state.rcAttributeIdentifier
+
+		const attributeInRow = !rcAttributeIdentifier.isEnterTradeRule && !rcAttributeIdentifier.isStoplossRule 
+		const ruleIndex = attributeInRow ? rcAttributeIdentifier?.ruleIndex : null
+		const mainAttributeVarName = attributeInRow ? mainAttributeVarNameMap[rcAttributeIdentifier?.mainAttributeIndex] : null
+
 		// Change id for attribute and save to redux state
 		const setId = (id: number) => {
-			let strategyDesignerStrategy = this.props.strategyDesignerStrategy
 			if(attributeInRow)
 				strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].id = id
-			else if(this.state.rcAttributeIdentifier.isEnterTradeRule)
+			else if(rcAttributeIdentifier.isEnterTradeRule)
 				strategyDesignerStrategy.enterValueExRule.id = id
-			else if(this.state.rcAttributeIdentifier.isStoplossRule)
+			else if(rcAttributeIdentifier.isStoplossRule)
 				strategyDesignerStrategy.stopLossValueExRule.id = id
 			actions.setStrategyDesignerStrategy(strategyDesignerStrategy)
 		}
@@ -255,59 +323,17 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 		}		
 		const idToDisplay = () : number => {
 			if(attributeInRow)
-				return this.props.strategyDesignerStrategy?.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.id
-			else if(this.state.rcAttributeIdentifier.isEnterTradeRule)
-				return this.props.strategyDesignerStrategy.enterValueExRule.id
-			else if(this.state.rcAttributeIdentifier.isStoplossRule)
-				return this.props.strategyDesignerStrategy.stopLossValueExRule.id
-		}
-		// For changing attribute type - simple/complex
-		let toogleAttributeTypeElement = (ruleIndex: number, mainAttributeVarName: string) => {
-			const isRelative = () => {
-				if(attributeInRow)
-					return this.props.strategyDesignerStrategy.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.isRelative
-				else if(this.state.rcAttributeIdentifier.isEnterTradeRule)
-					return this.props.strategyDesignerStrategy.enterValueExRule.isRelative
-				else if(this.state.rcAttributeIdentifier.isStoplossRule)
-					return this.props.strategyDesignerStrategy.stopLossValueExRule.isRelative
-			}
-			let onToogleClick = (isRelative: boolean) => {
-				let strategyDesignerStrategy = this.props.strategyDesignerStrategy
-				if(attributeInRow) {
-					strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].isRelative = isRelative
-					strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].attribute2 = isRelative ? AttributeType.OPEN : null
-					strategyDesignerStrategy.strategyConRules[ruleIndex][mainAttributeVarName].percent = isRelative ? 0 : null
-				}
-				else if(this.state.rcAttributeIdentifier.isEnterTradeRule) {
-					strategyDesignerStrategy.enterValueExRule.isRelative = isRelative
-					strategyDesignerStrategy.enterValueExRule.attribute2 = isRelative ? AttributeType.OPEN : null
-					strategyDesignerStrategy.enterValueExRule.percent = isRelative ? 0 : null
-				}
-				else if(this.state.rcAttributeIdentifier.isStoplossRule) {
-					strategyDesignerStrategy.stopLossValueExRule.isRelative = isRelative
-					strategyDesignerStrategy.stopLossValueExRule.attribute2 = isRelative ? AttributeType.OPEN : null
-					strategyDesignerStrategy.stopLossValueExRule.percent = isRelative ? 0 : null
-				}
-				this.setState({rcMenuAnchorElement: null})
-				actions.setStrategyDesignerStrategy(strategyDesignerStrategy)
-			}		
-			return(
-				<ToggleButtonGroup
-    			color="primary"
-    			value={isRelative()}
-    			exclusive    			
-    			aria-label="Platform"
-				>
-    			<ToggleButton onClick={(e) => { onToogleClick(false)}} value={false}>Simple</ToggleButton>
-    			<ToggleButton onClick={(e) => { onToogleClick(true)}} value={true}>Relative</ToggleButton>
-    		</ToggleButtonGroup>
-			)	
+				return strategyDesignerStrategy?.strategyConRules?.[ruleIndex]?.[mainAttributeVarName]?.id
+			else if(rcAttributeIdentifier.isEnterTradeRule)
+				return strategyDesignerStrategy.enterValueExRule.id
+			else if(rcAttributeIdentifier.isStoplossRule)
+				return strategyDesignerStrategy.stopLossValueExRule.id
 		}
 		// on delete
 		let onDelete = (ruleIndex: number) => {
 			if(!attributeInRow)
 				return
-			let newStrategy = deepCopy(this.props.strategyDesignerStrategy)
+			let newStrategy = deepCopy(strategyDesignerStrategy)
 			newStrategy.strategyConRules.splice(ruleIndex, 1)
 			actions.setStrategyDesignerStrategy(newStrategy)
 			this.setState({rcMenuAnchorElement: null})
@@ -317,15 +343,16 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 				open={this.state.rcMenuAnchorElement != null && this.state.canOpenRcMenu}
 				onClose={() => {this.setState({rcMenuAnchorElement: null})}}>
 					<Box sx={{ padding: "4px", gap: "8px", flexDirection: "column", display: "flex"}}>
-				<TextField
-					style={{ width: "100%"}}
-					value={isNaN(idToDisplay()) ? '' : idToDisplay()}
-					label="Vertical slice id"
-					onChange={(e) => { onChangeVsId(e.target.value) }}
-        		/>
-				<div>
-					{toogleAttributeTypeElement(ruleIndex, mainAttributeVarName)}
-				</div>
+					<TextField style={{ width: "100%"}} value={isNaN(idToDisplay()) ? '' : idToDisplay()} label="Vertical slice id" onChange={(e) => { onChangeVsId(e.target.value) }} />
+					<div>
+						<this.ToogleAttributeTypeElement
+							ruleIndex={ruleIndex}
+							mainAttributeVarName={mainAttributeVarName}
+							attributeInRow={attributeInRow}
+							strategyDesignerStrategy={strategyDesignerStrategy}
+							rcAttributeIdentifier={rcAttributeIdentifier}
+						/>
+					</div>
 				{
 					attributeInRow &&
 					<Button onClick={(e) => { onDelete(ruleIndex) }} variant="outlined" color="error"> DELETE </Button>
@@ -340,40 +367,27 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 
 
 
-	addNewRuleButton() {
-		const onClick = () => {
-			let newStrategy: Strategy = deepCopy(this.props.strategyDesignerStrategy)
-			newStrategy.strategyConRules.push(new ConditionalRule({
-				valueExtractionRule1: new ValueExtractionRule({
-					attribute1: AttributeType.OPEN,
-					id: 0,
-					isRelative: false
-				}),
-				position: Position.ABOVE,
-				valueExtractionRule2: new ValueExtractionRule({
-					attribute1: AttributeType.OPEN,
-					id: 0,
-					isRelative: false
-				})
-			}))
-			actions.setStrategyDesignerStrategy(newStrategy)
-			this.setState({rcMenuAnchorElement: null})
-		}
 
-		return(
-				<Button 
-					sx={{width: "auto", padding: "10px 20px" }} 
-					variant="contained" 
-					endIcon={<AddCircleOutlineIcon fontSize="large"/>} 
-					onClick={() => onClick()}
-				>
-					add rule
-				</Button>
+	initialRule = new ConditionalRule({
+		valueExtractionRule1: new ValueExtractionRule({
+			attribute1: AttributeType.OPEN,
+			id: 0,
+			isRelative: false
+		}),
+		position: Position.ABOVE,
+		valueExtractionRule2: new ValueExtractionRule({
+			attribute1: AttributeType.OPEN,
+			id: 0,
+			isRelative: false
+		})
+	})
 
-		)
+	addNewRule() {
+		let newStrategy: Strategy = deepCopy(this.props.strategyDesignerStrategy)
+		newStrategy.strategyConRules.push(deepCopy(this.initialRule))
+		actions.setStrategyDesignerStrategy(newStrategy)
+		this.setState({rcMenuAnchorElement: null})
 	}
-
-
 
 	onNameChange(e: any) {
 		const strategy = this.props.strategyDesignerStrategy
@@ -392,17 +406,18 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 					this.props.strategyDesignerStrategy?.strategyConRules?.map((rule: ConditionalRule, i) => (
 						<div className={styles.strategyDesignerSidebarListItem} key={i}>
 							{/* simple/relative attribute 1 */}
-							{ this.attributeElement({ ruleIndex: i, mainAttributeIndex: AttributeId.ATTRIBUTE1, subAttributeIndex: null, isEnterTradeRule: null, isStoplossRule: null}) }
+							<this.AttributeElement attributeIdentifier={{ ruleIndex: i, mainAttributeIndex: AttributeId.ATTRIBUTE1}}/>
 							{/* Rule condition */}
-							{ this.positionSelectElement(rule.position, i) }
+							<this.PositionSelectElement currentValue={rule.position} ruleIndex={i} />
 							{/* simple/relative attribute 2 */}
-							{ this.attributeElement({ ruleIndex: i, mainAttributeIndex: AttributeId.ATTRIBUTE2, subAttributeIndex: null, isEnterTradeRule: null, isStoplossRule: null}) }
+							<this.AttributeElement attributeIdentifier={{ ruleIndex: i, mainAttributeIndex: AttributeId.ATTRIBUTE2}}/>
 						</div>
         	))
         }
+
 				{/* Add new rule */}
 				<Box sx={{display: 'flex', justifyContent: 'start', paddingTop: '4px', paddingBottom: '4px'}}>
-					{this.addNewRuleButton()}
+					<Button sx={{padding: "10px 20px" }} variant="contained" endIcon={<AddCircleOutlineIcon fontSize="large"/>} onClick={this.addNewRule}>add rule</Button>
 				</Box>
 				<Divider variant='middle' sx={{ marginTop: '12px', marginBottom: '12px'}} orientation="horizontal" />  		
 
@@ -410,16 +425,19 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 				<Box className={styles.strategyDesignerSidebarListItemEnterStoplossAttributes}>
 					<Box style={{display: "flex", flexDirection: 'column', width: '25%'}}>
 						<Typography>Enter trade rule</Typography>
-						{this.attributeElement({ ruleIndex: null, mainAttributeIndex: null, subAttributeIndex: null, isEnterTradeRule: true, isStoplossRule: null})}
+						<this.AttributeElement attributeIdentifier={{ isEnterTradeRule: true }}/>
 					</Box>
 					<Divider variant='middle' orientation="vertical" sx={{height: 'auto', margin: 0, marginTop: "4px"}} />  		
 					<Box style={{display: "flex", flexDirection: 'column', width: '25%'}}>
 						<Typography>Stop-loss rule</Typography>
-						{this.attributeElement({ ruleIndex: null, mainAttributeIndex: null, subAttributeIndex: null, isEnterTradeRule: false, isStoplossRule: true})}
+						<this.AttributeElement attributeIdentifier={{ isEnterTradeRule: false, isStoplossRule: true}}/>
 					</Box>
 				</Box>
-				{/* Sidebar rule right click menu */}
-				{ this.props.strategyDesignerStrategy && this.state.rcAttributeIdentifier && this.rightClickMenuElement() }
+
+				{/* Right click rule menu */}
+				{ this.props.strategyDesignerStrategy && this.state.rcAttributeIdentifier && 
+					<this.RightClickMenu/> 
+				}
 			</Box>
 		);
   }

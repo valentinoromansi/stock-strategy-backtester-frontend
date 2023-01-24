@@ -5,16 +5,14 @@ import "apercu-font";
 import { TradeResult } from "types/trade-result";
 import { BacktestResult, TradeDateAndValues } from "models/backtest-result";
 import * as actions from "../../state/actions";
+import Box from "@mui/material/Box/Box";
 
 
 
 type PropsType = {
 	selectedBacktestResult: BacktestResult
 }
-
-
 type StateType = {
-	selectedBacktestResult: BacktestResult,
 	linearGradientBase: string,
 	linearGradientHiglight: string
 }
@@ -36,20 +34,17 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 		this.handleMouseMove = this.handleMouseMove.bind(this)
 		this.resetBarHighlight = this.resetBarHighlight.bind(this)
 		this.state = { 
-			selectedBacktestResult: props.selectedBacktestResult,
 			linearGradientBase: '',
 			linearGradientHiglight: 'linear-gradient(90deg, transparent 0%, transparent 100%)'
 		}
   }
 
   componentDidMount(): void {
-	  this.setState({selectedBacktestResult: this.props.selectedBacktestResult});
 	  this.setState({linearGradientBase: this.getLinearGradientBase(this.props.selectedBacktestResult.tradeDateAndValues)});
   }
 
 	componentDidUpdate(prevProps: PropsType) {
 		if(prevProps.selectedBacktestResult !== this.props.selectedBacktestResult) {
-			this.setState({selectedBacktestResult: this.props.selectedBacktestResult});
 			this.setState({linearGradientBase: this.getLinearGradientBase(this.props.selectedBacktestResult.tradeDateAndValues)});
 			this.resetBarHighlight()
 		}
@@ -63,7 +58,7 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 	getBarHoverData(e: any): { localMouseX: number, mouseXPercentFrac: number, barWidthPercentFrac: number, hoveredBarIndex: number } {
 		const localMouseX = e.clientX - e.target.offsetLeft 
 		const mouseXPercentFrac = localMouseX / this.divRef.current.offsetWidth
-		const barWidthPercentFrac = 1 / this.state.selectedBacktestResult.tradeDateAndValues?.length
+		const barWidthPercentFrac = 1 / this.props.selectedBacktestResult.tradeDateAndValues?.length
 		const hoveredBarIndex = Math.floor((mouseXPercentFrac / barWidthPercentFrac))
 		return {
 			localMouseX: localMouseX,
@@ -79,7 +74,7 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 	 */
 	handleMouseClick(e: any) {
 		const { hoveredBarIndex } = this.getBarHoverData(e)
-		actions.setSelectedTrade(this.state.selectedBacktestResult.tradeDateAndValues[hoveredBarIndex])
+		actions.setSelectedTrade(this.props.selectedBacktestResult.tradeDateAndValues[hoveredBarIndex])
 	}
 
 	// linear-gradient(90deg, transparent 93.9086%, blue 93.9086%, blue 94.4162%, transparent  94.4162%),
@@ -88,7 +83,7 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 
 		const startBarPosPercent = (barWidthPercentFrac * 100) * hoveredBarIndex
 		const endBarPosPercent = (barWidthPercentFrac * 100) * (hoveredBarIndex + 1) 
-		const highlightColor = this.getBarHighlightColor(this.state.selectedBacktestResult.tradeDateAndValues[hoveredBarIndex])
+		const highlightColor = this.getBarHighlightColor(this.props.selectedBacktestResult.tradeDateAndValues[hoveredBarIndex])
 
 		const linearGradientHiglight = `linear-gradient(
 			90deg, 
@@ -123,13 +118,12 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 	getLinearGradientBase(tradeDateAndValues: TradeDateAndValues[]) {
 		if(!tradeDateAndValues)
 			return ''
-		// Separate list into list of list with max 50 members
+		// Separate list into list of list with max 50 members - this is a hack since without separation it can't be sharply rendered
 		const chunkedTradeResultTypes: TradeDateAndValues[][] = []
 		const chunkSize = 50
 		for (let i = 0; i < tradeDateAndValues.length; i += chunkSize) {
 			chunkedTradeResultTypes.push(tradeDateAndValues.slice(i, i + chunkSize))
-		}
-		
+		}		
 		// Construct linear-gradient property string 
 		const barWidthPercent = 100 / tradeDateAndValues.length
 		let fromPercent = 0
@@ -160,8 +154,7 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 		const linearGradientProperty = this.state.linearGradientHiglight + ', ' + this.state.linearGradientBase
 
     return (
-			<div>
-				<div
+				<Box
 					ref={this.divRef}
 					onMouseLeave={this.resetBarHighlight}
 					onMouseMove={this.handleMouseMove}
@@ -172,8 +165,7 @@ class StrategyTradesBars extends Component<PropsType, StateType> {
 						background: linearGradientProperty
 					}}
 					>
-				</div>
-			</div>
+				</Box>
 		);
   }
 

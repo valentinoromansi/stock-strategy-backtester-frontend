@@ -3,13 +3,12 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as reducer from '../../state/reducers';
 
-import { format } from "d3-format";
 import { Chart, ChartCanvas } from "react-stockcharts";
 import { Annotate, LabelAnnotation } from "react-stockcharts/lib/annotation";
 import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 import { CrossHairCursor } from "react-stockcharts/lib/coordinates";
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
-import { BarSeries, CandlestickSeries, LineSeries } from "react-stockcharts/lib/series";
+import { CandlestickSeries, LineSeries } from "react-stockcharts/lib/series";
 import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
 import { BacktestResult, TradeDateAndValues } from "../../models/backtest-result";
 import { Strategy } from "../../models/strategy";
@@ -23,22 +22,14 @@ import StrategyTradesBars from "./strategy-trades-bars";
 type PropsType = {
 	selectedStrategy: Strategy,
 	selectedBacktestResult: BacktestResult,
-  type: string,
   width: number,
 	height: number,
-  ratio: number,
-  mouseMoveEnabled: boolean,
-  panEnabled: boolean,
-  zoomEnabled: boolean,
-  clamp: boolean,
   data: any,
 	stockVerticalSlicesFecthing: boolean,
 	selectedTrade: TradeDateAndValues
 }
 
 type StateType = {
-	indicatorsActive: boolean,
-	selectedTrade: TradeDateAndValues
 }
 
 class GraphWithTradeMarkings extends Component<PropsType, StateType> {
@@ -47,23 +38,14 @@ class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 	readonly lossColor: string = '#ff0000'
 	readonly indecisiveColor: string = '#3e3e3e'
 	readonly barChartInitFill: string = 'rgb(26, 32, 39)'
+	readonly candleNumToDisplay = 100
 
   constructor(props: PropsType) {
     super(props);
 		this.setPageScroll = this.setPageScroll.bind(this)
-		this.tradeLineValue = this.tradeLineValue.bind(this)
-		this.state = {
-			indicatorsActive: false,
-			selectedTrade: props.selectedTrade
-		}
+		this.tradeLineEndYValue = this.tradeLineEndYValue.bind(this)
+		this.TradeLines = this.TradeLines.bind(this)
   }
-
-
-	componentDidUpdate(prevProps: PropsType) {
-		if(prevProps.selectedTrade !== this.props.selectedTrade) {
-			this.setState({selectedTrade: this.props.selectedTrade});
-		}
-	}
 
 	
 	getBarChartFillColor(trade: TradeDateAndValues): string {
@@ -76,11 +58,13 @@ class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 		document.querySelector('html').style.overflow = (enabled) ? 'visible' : 'hidden'
 	}
 
-	tradeLineValue(vs: VerticalSlice, lineType: LineType): number {
+	// return Y value of a trade line depending on its type
+	tradeLineEndYValue(vs: VerticalSlice, lineType: LineType): number {
+		console.log(lineType)
 		let val: number = 0
 		this.props.selectedBacktestResult?.tradeDateAndValues?.every(trade => {
 			const tradeEndDate = new Date(trade.profitHitDate || trade.stopLossHitDate)
-			if(vs.date >= new Date(trade.enterDate) && vs.date <= tradeEndDate){
+			if(vs.date >= new Date(trade.enterDate) && vs.date <= tradeEndDate) {
 				if(lineType === LineType.ENTER) val = trade.enterValue
 				else if(lineType === LineType.PROFIT) val = trade.profitValue
 				else if(lineType === LineType.STOP_LOSS) val = trade.stopLossValue
@@ -91,32 +75,45 @@ class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 		return val
 	}
 
+	TradeLines(props: { lineType: LineType, color: string }): any {
+		return (
+			<LineSeries yAccessor={(vs: VerticalSlice) => this.tradeLineEndYValue(vs, props.lineType)} defined={(id: number) => id !== 0} strokeOpacity={1} stroke={props.color}/>
+		)
+	}
+
+
+	TradeAnnotations(props: { dates: Date[], color: string } ): any {
+		return(
+			<React.Fragment>
+				{
+					props.dates &&
+					<Annotate with={LabelAnnotation} 
+						when={(d: VerticalSlice) => props.dates.some((date: Date) => date.getTime() === d.date.getTime())} 
+						usingProps={{ fontSize: 14,	opacity: 1,	text: "▲", fill: props.color,	y: ({ yScale }) => yScale.range()[0] }}/>
+				}
+			</React.Fragment>
+		)
+	}
+
+
   render() {
 		const { tradeDateAndValues, stockName, interval, rewardToRisk } = this.props?.selectedBacktestResult || { tradeDateAndValues: [] }
-		const { type, width, ratio, mouseMoveEnabled, panEnabled, zoomEnabled, clamp, height } = this.props;
+		const { width, height } = this.props;
 
+		// size limits - if size is to small react-stockcharts component throws error
 		if(!width || !height || width < 50 || height < 50)
-			return (<React.Fragment></React.Fragment>)
+			return <React.Fragment/>
 
 		// ChartCanvas component breaks when data consits of less then 
-		const dataForRender = 
-			this.props.data?.length >= 2 ? 
-			this.props.data :
-			new Array(2).fill({date: new Date(), "open": 0, "high": 0, "low": 0, "close": 0, "volume": 0})
-			
+		const dataForRender = this.props.data?.length >= 2 ? this.props.data : new Array(2).fill({date: new Date(), "open": 0, "high": 0, "low": 0, "close": 0, "volume": 0})
 		
 		// returned 'data' is same as 'this.props.data' but has addtional 'idx' property that is used when rendering
-		const {
-			data,
-			xScale,
-			xAccessor,
-			displayXAccessor,
-		} = discontinuousTimeScaleProvider.inputDateAccessor((d: VerticalSlice) => d.date)(dataForRender);
+		const { data,	xScale, xAccessor, displayXAccessor } = discontinuousTimeScaleProvider.inputDateAccessor((d: VerticalSlice) => d.date)(dataForRender);
 		
 		// xExtents - slices between start and end will be rendered, xAccessor returns index of given verticalSlice
-		const sliceToFocusIndex: number = data.findIndex(slice => slice.date.getTime() === new Date(this.state.selectedTrade?.enterDate).getTime()) || 0
-		const start = xAccessor(data[Math.max(sliceToFocusIndex - 30, 0)]);
-		const end = xAccessor(data[Math.min(sliceToFocusIndex + 30, data.length - 1)]);
+		const sliceToFocusIndex: number = data.findIndex(slice => slice.date.getTime() === new Date(this.props.selectedTrade?.enterDate).getTime()) || 0
+		const start = xAccessor(data[Math.max(sliceToFocusIndex - this.candleNumToDisplay / 2, 0)]);
+		const end = xAccessor(data[Math.min(sliceToFocusIndex + this.candleNumToDisplay / 2, data.length - 1)]);
 		const xExtents = [start, end];
 
 		const yGrid = { innerTickSize: -1 * width, tickStrokeOpacity: 0.1 }
@@ -146,12 +143,12 @@ class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 					<ChartCanvas
 						width={width}
 						height={height}
-						ratio={ratio}
-						mouseMoveEvent={mouseMoveEnabled}
-						panEvent={panEnabled}
-						zoomEvent={zoomEnabled}
-						clamp={clamp}
-						type={type}
+						ratio={1}
+						mouseMoveEvent={true}
+						panEvent={true}
+						zoomEvent={true}
+						clamp={false}
+						type='svg'
 						data={data}
 						xScale={xScale}
 						xExtents={xExtents}
@@ -163,95 +160,28 @@ class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 								{/* Date axis */}
 								<XAxis axisAt="bottom"
 									orient="bottom"
-									zoomEnabled={zoomEnabled}
+									zoomEnabled={true}
 									{...xGrid} />
 								{/* price axis */}
 								<YAxis axisAt="right"
 									orient="right"
 									ticks={5}
-									zoomEnabled={zoomEnabled}
+									zoomEnabled={true}
 									{...yGrid}
 								/>
 								{/* Candles */}
 								<CandlestickSeries />
 								{/* Top left attributes */}
 								<OHLCTooltip origin={[-40, 0]}/>
-								{/* Anotations for enter date of won/lost trades */} 
-								{
-									profitEntryDates &&
-									<Annotate with={LabelAnnotation} 
-										when={(d: VerticalSlice) => profitEntryDates.some((date: Date) => date.getTime() === d.date.getTime())} 
-										usingProps={{
-											fontSize: 14,
-											opacity: 1,
-											text: "▲",
-											fill: this.profitColor,
-											y: ({ yScale }) => yScale.range()[0],
-										}}/>
-								}
-								{
-									lossEntryDates &&
-									<Annotate with={LabelAnnotation} 
-										when={(d: VerticalSlice) => lossEntryDates.some((date: Date) => date.getTime() === d.date.getTime())} 
-										usingProps={{
-											fontSize: 14,
-											opacity: 1,
-											text: "▲",
-											fill: this.lossColor,
-											y: ({ yScale }) => yScale.range()[0],
-										}}/>
-								}
-								{
-									indecisiveEntryDates &&
-									<Annotate with={LabelAnnotation} 
-										when={(d: VerticalSlice) => indecisiveEntryDates.some((date: Date) => date.getTime() === d.date.getTime())} 
-										usingProps={{
-											fontSize: 14,
-											opacity: 1,
-											text: "▲",
-											fill: this.indecisiveColor,
-											y: ({ yScale }) => yScale.range()[0],
-										}}/>
-								}
-								{/* enter line */}
-							<LineSeries
-								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d, LineType.ENTER)}
-								defined={(id: number) => id !== 0}
-								strokeOpacity={1}
-								stroke={this.enterTradeColor}
-								/>
-								{/* take profit line */}
-							<LineSeries
-								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d, LineType.PROFIT)}
-								defined={(id: number) => id !== 0}
-								strokeOpacity={1}
-								stroke={this.profitColor}
-								/>
-								{/* stop loss line */}
-							<LineSeries
-								yAccessor={(d: VerticalSlice) => this.tradeLineValue(d, LineType.STOP_LOSS)}
-								defined={(id: number) => id !== 0}
-								strokeOpacity={1}
-								stroke={this.lossColor}
-								/>
+								{/* Anotations for enter date of won/lost trades */}
+								<this.TradeAnnotations dates={profitEntryDates} color={this.profitColor} />
+								<this.TradeAnnotations dates={lossEntryDates} color={this.lossColor} />
+								<this.TradeAnnotations dates={indecisiveEntryDates} color={this.indecisiveColor} />								
+								{/* enter trade, take profit, stop loss lines */}
+								<this.TradeLines lineType={LineType.ENTER} color={this.enterTradeColor} />
+								<this.TradeLines lineType={LineType.PROFIT} color={this.profitColor} />
+								<this.TradeLines lineType={LineType.STOP_LOSS} color={this.lossColor} />
 						</Chart>
-
-						{/* Volume */}
-						{
-						this.state.indicatorsActive &&
-						<Chart id={2} yExtents={(d: VerticalSlice) => d.volume} height={70} origin={(w: number, h: number) => [0, h - 70]}>
-							{/* volume axis */}
-							<YAxis
-								axisAt="left"
-								orient="left"
-								ticks={5}
-								tickFormat={format(".2s")}
-								zoomEnabled={zoomEnabled}
-								/>
-							{/* volume candles */}
-							<BarSeries yAccessor={(d: VerticalSlice) => d.volume} fill={(d: VerticalSlice) => d.close > d.open ? this.profitColor : this.lossColor} />	
-						</Chart>
-						}
 						<CrossHairCursor />
 					</ChartCanvas>
 				}
@@ -267,12 +197,6 @@ const mapStateToProps = (state: reducer.StateType) => {
   return {
     selectedStrategy: state.selectedStrategy,
 		selectedBacktestResult: state.selectedBacktestResult,
-		type: "svg",
-		mouseMoveEnabled: true,
-		panEnabled: true,
-		zoomEnabled: true,
-		clamp: false,
-  	ratio: 1,
 		data: state.selectedStockVerticalSlices,
 		stockVerticalSlicesFecthing: state.stockVerticalSlicesFecthing,
 		selectedTrade: state.selectedTrade

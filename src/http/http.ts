@@ -2,7 +2,7 @@ import { StrategyReport } from "../models/strategy-report"
 import colors from "colors"
 import { Strategy } from "../models/strategy"
 import * as actions from "../state/actions";
-import { Notification } from "components/notifications-stack";
+import { Notification } from "models/notification";
 import * as storage from "browser-storage/browser-storage";
 import { UserCredentials } from "types/user-credentials";
 
@@ -55,7 +55,7 @@ export let getStock = (interval: string, symbol: string) : Promise<[]> => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STOCK} done.`))
         const data = response.data ?? []
-        actions.removeNotification(fetchingNotification.id)
+        actions.removeNotification(fetchingNotification)
         showNotification(response.status, {success: 'Stock fetched', error: 'Stock could not be fetched'})
         for(const o of data)
           o.date = new Date(o.date)
@@ -64,7 +64,7 @@ export let getStock = (interval: string, symbol: string) : Promise<[]> => {
     })
     .catch((err) => {
       console.log(colors.red(`Fetch ${URL_GET_STOCK} thrown error: ` + err))
-      actions.removeNotification(fetchingNotification.id)
+      actions.removeNotification(fetchingNotification)
       resolve(null)
     })
   })
@@ -81,14 +81,14 @@ export let getStrategyReports = () : Promise<StrategyReport[]> => {
       response.json().then((response: ServiceResponse) => {        
         console.log(colors.green(`Fetch ${URL_GET_STRATEGY_REPORTS} done.`))
         const data: StrategyReport[] = response.data ?? []
-        actions.removeNotification(fetchingNotification.id)
+        actions.removeNotification(fetchingNotification)
         showNotification(response.status, { success: 'Strategy reports fetched', error: 'Strategy reports could not be fetched' })
         resolve(data)
       })
     })
     .catch((err) => {
       console.log(colors.red(`Fetch ${URL_GET_STRATEGY_REPORTS} thrown error: ` + err))
-      actions.removeNotification(fetchingNotification.id)
+      actions.removeNotification(fetchingNotification)
       actions.addNotification(new Notification('error', 'Strategy reports could not be fetched!'))
       resolve([])
     })
@@ -106,14 +106,14 @@ export let getStrategies = () : Promise<Strategy[]> => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
         const data: Strategy[]  = response.data ?? []
-        actions.removeNotification(fetchingNotification.id)
+        actions.removeNotification(fetchingNotification)
         showNotification(response.status, { success: 'Strategies fetched', error: 'Strategies could not be fetched' })
         resolve(data)
       })
     })
     .catch((err) => {
       console.log(colors.red(`Fetch ${URL_GET_STRATEGIES} thrown error: ` + err))
-      actions.removeNotification(fetchingNotification.id)
+      actions.removeNotification(fetchingNotification)
       actions.addNotification(new Notification('error', 'Strategies could not be fetched!'))
       resolve([])
     })
@@ -134,15 +134,15 @@ export let saveStrategy = (strategy: Strategy) : Promise<boolean> => {
     .then(response => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
-        const data: boolean = response.data ?? false
-        actions.removeNotification(fetchingNotification.id)
+        const data: boolean = response.status === 200 ?? false
+        actions.removeNotification(fetchingNotification)
         showNotification(response.status, { success: 'Strategy saved', error: 'Strategy could not be saved' })
         resolve(data)
       })
     })
     .catch((err) => {
       console.log(colors.red(`Saving strategy over ${URL_SAVE_STRATEGY} thrown error: ` + err))
-      actions.removeNotification(fetchingNotification.id)
+      actions.removeNotification(fetchingNotification)
       actions.addNotification(new Notification('error', `Strategy "${strategy.name}" could not be saved.`))
       resolve(false)
     })
@@ -162,14 +162,14 @@ export let deleteStrategy = (name: string) : Promise<boolean> => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
         const isDeleted: boolean = response.status === 200 ?? false
-        actions.removeNotification(fetchingNotification.id)
+        actions.removeNotification(fetchingNotification)
         showNotification(response.status, { success: 'Strategy deleted', error: 'Strategy could not be deleted' })
         resolve(isDeleted)
       })
     })
     .catch((err) => {
       console.log(colors.red(`Deleting strategy ${name} over ${URL_DELETE_STRATEGY} thrown error: ` + err))
-      actions.removeNotification(fetchingNotification.id)
+      actions.removeNotification(fetchingNotification)
       actions.addNotification(new Notification('error', `Strategy "${name}" could not be deleted!`))
       resolve(false)
     })
@@ -189,14 +189,14 @@ export let regenerateStrategyReports = () : Promise<StrategyReport[]> => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} done.`))
         const data: StrategyReport[] = response.data ?? []
-        actions.removeNotification(fetchingNotification.id)
+        actions.removeNotification(fetchingNotification)
         showNotification(response.status, { success: 'Strategy reports regenerated', error: 'Strategy reports could not be regenerated' })
         resolve(data)
       })
     })
     .catch((err) => {
       console.log(colors.red(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} thrown error: ` + err))
-      actions.removeNotification(fetchingNotification.id)
+      actions.removeNotification(fetchingNotification)
       actions.addNotification(new Notification('error', 'Strategy reports could not be regenerated!'))
       resolve([])
     })
@@ -217,7 +217,7 @@ export let authenticateCredentials = (credentials: UserCredentials) : Promise<st
     })
     .then(response => {
       response.json().then((response: ServiceResponse)=> {
-        actions.removeNotification(fetchingNotification.id)
+        actions.removeNotification(fetchingNotification)
         showNotification(response.status, { success: `User ${credentials.username} authenticated.`, error: `User ${credentials.username} could not be authenticated.` })
         const token: string = response.data
         resolve(token)
@@ -225,7 +225,7 @@ export let authenticateCredentials = (credentials: UserCredentials) : Promise<st
     })
     .catch((err) => {
       console.log(colors.red(`Authenticating over ${URL_AUTHENTICATE} thrown error:` + err))
-      actions.removeNotification(fetchingNotification.id)
+      actions.removeNotification(fetchingNotification)
       actions.addNotification(new Notification('error', `User could not be authenticated!`))
       resolve(null)
     })

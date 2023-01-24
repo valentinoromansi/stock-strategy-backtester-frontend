@@ -9,14 +9,12 @@ export function getItem(storageType: StorageType, key: StorageKey): any {
 
 export function setItem(storageType: StorageType, key: StorageKey, value: string) {
   if(storageType === "local")
-    localStorage.setItem(key, value)
-  else
-    sessionStorage.setItem(key, value)
+    return localStorage.setItem(key, value)
+  sessionStorage.setItem(key, value)
 }
 
 export function removeItem(storageType: StorageType, key: StorageKey) {
   if(storageType === "local")
-    localStorage.removeItem(key)
-  else
-    sessionStorage.removeItem(key)
+    return localStorage.removeItem(key)
+  sessionStorage.removeItem(key)
 }
