@@ -16,15 +16,17 @@ import { Typography } from "@mui/material";
 
 type PropsType = {
   strategyEditorActive: boolean,
-  strategyReports: StrategyReport[],
   selectedStrategyReport: StrategyReport,
   selectedBacktestResult: BacktestResult,
   authenticated: boolean
 }
 type StateType = {
-  strategyBacktestResults?: StrategyReport,
-  actionMenuOpened: boolean,
-  graphSize: { width: number, height: number }
+  graphSize: GraphSize
+}
+
+interface GraphSize {
+  width: number,
+  height: number
 }
 
 class Main extends Component<PropsType, StateType> {
@@ -34,11 +36,9 @@ class Main extends Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props);
     this.state = {
-      actionMenuOpened: true,
       graphSize: { width: 0, height: 0}
     }
     this.updateGraphSize = this.updateGraphSize.bind(this)
-    this.handleActionMenuClick = this.handleActionMenuClick.bind(this)
   }
   
   
@@ -55,10 +55,6 @@ class Main extends Component<PropsType, StateType> {
     this.updateGraphSize()
     window.addEventListener('resize', this.updateGraphSize)
   }
- 
-  handleActionMenuClick() {
-    this.setState({actionMenuOpened: !this.state.actionMenuOpened})
-  }
 
   componentDidUpdate(prevProps: Readonly<PropsType>, prevState: Readonly<StateType>, snapshot?: any): void {
     if(prevProps.authenticated !== this.props.authenticated) {
@@ -70,48 +66,56 @@ class Main extends Component<PropsType, StateType> {
   }
 
 
+  GraphAndReportTable(props: { backtestResults: BacktestResult[], selectedBacktestResult: BacktestResult, graphSize: GraphSize }) {
+    return(
+      <React.Fragment> 
+        {
+          props.backtestResults ?
+          <React.Fragment>                         
+            { 
+              props.selectedBacktestResult &&
+              <Box width='100%' display='flex' flexDirection='column'>
+                <GraphWithTradeMarkings width={props.graphSize.width} height={props.graphSize.height}/>
+              </Box> 
+            }
+            <Box width='100%' display='flex' flexDirection='column'>
+              <StrategyReportTable/>
+            </Box>
+          </React.Fragment>
+          :
+          <Typography fontSize='large' color="#343434">There are no reports generated for this strategy.</Typography>
+        }                                
+      </React.Fragment>)
+  }
+
+
   render() {
+    const { authenticated, strategyEditorActive, selectedStrategyReport, selectedBacktestResult  } = this.props
+    const { graphSize } = this.state
+
     return (
-        <Box sx={{ padding: '24px'}}>
+        <Box p={'24px'}>
           <NotificationsStack/>
           {
-            !this.props.authenticated ?
-            <LoginForm/> :
-            <React.Fragment>       
-              <Box sx={{ display:'flex', flexDirection: 'row', gap: '16px'}}>          
-                {/* Action and strategy list */}
-                <Box sx={{ minWidth: '190px', display:'flex', flexDirection: 'column', gap: '16px'}}>
-                  <MenuMainActions/>      
-                  <MenuStrategyList/>
-                </Box>
-                {/* Strategy designer, graph view, report table  */}
-                <Box sx={{ width: '100%', minWidth: '500px', display:'flex', flexDirection: 'column', gap: '16px'}} ref={this.graphWrapperRef}>
-                  {/* Strategy designer*/}
-                    {this.props.strategyEditorActive ?                  
-                      <StrategyDesigner/>                
-                    :
-                    <React.Fragment>
-                        {/* Graph and Report table */}
-                        {
-                          this.props.selectedStrategyReport?.backtestResults ?
-                          <React.Fragment>                         
-                            { this.props.selectedBacktestResult &&
-                              <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
-                                <GraphWithTradeMarkings width={this.state.graphSize.width} height={this.state.graphSize.height}/>
-                              </Box> 
-                            }
-                            <Box sx={{ width: '100%', display:'flex', flexDirection: 'column'}}>
-                              <StrategyReportTable/>
-                            </Box>
-                          </React.Fragment>
-                          :
-                          <Typography fontSize={'large'} color="#343434">There are no reports generated for this strategy.</Typography>
-                        }                                
-                      </React.Fragment>
-                    }
-                </Box>
+            !authenticated ?
+            <LoginForm/>
+            :
+            <Box display='flex' flexDirection='row' gap='16px'>          
+              {/* Action and strategy menus */}
+              <Box minWidth='190px' display='flex' flexDirection='column' gap='16px'>
+                <MenuMainActions/>      
+                <MenuStrategyList/>
               </Box>
-            </React.Fragment>
+              {/* Strategy designer or (graph and report table)*/}
+              <Box sx={{width:'100%', minWidth:'500px', display:'flex', flexDirection:'column', gap:'16px'}} width='100%' minWidth='500px' display='flex' flexDirection='column' gap='16px' ref={this.graphWrapperRef}>
+                {
+                  strategyEditorActive ?                  
+                  <StrategyDesigner/>                
+                  :
+                  <this.GraphAndReportTable backtestResults={selectedStrategyReport?.backtestResults} selectedBacktestResult={selectedBacktestResult} graphSize={graphSize}/>
+                }
+              </Box>
+            </Box>
           }
         </Box>
     );
@@ -123,10 +127,9 @@ class Main extends Component<PropsType, StateType> {
 
 const mapStateToProps = (state: reducer.StateType) => {
   return {
-		strategyEditorActive: state.strategyEditorActive,
-    strategyReports: state.strategyReports,
-    selectedStrategyReport: state.strategyReports.find(item => item.strategyName === state.selectedStrategy?.name),
+		strategyEditorActive: state.strategyDesignerActive,
     selectedBacktestResult: state.selectedBacktestResult,
+    selectedStrategyReport: state.strategyReports.find(item => item.strategyName === state.selectedStrategy?.name),
     authenticated: state.authenticated
   };
 };

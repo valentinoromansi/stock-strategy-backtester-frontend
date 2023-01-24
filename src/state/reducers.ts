@@ -16,7 +16,7 @@ export type StateType = {
   strategyDesignerStrategy: Strategy | null,
   strategiesFecthing: boolean,
   selectedTrade: TradeDateAndValues | null,
-  strategyEditorActive: boolean,
+  strategyDesignerActive: boolean,
   notifications: Notification[],
   authenticated: boolean,
   authenticationFetching: boolean
@@ -34,7 +34,7 @@ export const initialState: StateType = {
   selectedStrategy: null, // used to hold value of selected strategy with all children properties
   strategyDesignerStrategy: null, // strategy that should be used for strategy edit, can always revert to 'selectedStrategy' which is its initial state
   selectedTrade: null,
-  strategyEditorActive: false,
+  strategyDesignerActive: false,
   notifications: [],
   authenticated: false,
   authenticationFetching: false
@@ -69,7 +69,7 @@ export const rootReducer = (state = initialState, action: {type: any, payload: a
     case types.SET_SELECTED_TRADE:
       return { ...state, selectedTrade: action.payload };
     case types.SET_STRATEGY_EDITOR_ACTIVE:
-      return { ...state, strategyEditorActive: action.payload };
+      return { ...state, strategyDesignerActive: action.payload };
     case types.ADD_NOTIFICATION:
       state.notifications.push(action.payload)
       return { ...state, notifications: [...state.notifications]}
