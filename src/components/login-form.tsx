@@ -1,10 +1,10 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 
-import * as actions from "../../state/actions";
+import * as actions from "../state/actions";
 import "apercu-font";
 import { Grid, Typography, TextField, Button, Paper} from "@mui/material";
-import * as reducer from '../../state/reducers';
+import * as reducer from '../state/reducers';
 import 'dotenv/config'
 
 

@@ -5,8 +5,9 @@ import { connect } from "react-redux";
 import Box from '@mui/material/Box';
 import { Typography } from "@mui/material";
 import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertColor } from '@mui/material/Alert';
+import MuiAlert from '@mui/material/Alert';
 import LoadingIcons from 'react-loading-icons'
+import { Notification } from "../models/notification";
 
 type PropsType = {
   notifications?: Notification[]
@@ -16,22 +17,6 @@ type StateType = {
 }
 
 const notificationDuration = 2
-
-export class Notification {
-  id?: number
-  type: AlertColor
-  message: string
-  creationDate: Date
-  fetching: boolean
-  constructor(type: AlertColor, message: string, fetching: boolean = false) {
-    this.type = type
-    this.message = message
-    this.fetching = fetching
-    this.creationDate = new Date()
-  }
-}
-
-
 
 class NotificationsStack extends Component<PropsType, StateType> {
 

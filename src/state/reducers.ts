@@ -1,4 +1,4 @@
-import { Notification } from 'components/notifications-stack';
+import { Notification } from "models/notification";
 import { BacktestResult, TradeDateAndValues } from '../models/backtest-result';
 import { Strategy } from '../models/strategy';
 import { StrategyReport } from '../models/strategy-report';

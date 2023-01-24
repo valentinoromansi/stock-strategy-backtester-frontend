@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import { StrategyReport } from "../models/strategy-report";
-import StrategyReportTable from "./strategy-report-table/strategy-report-table";
+import StrategyReportTable from "./strategy-report-table";
 import MenuMainActions from './menu-main-actions'
 import MenuStrategyList from './menu-strategy-list'
 import * as actions from "../state/actions";
 import * as reducer from '../state/reducers';
 import { connect } from "react-redux";
-import GraphWithTradeMarkings from "./graph-with-trade-markings/graph-with-trade-markings";
+import GraphWithTradeMarkings from "./graph-with-trade-markings-and-bars/graph-with-trade-markings";
 import StrategyDesigner from "./strategy-designer/strategy-designer";
 import Box from '@mui/material/Box';
 import { BacktestResult } from "models/backtest-result";
 import NotificationsStack from "./notifications-stack";
-import LoginForm from "./login-form/login-form";
+import LoginForm from "./login-form";
 import { Typography } from "@mui/material";
 
 type PropsType = {

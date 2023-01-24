@@ -19,7 +19,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import * as actions from "../../state/actions";
 import * as http from "http/http";
 import StrategyDesignerRuleList from "./strategy-designer-rule-list";
-import { Notification } from "components/notifications-stack";
+import { Notification } from "models/notification";
 
 
 type PropsType = {

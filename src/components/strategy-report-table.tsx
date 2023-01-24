@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { StrategyReport } from "../../models/strategy-report";
+import { StrategyReport } from "../models/strategy-report";
 import { connect } from "react-redux";
-import * as reducer from '../../state/reducers';
-import { Strategy } from "../../models/strategy";
+import * as reducer from '../state/reducers';
+import { Strategy } from "../models/strategy";
 import { SpinnerComponent } from 'react-element-spinner';
-import { BacktestResult } from "../../models/backtest-result";
-import * as actions from "../../state/actions";
+import { BacktestResult } from "../models/backtest-result";
+import * as actions from "../state/actions";
 
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';

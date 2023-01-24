@@ -5,7 +5,7 @@ import { StrategyReport } from '../models/strategy-report';
 import { Strategy } from '../models/strategy';
 import { BacktestResult, TradeDateAndValues } from '../models/backtest-result';
 import { deepCopy } from 'utils/utils';
-import { Notification } from 'components/notifications-stack';
+import { Notification } from "models/notification";
 import { UserCredentials } from 'types/user-credentials';
 import * as storage from '../browser-storage/browser-storage'
 

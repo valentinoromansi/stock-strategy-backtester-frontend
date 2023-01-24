@@ -2,7 +2,7 @@ import { StrategyReport } from "../models/strategy-report"
 import colors from "colors"
 import { Strategy } from "../models/strategy"
 import * as actions from "../state/actions";
-import { Notification } from "components/notifications-stack";
+import { Notification } from "models/notification";
 import * as storage from "browser-storage/browser-storage";
 import { UserCredentials } from "types/user-credentials";
 
