@@ -98,8 +98,8 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 				onClose={(e) =>  { this.setState({ canOpenRcMenu: true, rcMenuAnchorElement: null}) }}
 			>
 				{
-					Object.values(enumType).map((value) => (
-						<MenuItem value={value}>
+					Object.values(enumType).map((value, i) => (
+						<MenuItem key={i} value={value}>
 							<Typography>{prefix + '' + value}</Typography>
 						</MenuItem>
 					))
@@ -390,7 +390,7 @@ class StrategyDesignerRuleList extends Component<PropsType, StateType> {
 				{/* Rules list */}
 				{
 					this.props.strategyDesignerStrategy?.strategyConRules?.map((rule: ConditionalRule, i) => (
-						<div className={styles.strategyDesignerSidebarListItem}>
+						<div className={styles.strategyDesignerSidebarListItem} key={i}>
 							{/* simple/relative attribute 1 */}
 							{ this.attributeElement({ ruleIndex: i, mainAttributeIndex: AttributeId.ATTRIBUTE1, subAttributeIndex: null, isEnterTradeRule: null, isStoplossRule: null}) }
 							{/* Rule condition */}

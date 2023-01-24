@@ -92,8 +92,8 @@ class MenuStrategyList extends Component<PropsType, StateType> {
           <Divider sx={{margin: '8px'}} variant='middle' orientation="horizontal" flexItem />
 
           {!this.props.strategiesFecthing &&
-            this.props.strategies.map((strategy) => (
-            <ListItem selected={ this.isStrategySelected(strategy)} sx={{margin: 0, padding: 0, borderRadius: '4px'}} key={strategy.name}>
+            this.props.strategies.map((strategy, i) => (
+            <ListItem selected={ this.isStrategySelected(strategy)} sx={{margin: 0, padding: 0, borderRadius: '4px'}} key={i}>
               <Grid container alignItems='center'>
                 {/* Strategy name */}
                 <Grid item xs={9}>

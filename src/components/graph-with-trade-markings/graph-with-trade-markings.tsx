@@ -157,6 +157,7 @@ class GraphWithTradeMarkings extends Component<PropsType, StateType> {
 						xExtents={xExtents}
 						xAccessor={xAccessor}
 						displayXAccessor={displayXAccessor}
+						seriesName= {"s"}
 					>
 							<Chart id={1} yExtents={(d: VerticalSlice) => [d.high, d.low]}>
 								{/* Date axis */}

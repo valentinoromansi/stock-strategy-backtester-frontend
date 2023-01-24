@@ -59,9 +59,9 @@ class NotificationsStack extends Component<PropsType, StateType> {
           <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} open={true} autoHideDuration={6000} sx={{padding: '8px', gap: '6px'}}>
             <Box sx={{gap: '6px', display: 'flex', flexDirection: 'column', alignItems: 'end'}}>
               {
-                this.props.notifications?.map((notification) => {
+                this.props.notifications?.map((notification, i) => {
                   return(
-                    <MuiAlert key={notification.id} severity={notification.type} variant="filled">
+                    <MuiAlert key={i} severity={notification.type} variant="filled">
                       <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} >
                       <Typography color={'white'}>{notification.message}</Typography>
                       {

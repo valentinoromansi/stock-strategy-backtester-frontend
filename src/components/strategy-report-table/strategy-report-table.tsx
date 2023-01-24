@@ -216,12 +216,9 @@ class StrategyReportTable extends Component<PropsType, StateType> {
     this.setSelectedStrategyReport(this.props)
   }
 
-  componentDidUpdate(prevProps: Readonly<PropsType>, prevState: Readonly<StateType>, snapshot?: any): void {
-  }
-  
-
-  componentWillReceiveProps(nextProps: PropsType) {
-    this.setSelectedStrategyReport(nextProps)
+  componentDidUpdate(prevProps: Readonly<PropsType>): void {
+    if(prevProps !== this.props)
+      this.setSelectedStrategyReport(this.props)
   }
 
   onRowClick(row: BacktestResult) {

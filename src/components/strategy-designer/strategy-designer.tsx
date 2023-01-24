@@ -52,11 +52,12 @@ class StrategyDesigner extends Component<PropsType, StateType> {
 
 	componentDidMount() {
     	this.setState({selectedStrategy: this.props.selectedStrategy})
-  	}  
-
-	componentWillReceiveProps(nextProps: PropsType) {
-    	this.setState({selectedStrategy: nextProps.selectedStrategy})
-  	}
+  	} 
+	
+	componentDidUpdate(prevProps: Readonly<PropsType>): void {
+		if(prevProps.selectedStrategy !== this.props.selectedStrategy)
+			this.setState({selectedStrategy: this.props.selectedStrategy})
+	}
 
   
     
