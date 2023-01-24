@@ -18,6 +18,8 @@ import * as storage from "../browser-storage/browser-storage";
 type PropsType = {
   strategyBacktestResults?: StrategyReport[]
   currentStr?: string
+  strategiesFecthing: boolean,
+  strategyReportsFecthing: boolean    
 }
 type StateType = {
   strategyBacktestResults?: StrategyReport[]
@@ -67,13 +69,13 @@ class MenuMainActions extends Component<PropsType, StateType> {
             <Button sx={{ width: "auto", padding: "10px 20px" }} variant="outlined" onClick={this.logout}>
               logout
             </Button>
-            <Button sx={{ width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.refetchStrategies}>
+            <Button sx={{ width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.refetchStrategies} disabled={this.props.strategiesFecthing}>
               Refetch strategies
             </Button>
-            <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.refetchStrategyReports}>
+            <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.refetchStrategyReports} disabled={this.props.strategyReportsFecthing}>
               Refetch reports
             </Button>
-            <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.generateStrategyReports}>
+            <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" onClick={this.generateStrategyReports} disabled={this.props.strategyReportsFecthing}>
               Regenerate reports
             </Button>
           </Grid>
@@ -87,7 +89,9 @@ class MenuMainActions extends Component<PropsType, StateType> {
 
 const mapStateToProps = (state: any) => {
   return {
-    currentStr: state.currentStr
+    currentStr: state.currentStr,
+    strategiesFecthing: state.strategiesFecthing,
+    strategyReportsFecthing: state.strategyReportsFecthing    
   };
 };
 

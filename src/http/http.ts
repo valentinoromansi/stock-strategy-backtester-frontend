@@ -4,6 +4,7 @@ import { Strategy } from "../models/strategy"
 import * as actions from "../state/actions";
 import { Notification } from "components/notifications-stack";
 import * as storage from "browser-storage/browser-storage";
+import { UserCredentials } from "types/user-credentials";
 
 const BASE_URL: string = process?.env?.REACT_APP_SERVICE_BASE_URL
 const URL_GET_STOCK: string = BASE_URL + 'get-stock'
@@ -205,11 +206,6 @@ export let regenerateStrategyReports = () : Promise<StrategyReport[]> => {
 
 
 
-export interface UserCredentials {
-  user: string,
-  password: string
-}
-
 // Authenticates user credentials and saves received jwt access token in local storage for future service calls
 export let authenticateCredentials = (credentials: UserCredentials) : Promise<string> => {
   const fetchingNotification = actions.addNotification(new Notification('info', "Authentication started...", true))
@@ -222,7 +218,7 @@ export let authenticateCredentials = (credentials: UserCredentials) : Promise<st
     .then(response => {
       response.json().then((response: ServiceResponse)=> {
         actions.removeNotification(fetchingNotification.id)
-        showNotification(response.status, { success: `User ${credentials.user} authenticated.`, error: `User ${credentials.user} could not be authenticated.` })
+        showNotification(response.status, { success: `User ${credentials.username} authenticated.`, error: `User ${credentials.username} could not be authenticated.` })
         const token: string = response.data
         resolve(token)
       })
