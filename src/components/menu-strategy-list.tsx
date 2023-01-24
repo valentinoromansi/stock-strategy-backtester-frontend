@@ -118,7 +118,7 @@ class MenuStrategyList extends Component<PropsType, StateType> {
 
           {
             this.props.strategies?.length !== 0 && !this.props.strategiesFecthing &&
-            <Divider variant='middle' sx={{ marginTop: '4px', marginBottom: '12px' }} orientation="horizontal" flexItem />
+            <Divider variant='middle' sx={{margin: '8px'}} orientation="horizontal" flexItem />
           }
           <Box sx={{display: "flex", flexDirection: "column"}}>
             <Button sx={{width: "auto", padding: "10px 20px" }} variant="contained" endIcon={<AddCircleOutlineIcon/>} onClick={() => this.addNewStrategy()}>
