@@ -134,7 +134,7 @@ export let saveStrategy = (strategy: Strategy) : Promise<boolean> => {
     .then(response => {
       response.json().then((response: ServiceResponse) => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
-        const data: boolean = response.data ?? false
+        const data: boolean = response.status === 200 ?? false
         actions.removeNotification(fetchingNotification)
         showNotification(response.status, { success: 'Strategy saved', error: 'Strategy could not be saved' })
         resolve(data)
