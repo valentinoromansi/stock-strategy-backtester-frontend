@@ -56,7 +56,7 @@ export let getStock = (interval: string, symbol: string) : Promise<[]> => {
         console.log(colors.green(`Fetch ${URL_GET_STOCK} done.`))
         const data = response.data ?? []
         actions.removeNotification(fetchingNotification)
-        showNotification(response.status, {success: 'Stock fetched', error: 'Stock could not be fetched'})
+        showNotification(response.status, {success: 'Stock fetched', error: response.message ?? 'Stock could not be fetched'})
         for(const o of data)
           o.date = new Date(o.date)
         resolve(data)        
@@ -82,7 +82,7 @@ export let getStrategyReports = () : Promise<StrategyReport[]> => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGY_REPORTS} done.`))
         const data: StrategyReport[] = response.data ?? []
         actions.removeNotification(fetchingNotification)
-        showNotification(response.status, { success: 'Strategy reports fetched', error: 'Strategy reports could not be fetched' })
+        showNotification(response.status, { success: 'Strategy reports fetched', error: response.message ?? 'Strategy reports could not be fetched' })
         resolve(data)
       })
     })
@@ -107,7 +107,7 @@ export let getStrategies = () : Promise<Strategy[]> => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
         const data: Strategy[]  = response.data ?? []
         actions.removeNotification(fetchingNotification)
-        showNotification(response.status, { success: 'Strategies fetched', error: 'Strategies could not be fetched' })
+        showNotification(response.status, { success: 'Strategies fetched', error: response.message ?? 'Strategies could not be fetched' })
         resolve(data)
       })
     })
@@ -120,9 +120,7 @@ export let getStrategies = () : Promise<Strategy[]> => {
   })
 }
 
-// HANDLE RESPONSE PROPERLY
-// HANDLE RESPONSE PROPERLY
-// HANDLE RESPONSE PROPERLY
+
 export let saveStrategy = (strategy: Strategy) : Promise<boolean> => {
   const fetchingNotification = actions.addNotification(new Notification('info', "Saving strategy...", true))
   return new Promise(async (resolve) => {
@@ -136,7 +134,7 @@ export let saveStrategy = (strategy: Strategy) : Promise<boolean> => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
         const data: boolean = response.status === 200 ?? false
         actions.removeNotification(fetchingNotification)
-        showNotification(response.status, { success: 'Strategy saved', error: 'Strategy could not be saved' })
+        showNotification(response.status, { success: 'Strategy saved', error: response.message ?? 'Strategy could not be saved' })
         resolve(data)
       })
     })
@@ -163,7 +161,7 @@ export let deleteStrategy = (name: string) : Promise<boolean> => {
         console.log(colors.green(`Fetch ${URL_GET_STRATEGIES} done.`))
         const isDeleted: boolean = response.status === 200 ?? false
         actions.removeNotification(fetchingNotification)
-        showNotification(response.status, { success: 'Strategy deleted', error: 'Strategy could not be deleted' })
+        showNotification(response.status, { success: 'Strategy deleted', error: response.message ?? 'Strategy could not be deleted' })
         resolve(isDeleted)
       })
     })
@@ -190,7 +188,7 @@ export let regenerateStrategyReports = () : Promise<StrategyReport[]> => {
         console.log(colors.green(`Update and Fetch ${URL_UPDATE_STRATEGY_REPORTS} done.`))
         const data: StrategyReport[] = response.data ?? []
         actions.removeNotification(fetchingNotification)
-        showNotification(response.status, { success: 'Strategy reports regenerated', error: 'Strategy reports could not be regenerated' })
+        showNotification(response.status, { success: 'Strategy reports regenerated', error: response.message ?? 'Strategy reports could not be regenerated' })
         resolve(data)
       })
     })
