@@ -60,7 +60,7 @@ interface Column {
 
 const columns: readonly Column[] = [
   { key: 'stockName', label: 'Stock name', minWidth: 50 },
-  { key: 'interval', label: 'Interval', minWidth: 50 },
+  { key: 'interval', label: 'Timeframe', minWidth: 50 },
   { key: 'plFactor', label: 'P/L factor', minWidth: 50,
     format: (backtest: BacktestResult) => {
       const color = getColorFromPlFactor(backtest.plFactor)
