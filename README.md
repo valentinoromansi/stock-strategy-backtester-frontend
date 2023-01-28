@@ -1,7 +1,5 @@
 # How to use
-<video width="100%" controls>
-  <source src="readme-graphics/quick-tutorial.mp4" type="video/mp4">
-</video>
+![g](readme-graphics/quick-tutorial.gif)
 
 
 </br></br></br>
